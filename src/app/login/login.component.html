@@ -1,0 +1,67 @@
+<main class="login__container">
+  <section class="login__wrapper">
+    <div class="">
+      <img src="../../assets/saving_money.svg" alt="saving_money" />
+      <div class="login__company__name">
+        <span
+          >Seanenyuiawo <br />
+          Educational Foundation</span
+        >
+        <p>SEF 2009AD</p>
+      </div>
+    </div>
+    <div class="login__form">
+      <div class="login__logo">
+        <img src="../../assets/logo.svg" alt="logo" />
+      </div>
+      <div class="login__header">
+        <h1>Login</h1>
+        <p>Please enter your details to login</p>
+      </div>
+      <form
+        [formGroup]="loginForm"
+        (ngSubmit)="onSubmit()"
+        class="login__form__container">
+        <mat-form-field>
+          <mat-label for="email">Email: </mat-label>
+          <input matInput id="email" type="email" formControlName="email" />
+          @if (loginForm.hasError('email') && !loginForm.hasError('required')) {
+            <mat-error>Please enter a valid email address</mat-error>
+          }
+          @if (loginForm.hasError('required')) {
+            <mat-error>Email is <strong>required</strong></mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label for="password">Password: </mat-label>
+          <input
+            matInput
+            id="password"
+            type="password"
+            formControlName="password" />
+          @if (
+            loginForm.hasError('password') && !loginForm.hasError('required')
+          ) {
+            <mat-error>Please enter a valid password</mat-error>
+          }
+          @if (loginForm.hasError('required')) {
+            <mat-error>Password is <strong>required</strong></mat-error>
+          }
+        </mat-form-field>
+
+        <div class="login__action">
+          <button mat-flat-button type="submit" class="submit__btn">
+            Login
+          </button>
+          <a
+            routerLink="/forgot-password"
+            routerLinkActive="active"
+            ariaCurrentWhenActive="page"
+            >Forgot password?</a
+          >
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
