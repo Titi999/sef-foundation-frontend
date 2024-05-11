@@ -20,6 +20,10 @@ $primary-palette: (
   700: #164860,
   800: #11384A,
   900: #0D2A39,
+  A100: #80D8FF,
+  A200: #40C4FF,
+  A400: #00B0FF,
+  A700: #0091EA,
   contrast: (
     50: $dark-primary-text,
     100: $dark-primary-text,
@@ -49,6 +53,10 @@ $secondary-palette: (
   700: #B58800,
   800: #8C6A00,
   900: #6B5100,
+  A100: #FFE57F,
+  A200: #FFD740,
+  A400: #FFC000,
+  A700: #FFAB00,
   contrast: (
     50: $dark-primary-text,
     100: $dark-primary-text,
@@ -78,6 +86,10 @@ $tertiary-palette: (
   700: #4D4763,
   800: #3B374C,
   900: #2D2A3A,
+  A100: #B8B3C3,
+  A200: #A098B4,
+  A400: #8F80A7,
+  A700: #7C6B97,
   contrast: (
     50: $dark-primary-text,
     100: $dark-primary-text,
