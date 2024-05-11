@@ -44,6 +44,15 @@
   font-weight: $font-weight-sm;
 }
 
+@media (max-width: 850px) {
+  .login__illustration {
+    display: none;
+  }
+  .login__form {
+    margin-bottom: 9rem;
+  }
+}
+
 .login__form {
   display: flex;
   flex-direction: column;
@@ -84,5 +93,11 @@
       font-weight: $font-weight-sm;
       color: map-get($primary-palette, 500);
     }
+  }
+}
+
+@media (max-width: 475px) {
+  .login__form__container {
+    width: 300px;
   }
 }
