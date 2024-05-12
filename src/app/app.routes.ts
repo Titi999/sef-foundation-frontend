@@ -1,7 +1,8 @@
 import { Routes } from '@angular/router';
+import { dashboardRoutes } from './dashboard/dashboard.routes';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { LoginComponent } from './login/login.component';
 import { NotFoundComponent } from './not-found/not-found.component';
-import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { VerificationComponent } from './verification/verification.component';
 
 export const routes: Routes = [
@@ -16,5 +17,6 @@ export const routes: Routes = [
     path: 'verification/:id/:encodedEmail',
     component: VerificationComponent,
   },
+  ...dashboardRoutes,
   { path: '**', component: NotFoundComponent },
 ];
