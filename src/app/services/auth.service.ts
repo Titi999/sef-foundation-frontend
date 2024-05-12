@@ -1,16 +1,19 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
+import { UserLoginResponse } from '../types/user';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor() {}
+  private userSignal = signal<UserLoginResponse | undefined>(undefined);
+
+  public readonly loggedInUser = this.userSignal.asReadonly();
 
   public isAuthenticated(): boolean {
-    return !!localStorage.getItem('token');
-  }
+    if (!this.loggedInUser()) {
+      return false;
+    }
 
-  public getToken(): string | null {
-    return localStorage.getItem('token');
+    return true;
   }
 }
