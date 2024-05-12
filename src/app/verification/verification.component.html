@@ -1,0 +1,32 @@
+<main class="verification__container">
+  <section class="verification__wrapper">
+    <div class="verification__illustration">
+      <img src="../../assets/2fa.svg" alt="2fa" />
+    </div>
+    <div class="verifcation__form">
+      <div class="verification__logo">
+        <img src="../../assets/logo.svg" alt="logo" />
+      </div>
+      <div class="verifcation__header">
+        <h1>We've emailed you a code</h1>
+        <p>Please enter the verification code sent to</p>
+      </div>
+      <ng-otp-input
+        (onInputChange)="onOtpChange($event)"
+        [config]="{
+          length: 6,
+          allowNumbersOnly: true,
+          disableAutoFocus: true
+        }"></ng-otp-input>
+      <div class="verifcation__action">
+        <button mat-flat-button type="submit" class="submit__btn">
+          Continue
+        </button>
+        <div class="verifcation__action__text">
+          <span>Didn't get the code?</span>
+          <a>Resend code</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
