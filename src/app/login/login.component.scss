@@ -80,6 +80,12 @@
   width: 419px;
   height: 124px;
 
+  .login__error {
+    margin-top: -1rem;
+    margin-bottom: 5px;
+    font-size: small;
+  }
+
   .login__action {
     width: 100%;
     display: flex;

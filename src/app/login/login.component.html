@@ -23,32 +23,48 @@
         (ngSubmit)="onSubmit()"
         class="login__form__container">
         <mat-form-field>
-          <mat-label for="email">Email: </mat-label>
+          <mat-label for="email">Email </mat-label>
           <input matInput id="email" type="email" formControlName="email" />
-          @if (loginForm.hasError('email') && !loginForm.hasError('required')) {
-            <mat-error>Please enter a valid email address</mat-error>
-          }
-          @if (loginForm.hasError('required')) {
-            <mat-error>Email is <strong>required</strong></mat-error>
-          }
         </mat-form-field>
+        @if (
+          loginForm.get('email')?.invalid && loginForm.get('email')?.touched
+        ) {
+          @if (loginForm.get('email')?.errors?.['required']) {
+            <mat-error class="login__error">Email is required</mat-error>
+          }
+          @if (loginForm.get('email')?.errors?.['email']) {
+            <mat-error class="login__error"
+              >Please enter a valid email address</mat-error
+            >
+          }
+        }
 
         <mat-form-field>
-          <mat-label for="password">Password: </mat-label>
+          <mat-label for="password">Password </mat-label>
           <input
             matInput
             id="password"
             type="password"
             formControlName="password" />
-          @if (
-            loginForm.hasError('password') && !loginForm.hasError('required')
-          ) {
-            <mat-error>Please enter a valid password</mat-error>
-          }
-          @if (loginForm.hasError('required')) {
-            <mat-error>Password is <strong>required</strong></mat-error>
-          }
         </mat-form-field>
+        @if (
+          loginForm.get('password')?.invalid &&
+          loginForm.get('password')?.touched
+        ) {
+          @if (loginForm.get('password')?.errors?.['required']) {
+            <mat-error class="login__error">Password is required</mat-error>
+          }
+          @if (loginForm.get('password')?.errors?.['minLength']) {
+            <mat-error class="login__error"
+              >Password should be at least 8 characters</mat-error
+            >
+          }
+          @if (loginForm.get('password')?.errors?.['weakPassword']) {
+            <mat-error class="login__error"
+              >Please enter a valid password</mat-error
+            >
+          }
+        }
 
         <div class="login__action">
           <button mat-flat-button type="submit" class="submit__btn">
