@@ -67,8 +67,16 @@
         }
 
         <div class="login__action">
-          <button mat-flat-button type="submit" class="submit__btn">
-            Login
+          <button
+            mat-flat-button
+            type="submit"
+            class="submit__btn"
+            [disabled]="loading">
+            @if (loading) {
+              <span class="loading">Loading...</span>
+            } @else {
+              <span>Login</span>
+            }
           </button>
           <a
             routerLink="/forgot-password"

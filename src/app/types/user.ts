@@ -14,3 +14,8 @@ export interface UserLoginResponse {
     };
   };
 }
+
+export interface UserData {
+  email: string;
+  password: string;
+}
