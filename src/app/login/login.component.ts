@@ -12,11 +12,13 @@ import {
 } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { Subject, catchError, finalize, of, takeUntil } from 'rxjs';
-import { LoginService } from '../services/login.service';
+import { AuthService } from '../services/auth.service';
 import { UserData } from '../types/user';
-import { passwordValidator } from '../utils/functions';
+import { serverError } from '../utils/constants';
+import { encodeToBase64, passwordValidator } from '../utils/functions';
 
 @Component({
   selector: 'app-login',
@@ -52,11 +54,14 @@ export class LoginComponent implements OnDestroy {
 
       this.loading = true;
 
-      this.loginService
+      this.authService
         .login(email, password)
         .pipe(
           catchError(error => {
-            console.log('login', error);
+            this.toastrService.error(
+              error.error.message,
+              error.error.error || serverError
+            );
             return of(null);
           }),
           finalize(() => (this.loading = false)),
@@ -64,13 +69,18 @@ export class LoginComponent implements OnDestroy {
         )
         .subscribe(response => {
           if (response) {
-            console.log('login response', response);
+            this.toastrService.info(response.message, 'Verification needed');
+            const { id, email } = response.data.user;
+            const encodedEmail = encodeToBase64(email);
+            this.router.navigate(['/verification', id, encodedEmail]);
           }
         });
     }
   }
 
-  private loginService = inject(LoginService);
+  private authService = inject(AuthService);
+  private toastrService = inject(ToastrService);
+  private router = inject(Router);
 
   private unsubscribe = new Subject<void>();
 
