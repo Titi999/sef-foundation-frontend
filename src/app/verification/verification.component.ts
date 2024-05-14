@@ -60,7 +60,7 @@ export class VerificationComponent implements OnInit, OnDestroy {
         )
         .subscribe(response => {
           if (response) {
-            this.authService.setUser(response);
+            this.authService.setUser(response.data);
             this.toastrService.success(
               response.message,
               `Welcome ${response.data.user.name}`

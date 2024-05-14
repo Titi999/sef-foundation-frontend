@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, signal } from '@angular/core';
+import {computed, Injectable, signal} from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Response, UserLoginResponse, VerifyLogin } from '../types/user';
@@ -8,7 +8,7 @@ import { Response, UserLoginResponse, VerifyLogin } from '../types/user';
   providedIn: 'root',
 })
 export class AuthService {
-  private userSignal = signal<UserLoginResponse | undefined>(undefined);
+  private userSignal = signal<VerifyLogin | undefined>(undefined);
 
   public readonly loggedInUser = this.userSignal.asReadonly();
 
@@ -20,17 +20,8 @@ export class AuthService {
     );
   }
 
-  // Check if user is authenticated
-  public isAuthenticated(): boolean {
-    if (!this.loggedInUser()) {
-      return false;
-    }
-
-    return true;
-  }
-
   // Set user session
-  public setUser(response: UserLoginResponse) {
+  public setUser(response: VerifyLogin) {
     window.localStorage.setItem('user', JSON.stringify(response));
     this.userSignal.set(response);
   }
@@ -70,5 +61,11 @@ export class AuthService {
       `${this.url}/forgot-password`,
       { email }
     );
+  }
+
+  public get userName() {
+    return computed(() => {
+      return this.loggedInUser()?.user.name
+    })
   }
 }
