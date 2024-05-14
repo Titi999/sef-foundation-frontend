@@ -1,0 +1,101 @@
+@use '../../scss/colors' as colors;
+@use '../../scss/global' as font;
+
+h1 {
+  padding: 0 1rem;
+}
+
+h2 {
+  padding: 1rem;
+}
+
+mat-toolbar{
+  position: fixed;
+  z-index: 2;
+  background: colors.$light-primary-text;
+  border-bottom: 1px solid colors.$schemes-surface-variant;
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+}
+
+.dashboard-toolbar-items {
+  margin: 0 1rem;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .toolbar-right {
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+    color: colors.$sys-light-on-surface-variant;
+  }
+
+  span {
+    font-size: 20px;
+  }
+
+  .logo {
+    width: 3rem;
+  }
+}
+
+
+mat-sidenav-container {
+  height: 100vh;
+}
+
+mat-sidenav {
+  padding-top: 3.5rem;
+  @media screen and (min-width: 600px) {
+    padding-top: 4rem;
+  }
+
+  .entry{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    border-radius: 100px;
+    color: colors.$schemes-outline-variant;
+  }
+
+  .entry__active {
+    background: colors.$schemes-primary;
+    color: map-get(colors.$primary-palette, 500)
+  }
+}
+
+.nav-item {
+  margin: 5px 0;
+}
+
+mat-sidenav-content{
+  padding-top: 3.5rem;
+  @media screen and (min-width: 600px) {
+    padding-top: 4rem;
+  }
+}
+
+.expanded {
+  width: 250px;
+}
+
+
+.navigation-items {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-content: space-between;
+  height: 100%;
+}
+
+.navigation-bottom-items {
+  display: flex;
+  flex-direction: column;
+  margin-top: 3rem;
+}
+
+
