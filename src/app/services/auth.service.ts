@@ -61,4 +61,14 @@ export class AuthService {
       { id }
     );
   }
+
+  // Forgot password
+  public forgotPassword(
+    email: string
+  ): Observable<Response<UserLoginResponse>> {
+    return this.http.post<Response<UserLoginResponse>>(
+      `${this.url}/forgot-password`,
+      { email }
+    );
+  }
 }
