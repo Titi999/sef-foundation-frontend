@@ -8,7 +8,7 @@ import { Response, UserLoginResponse, VerifyLogin } from '../types/user';
   providedIn: 'root',
 })
 export class AuthService {
-  public userSignal = signal<UserLoginResponse | undefined>(undefined);
+  private userSignal = signal<UserLoginResponse | undefined>(undefined);
 
   public readonly loggedInUser = this.userSignal.asReadonly();
 
