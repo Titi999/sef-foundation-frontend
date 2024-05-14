@@ -69,11 +69,12 @@
     justify-content: center;
   }
 
-  a {
+  .verification__resend__link {
+    background: none;
+    border: 0;
     font-size: $font-size-sm;
     line-height: $line-height-sm;
     font-weight: $font-weight-sm;
     color: map-get($primary-palette, 500);
-    cursor: pointer;
   }
 }

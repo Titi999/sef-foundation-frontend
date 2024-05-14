@@ -1,11 +1,11 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgOtpInputModule } from 'ng-otp-input';
 import { ToastrService } from 'ngx-toastr';
-import { Subject, catchError, finalize, of, takeUntil } from 'rxjs';
-import { AuthService } from '../services/auth.service';
+import { catchError, finalize, of, Subject, takeUntil } from 'rxjs';
 import { serverError } from '../utils/constants';
+import { AuthService } from '@app/services/auth.service';
 
 @Component({
   selector: 'app-verification',
@@ -15,22 +15,21 @@ import { serverError } from '../utils/constants';
   styleUrl: './verification.component.scss',
 })
 export class VerificationComponent implements OnInit, OnDestroy {
-  private userId!: string;
   public token!: string;
   public loading = false;
   public isButtonEnabled = false;
-
+  public isResendLoading = false;
+  private userId!: string;
   private unsubscribe = new Subject<void>();
+  private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private toastrService = inject(ToastrService);
 
   public onOtpChange(token: string): void {
     this.token = token;
     this.isButtonEnabled = token.length === 6;
   }
-
-  private authService = inject(AuthService);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private toastrService = inject(ToastrService);
 
   ngOnInit(): void {
     this.route.params.pipe(takeUntil(this.unsubscribe)).subscribe(params => {
@@ -67,6 +66,33 @@ export class VerificationComponent implements OnInit, OnDestroy {
               `Welcome ${response.data.user.name}`
             );
             this.router.navigate(['/dashboard']);
+          }
+        });
+    }
+  }
+
+  public resendCode() {
+    if (this.userId) {
+      this.isResendLoading = true;
+      this.authService
+        .resendCode(this.userId)
+        .pipe(
+          catchError(error => {
+            this.toastrService.error(
+              error.error.message,
+              error.error.error || serverError
+            );
+            return of(null);
+          }),
+          finalize(() => (this.isResendLoading = false)),
+          takeUntil(this.unsubscribe)
+        )
+        .subscribe(response => {
+          if (response) {
+            this.toastrService.success(
+              response.message,
+              'Code has been sent successfully'
+            );
           }
         });
     }

@@ -53,4 +53,12 @@ export class AuthService {
       token,
     });
   }
+
+  // Resend code
+  public resendCode(id: string): Observable<Response<UserLoginResponse>> {
+    return this.http.post<Response<UserLoginResponse>>(
+      `${this.url}/resend-code`,
+      { id }
+    );
+  }
 }
