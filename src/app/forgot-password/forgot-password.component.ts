@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -12,7 +12,10 @@ import {
 } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
-import {AuthService} from "../services/auth.service";
+import { AuthService } from '@app/services/auth.service';
+import { catchError, finalize, of, Subject, takeUntil } from 'rxjs';
+import { serverError } from '@app/utils/constants';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-forgot-password',
@@ -33,16 +36,51 @@ import {AuthService} from "../services/auth.service";
     },
   ],
 })
-export class ForgotPasswordComponent {
-  private authService = inject(AuthService)
+export class ForgotPasswordComponent implements OnDestroy {
+  public loading = false;
+
   public emailForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
   });
 
+  private authService = inject(AuthService);
+  private toastrService = inject(ToastrService);
+
+  private unsubscribe = new Subject<void>();
+
+  ngOnDestroy(): void {
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
+  }
+
   public onSubmit() {
     if (this.emailForm.valid) {
-      const email = this.emailForm.value as string;
-      this.authService.forgotPassword(email)
+      const { email } = this.emailForm.value;
+
+      if (!email) {
+        return;
+      }
+
+      this.loading = true;
+
+      this.authService
+        .forgotPassword(email)
+        .pipe(
+          catchError(error => {
+            this.toastrService.error(
+              error.error.message,
+              error.error.error || serverError
+            );
+            return of(null);
+          }),
+          finalize(() => (this.loading = false)),
+          takeUntil(this.unsubscribe)
+        )
+        .subscribe(response => {
+          if (response) {
+            this.toastrService.info(response.message);
+          }
+        });
     }
   }
 }

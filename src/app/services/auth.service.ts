@@ -20,15 +20,6 @@ export class AuthService {
     );
   }
 
-  // Check if user is authenticated
-  public isAuthenticated(): boolean {
-    if (!this.loggedInUser()) {
-      return false;
-    }
-
-    return true;
-  }
-
   // Set user session
   public setUser(response: VerifyLogin) {
     window.localStorage.setItem('user', JSON.stringify(response));
