@@ -19,8 +19,17 @@
           disableAutoFocus: true
         }"></ng-otp-input>
       <div class="verifcation__action">
-        <button mat-flat-button type="submit" class="submit__btn">
-          Continue
+        <button
+          mat-flat-button
+          type="submit"
+          class="submit__btn"
+          (click)="verifyLogin()"
+          [disabled]="!isButtonEnabled || loading">
+          @if (loading) {
+            <span class="loading">Loading...</span>
+          } @else {
+            <span>Continue</span>
+          }
         </button>
         <div class="verifcation__action__text">
           <span>Didn't get the code?</span>
