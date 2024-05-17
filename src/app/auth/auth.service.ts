@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { computed, Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '@environments/environment';
-import { Response, User, VerifyLogin } from '../types/user';
+import { AuthType, Response, VerifyLogin } from './auth.type';
 
 @Injectable({
   providedIn: 'root',
@@ -32,9 +32,12 @@ export class AuthService {
     this.userSignal.set(response);
   }
 
-  // User login
-  public login(email: string, password: string): Observable<Response<User>> {
-    return this.http.post<Response<User>>(`${this.url}/login`, {
+  // AuthType login
+  public login(
+    email: string,
+    password: string
+  ): Observable<Response<AuthType>> {
+    return this.http.post<Response<AuthType>>(`${this.url}/login`, {
       email,
       password,
     });
@@ -52,13 +55,15 @@ export class AuthService {
   }
 
   // Resend code
-  public resendCode(id: string): Observable<Response<User>> {
-    return this.http.post<Response<User>>(`${this.url}/resend-code`, { id });
+  public resendCode(id: string): Observable<Response<AuthType>> {
+    return this.http.post<Response<AuthType>>(`${this.url}/resend-code`, {
+      id,
+    });
   }
 
   // Forgot password
-  public forgotPassword(email: string): Observable<Response<User>> {
-    return this.http.post<Response<User>>(`${this.url}/forgot-password`, {
+  public forgotPassword(email: string): Observable<Response<AuthType>> {
+    return this.http.post<Response<AuthType>>(`${this.url}/forgot-password`, {
       email,
     });
   }
@@ -68,8 +73,8 @@ export class AuthService {
     token: string,
     password: string,
     confirmPassword: string
-  ): Observable<Response<User>> {
-    return this.http.post<Response<User>>(`${this.url}/reset-password`, {
+  ): Observable<Response<AuthType>> {
+    return this.http.post<Response<AuthType>>(`${this.url}/reset-password`, {
       token,
       password,
       confirmPassword,

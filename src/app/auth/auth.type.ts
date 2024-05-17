@@ -1,16 +1,9 @@
-export interface UserLoginResponse {
-  message: string;
-  data: {
-    user: User;
-  };
-}
-
-export interface UserData {
+export interface UserLoginData {
   email: string;
   password: string;
 }
 
-export interface User {
+export interface AuthType {
   id: string;
   email: string;
   name: string;
@@ -25,7 +18,7 @@ export interface User {
 export interface VerifyLogin {
   accessToken: string;
   refreshToken: string;
-  user: User;
+  user: AuthType;
 }
 
 export interface Response<T> {
@@ -33,8 +26,8 @@ export interface Response<T> {
   data: T;
 }
 
-export type ForgotPasswordData = Pick<UserData, 'email'>;
+export type ForgotPasswordData = Pick<UserLoginData, 'email'>;
 
 export type ResetPasswordData = {
   confirmPassword: string;
-} & Pick<UserData, 'password'>;
+} & Pick<UserLoginData, 'password'>;
