@@ -28,6 +28,10 @@
         font-size: $font-size-md;
         line-height: $line-height-sm + 4px;
         margin: 1rem 0;
+
+        span {
+          font-weight: $font-weight-sm;
+        }
       }
     }
   }

@@ -1,0 +1,50 @@
+@import '../../scss/colors.scss';
+@import '../../scss/global.scss';
+
+.check-email__container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .check-email__wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    text-align: center;
+
+    .check-email__header {
+      h1 {
+        color: map-get($primary-palette, 500);
+        font-weight: $font-weight-md;
+        line-height: $line-height-lg;
+        font-size: $font-size-xl;
+      }
+
+      p {
+        color: map-get($primary-palette, 500);
+        font-weight: $font-weight-xsm;
+        font-size: $font-size-md;
+        line-height: $line-height-sm + 4px;
+        margin: 1rem 0;
+
+        span {
+          font-weight: $font-weight-sm;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 850px) {
+  .check-email__illustration {
+    display: none;
+  }
+}
+
+@media (max-width: 475px) {
+  .mat-mdc-form-field {
+    width: 280px;
+  }
+}

@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { catchError, finalize, of, Subject, takeUntil } from 'rxjs';
 import { serverError } from '../utils/constants';
 import { AuthService } from '@app/services/auth.service';
+import { decodeFromBase64 } from '@app/utils/functions';
 
 @Component({
   selector: 'app-verification',
@@ -20,6 +21,7 @@ export class VerificationComponent implements OnInit, OnDestroy {
   public isButtonEnabled = false;
   public isResendLoading = false;
   private userId!: string;
+  private userEncodedEmail!: string;
   private unsubscribe = new Subject<void>();
   private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
@@ -34,6 +36,7 @@ export class VerificationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.params.pipe(takeUntil(this.unsubscribe)).subscribe(params => {
       this.userId = params['id'];
+      this.userEncodedEmail = params['encodedEmail'];
     });
   }
 
@@ -96,5 +99,9 @@ export class VerificationComponent implements OnInit, OnDestroy {
           }
         });
     }
+  }
+
+  public userEmail(): string {
+    return decodeFromBase64(this.userEncodedEmail);
   }
 }

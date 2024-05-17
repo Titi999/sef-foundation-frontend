@@ -9,7 +9,7 @@ h2 {
   padding: 1rem;
 }
 
-mat-toolbar{
+mat-toolbar {
   position: fixed;
   z-index: 2;
   background: colors.$light-primary-text;
@@ -42,7 +42,6 @@ mat-toolbar{
   }
 }
 
-
 mat-sidenav-container {
   height: 100vh;
 }
@@ -53,7 +52,7 @@ mat-sidenav {
     padding-top: 4rem;
   }
 
-  .entry{
+  .entry {
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -64,7 +63,7 @@ mat-sidenav {
 
   .entry__active {
     background: colors.$schemes-primary;
-    color: map-get(colors.$primary-palette, 500)
+    color: map-get(colors.$primary-palette, 500);
   }
 }
 
@@ -72,7 +71,7 @@ mat-sidenav {
   margin: 5px 0;
 }
 
-mat-sidenav-content{
+mat-sidenav-content {
   padding-top: 3.5rem;
   @media screen and (min-width: 600px) {
     padding-top: 4rem;
@@ -82,7 +81,6 @@ mat-sidenav-content{
 .expanded {
   width: 250px;
 }
-
 
 .navigation-items {
   display: flex;
@@ -97,5 +95,3 @@ mat-sidenav-content{
   flex-direction: column;
   margin-top: 3rem;
 }
-
-

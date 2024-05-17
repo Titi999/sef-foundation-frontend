@@ -6,16 +6,15 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import {
-  MAT_FORM_FIELD_DEFAULT_OPTIONS,
-  MatFormFieldModule,
-} from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '@app/services/auth.service';
 import { catchError, finalize, of, Subject, takeUntil } from 'rxjs';
 import { serverError } from '@app/utils/constants';
 import { ToastrService } from 'ngx-toastr';
+import { ForgotPasswordData } from '@app/types/user';
+import { encodeToBase64 } from '@app/utils/functions';
 
 @Component({
   selector: 'app-forgot-password',
@@ -29,12 +28,6 @@ import { ToastrService } from 'ngx-toastr';
   ],
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss',
-  providers: [
-    {
-      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
-      useValue: { appearance: 'outline' },
-    },
-  ],
 })
 export class ForgotPasswordComponent implements OnDestroy {
   public loading = false;
@@ -45,6 +38,7 @@ export class ForgotPasswordComponent implements OnDestroy {
 
   private authService = inject(AuthService);
   private toastrService = inject(ToastrService);
+  private router = inject(Router);
 
   private unsubscribe = new Subject<void>();
 
@@ -55,7 +49,7 @@ export class ForgotPasswordComponent implements OnDestroy {
 
   public onSubmit() {
     if (this.emailForm.valid) {
-      const { email } = this.emailForm.value;
+      const { email } = this.emailForm.value as ForgotPasswordData;
 
       if (!email) {
         return;
@@ -79,6 +73,9 @@ export class ForgotPasswordComponent implements OnDestroy {
         .subscribe(response => {
           if (response) {
             this.toastrService.info(response.message);
+            const { email } = response.data;
+            const encodedEmail = encodeToBase64(email);
+            this.router.navigate(['/check-email', encodedEmail]);
           }
         });
     }
