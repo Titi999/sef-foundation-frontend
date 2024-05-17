@@ -30,7 +30,6 @@
 .user-table-container {
   position: relative;
   min-height: 200px;
-  //max-height: 400px;
   overflow: auto;
 }
 
@@ -50,21 +49,6 @@ table {
   align-items: center;
   justify-content: center;
 }
-
-.example-rate-limit-reached {
-  max-width: 360px;
-  text-align: center;
-}
-
-/* Column Widths */
-//.mat-column-number,
-//.mat-column-state {
-//  max-width: 64px;
-//}
-
-//.mat-column-created {
-//  max-width: 124px;
-//}
 
 .actions__wrapper {
   margin: 0 1rem;

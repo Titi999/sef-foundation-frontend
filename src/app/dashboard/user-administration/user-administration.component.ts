@@ -9,7 +9,6 @@ import {
   combineLatest,
   debounceTime,
   filter,
-  merge,
   of as observableOf,
   Subject,
   takeUntil,
@@ -28,12 +27,7 @@ import {
   MatPrefix,
   MatSuffix,
 } from '@angular/material/input';
-import {
-  MatButton,
-  MatFabButton,
-  MatIconButton,
-  MatMiniFabButton,
-} from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { RoundedInputComponent } from '@app/shared/rounded-input/rounded-input.component';
 import { UserAdministrationService } from '@app/dashboard/user-administration/user-administration.service';
 import { User } from '@app/auth/auth.type';
@@ -63,9 +57,7 @@ import { AddUserComponent } from '@app/dashboard/user-administration/add-user/ad
     MatLabel,
     MatPrefix,
     RoundedInputComponent,
-    MatFabButton,
     MatButton,
-    MatMiniFabButton,
     MatChip,
     TitleCasePipe,
     MatMenuTrigger,
@@ -82,7 +74,7 @@ export class UserAdministrationComponent implements AfterViewInit, OnDestroy {
     'status',
     'more',
   ];
-  // exampleDatabase!: ExampleHttpDatabase | null;
+
   data: User[] = [];
 
   totalItems = 0;

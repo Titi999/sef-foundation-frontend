@@ -11,7 +11,6 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatIconButton } from '@angular/material/button';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { NgClass, NgOptimizedImage } from '@angular/common';
-import { MatCardAvatar } from '@angular/material/card';
 import { AvatarModule } from 'ngx-avatars';
 import { MatTooltip } from '@angular/material/tooltip';
 import { AuthService } from '@app/auth/auth.service';
@@ -31,7 +30,6 @@ import { AuthService } from '@app/auth/auth.service';
     MatListItem,
     NgClass,
     NgOptimizedImage,
-    MatCardAvatar,
     AvatarModule,
     RouterLinkActive,
     RouterLink,

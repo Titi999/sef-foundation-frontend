@@ -1,9 +1,5 @@
 import { Component } from '@angular/core';
-import {
-  MatError,
-  MatFormField,
-  MatFormFieldModule,
-} from '@angular/material/form-field';
+import { MatError, MatFormFieldModule } from '@angular/material/form-field';
 import {
   FormControl,
   FormGroup,

@@ -8,7 +8,6 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router, RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, finalize, of, Subject, takeUntil } from 'rxjs';
@@ -28,7 +27,6 @@ import { encodeToBase64 } from '@app/libs/base64';
     MatInputModule,
     MatButtonModule,
     RouterLink,
-    MatProgressSpinnerModule,
     MatIconModule,
   ],
   templateUrl: './login.component.html',
