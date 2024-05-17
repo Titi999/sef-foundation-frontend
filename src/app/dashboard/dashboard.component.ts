@@ -11,10 +11,10 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatIconButton } from '@angular/material/button';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { NgClass, NgOptimizedImage } from '@angular/common';
-import { AuthService } from '../services/auth.service';
 import { MatCardAvatar } from '@angular/material/card';
 import { AvatarModule } from 'ngx-avatars';
 import { MatTooltip } from '@angular/material/tooltip';
+import { AuthService } from '@app/auth/auth.service';
 
 @Component({
   selector: 'app-dashboard',

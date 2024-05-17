@@ -4,9 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgOtpInputModule } from 'ng-otp-input';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, finalize, of, Subject, takeUntil } from 'rxjs';
-import { serverError } from '../utils/constants';
-import { AuthService } from '@app/services/auth.service';
-import { decodeFromBase64 } from '@app/utils/functions';
+import { serverError } from '@app/libs/constants';
+import { AuthService } from '@app/auth/auth.service';
+import { decodeFromBase64 } from '@app/libs/functions';
 
 @Component({
   selector: 'app-verification',
@@ -68,7 +68,7 @@ export class VerificationComponent implements OnInit, OnDestroy {
               response.message,
               `Welcome ${response.data.user.name}`
             );
-            this.router.navigate(['/dashboard']);
+            void this.router.navigate(['/dashboard']);
           }
         });
     }

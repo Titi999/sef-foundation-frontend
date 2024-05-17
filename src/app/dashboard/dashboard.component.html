@@ -2,39 +2,39 @@
   <mat-toolbar>
     <div class="dashboard-toolbar-items">
       <img
-        class="logo"
-        ngSrc="../../assets/logo.svg"
         alt="logo"
+        class="logo"
         height="58"
+        ngSrc="assets/logo.svg"
         width="64" />
       <div class="toolbar-right">
-        <mat-icon fontSet="material-icons-outlined" color="#41484D"
-          >notifications_outline</mat-icon
-        >
+        <mat-icon color="#41484D" fontSet="material-icons-outlined"
+          >notifications_outline
+        </mat-icon>
         <span>{{ userName() }}</span>
-        <ngx-avatars size="40" [name]="userName()" src=""></ngx-avatars>
+        <ngx-avatars [name]="userName()" size="40" src=""></ngx-avatars>
       </div>
     </div>
   </mat-toolbar>
   <mat-sidenav-container autosize>
     <mat-sidenav
-      [ngClass]="!isCollapsed ? 'expanded' : ''"
       [mode]="isMobile ? 'over' : 'side'"
+      [ngClass]="!isCollapsed ? 'expanded' : ''"
       [opened]="isMobile ? 'false' : 'true'">
       <mat-nav-list>
         <a mat-list-item>
-          <button mat-icon-button aria-label="Menu icon" (click)="toggleMenu()">
+          <button (click)="toggleMenu()" aria-label="Menu icon" mat-icon-button>
             <mat-icon>menu</mat-icon>
           </button>
         </a>
         <div class="navigation-items">
           <div>
-            <a mat-list-item class="nav-item">
+            <a class="nav-item" mat-list-item>
               <span
+                class="entry"
                 matTooltip="Overview"
                 matTooltipPosition="right"
                 routerLink="/dashboard"
-                class="entry"
                 routerLinkActive="entry__active">
                 <mat-icon>grid_view</mat-icon>
                 @if (!isCollapsed) {
@@ -42,44 +42,44 @@
                 }
               </span>
             </a>
-            <a mat-list-item class="nav-item">
+            <a class="nav-item" mat-list-item>
               <span
+                class="entry"
                 matTooltip="Students"
-                matTooltipPosition="right"
-                class="entry">
+                matTooltipPosition="right">
                 <mat-icon>groups</mat-icon>
                 @if (!isCollapsed) {
                   <span>Students</span>
                 }
               </span>
             </a>
-            <a mat-list-item class="nav-item">
+            <a class="nav-item" mat-list-item>
               <span
+                class="entry"
                 matTooltip="Finance"
-                matTooltipPosition="right"
-                class="entry">
+                matTooltipPosition="right">
                 <mat-icon>payments</mat-icon>
                 @if (!isCollapsed) {
                   <span>Finance</span>
                 }
               </span>
             </a>
-            <a mat-list-item class="nav-item">
+            <a class="nav-item" mat-list-item>
               <span
-                matTooltip="User administration"
-                matTooltipPosition="right"
-                class="entry">
+                class="entry"
+                matTooltip="AuthType administration"
+                matTooltipPosition="right">
                 <mat-icon>person</mat-icon>
                 @if (!isCollapsed) {
-                  <span>User administration</span>
+                  <span>AuthType administration</span>
                 }
               </span>
             </a>
-            <a mat-list-item class="nav-item">
+            <a class="nav-item" mat-list-item>
               <span
+                class="entry"
                 matTooltip="Performance"
-                matTooltipPosition="right"
-                class="entry">
+                matTooltipPosition="right">
                 <mat-icon>bar_chart</mat-icon>
                 @if (!isCollapsed) {
                   <span>Performance</span>
@@ -88,33 +88,33 @@
             </a>
           </div>
           <div class="navigation-bottom-items">
-            <a mat-list-item class="nav-item">
+            <a class="nav-item" mat-list-item>
               <span
+                class="entry"
                 matTooltip="Settings"
-                matTooltipPosition="right"
-                class="entry">
+                matTooltipPosition="right">
                 <mat-icon>settings</mat-icon>
                 @if (!isCollapsed) {
                   <span>Settings</span>
                 }
               </span>
             </a>
-            <a mat-list-item class="nav-item">
+            <a class="nav-item" mat-list-item>
               <span
+                class="entry"
                 matTooltip="Help and support"
-                matTooltipPosition="right"
-                class="entry">
+                matTooltipPosition="right">
                 <mat-icon>help</mat-icon>
                 @if (!isCollapsed) {
                   <span>Help and support</span>
                 }
               </span>
             </a>
-            <a mat-list-item class="nav-item">
+            <a class="nav-item" mat-list-item>
               <span
+                class="entry"
                 matTooltip="Logout"
-                matTooltipPosition="right"
-                class="entry">
+                matTooltipPosition="right">
                 <mat-icon>logout</mat-icon>
                 @if (!isCollapsed) {
                   <span>Logout</span>

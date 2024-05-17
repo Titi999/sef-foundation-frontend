@@ -1,7 +1,7 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { decodeFromBase64 } from '@app/utils/functions';
+import { decodeFromBase64 } from '@app/libs/functions';
 
 @Component({
   selector: 'app-check-email',
@@ -15,7 +15,6 @@ export class CheckEmailComponent implements OnInit, OnDestroy {
   private unsubscribe = new Subject<void>();
 
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
 
   ngOnInit() {
     this.route.params.pipe(takeUntil(this.unsubscribe)).subscribe(params => {
