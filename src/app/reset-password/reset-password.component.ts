@@ -10,7 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { passwordValidator } from '@app/utils/functions';
+// import { passwordValidator } from '@app/utils/functions';
 import { AuthService } from '@app/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, finalize, of, Subject, takeUntil } from 'rxjs';
@@ -38,21 +38,10 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
   public togglePassword = true;
   public toggleConfirmPassword = true;
 
-  public resetPasswordForm = new FormGroup(
-    {
-      password: new FormControl('', [
-        Validators.required,
-        Validators.minLength(8),
-        passwordValidator,
-      ]),
-      confirmPassword: new FormControl('', [
-        Validators.required,
-        Validators.minLength(8),
-        passwordValidator,
-      ]),
-    },
-    { validators: this.passwordMatchValidator }
-  );
+  public resetPasswordForm = new FormGroup({
+    password: new FormControl('', Validators.required),
+    confirmPassword: new FormControl('', Validators.required),
+  });
 
   private authService = inject(AuthService);
   private toastrService = inject(ToastrService);
