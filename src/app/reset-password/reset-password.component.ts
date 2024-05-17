@@ -39,8 +39,14 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
   public toggleConfirmPassword = true;
 
   public resetPasswordForm = new FormGroup({
-    password: new FormControl('', Validators.required),
-    confirmPassword: new FormControl('', Validators.required),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(8),
+    ]),
+    confirmPassword: new FormControl('', [
+      Validators.required,
+      Validators.minLength(8),
+    ]),
   });
 
   private authService = inject(AuthService);
