@@ -10,7 +10,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { passwordValidator } from '@app/utils/functions';
+import { passwordValidator } from '@app/libs/validators';
 import { MatInput } from '@angular/material/input';
 
 @Component({

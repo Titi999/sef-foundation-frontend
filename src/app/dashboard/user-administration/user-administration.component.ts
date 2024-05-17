@@ -36,7 +36,7 @@ import {
 } from '@angular/material/button';
 import { RoundedInputComponent } from '@app/shared/rounded-input/rounded-input.component';
 import { UserAdministrationService } from '@app/dashboard/user-administration/user-administration.service';
-import { User } from '@app/types/user';
+import { User } from '@app/auth/auth.type';
 import { MatChip } from '@angular/material/chips';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';

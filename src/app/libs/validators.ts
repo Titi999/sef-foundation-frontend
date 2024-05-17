@@ -14,11 +14,3 @@ export function passwordMatchValidator(control: AbstractControl) {
     ? null
     : { mismatch: true };
 }
-
-export function encodeToBase64(data: string) {
-  return btoa(encodeURIComponent(data));
-}
-
-export function decodeFromBase64(encodedData: string) {
-  return decodeURIComponent(atob(encodedData));
-}

@@ -1,7 +1,8 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { decodeFromBase64 } from '@app/libs/functions';
+
+import { decodeFromBase64 } from '@app/libs/base64';
 
 @Component({
   selector: 'app-check-email',
