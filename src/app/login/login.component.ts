@@ -70,7 +70,7 @@ export class LoginComponent implements OnDestroy {
             this.toastrService.info(response.message, 'Verification needed');
             const { id, email } = response.data;
             const encodedEmail = encodeToBase64(email);
-            this.router.navigate(['/verification', id, encodedEmail]);
+            void this.router.navigate(['/verification', id, encodedEmail]);
           }
         });
     }

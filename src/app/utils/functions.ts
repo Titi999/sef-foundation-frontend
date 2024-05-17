@@ -1,24 +1,19 @@
-import { FormGroup } from '@angular/forms';
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
-export const passwordValidator = (
-  control: FormGroup
-): { [key: string]: boolean } | null => {
-  const password = control.value;
-  if (!password) {
-    return null;
-  }
+export function passwordValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const passwordRegex: RegExp = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    const validPassword = passwordRegex.test(control.value);
+    return validPassword ? null : { passwordMismatch: true };
+  };
+}
 
-  if (password.length < 8) {
-    return { minLength: true };
-  }
-
-  const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[.!@#$%^&*]).{8,}$/;
-  if (!regex.test(password)) {
-    return { weakPassword: true };
-  }
-
-  return null;
-};
+export function passwordMatchValidator(control: AbstractControl) {
+  return control.get('password')?.value ===
+    control.get('confirmPassword')?.value
+    ? null
+    : { mismatch: true };
+}
 
 export function encodeToBase64(data: string) {
   return btoa(encodeURIComponent(data));

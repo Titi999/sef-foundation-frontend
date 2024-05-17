@@ -1,6 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
-  AbstractControl,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
@@ -10,13 +9,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-// import { passwordValidator } from '@app/utils/functions';
 import { AuthService } from '@app/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, finalize, of, Subject, takeUntil } from 'rxjs';
 import { ResetPasswordData } from '@app/types/user';
 import { serverError } from '@app/utils/constants';
 import { MatIconModule } from '@angular/material/icon';
+import {
+  passwordMatchValidator,
+  passwordValidator,
+} from '@app/utils/functions';
 
 @Component({
   selector: 'app-reset-password',
@@ -38,16 +40,21 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
   public togglePassword = true;
   public toggleConfirmPassword = true;
 
-  public resetPasswordForm = new FormGroup({
-    password: new FormControl('', [
-      Validators.required,
-      Validators.minLength(8),
-    ]),
-    confirmPassword: new FormControl('', [
-      Validators.required,
-      Validators.minLength(8),
-    ]),
-  });
+  public resetPasswordForm = new FormGroup(
+    {
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(8),
+        passwordValidator(),
+      ]),
+      confirmPassword: new FormControl('', [
+        Validators.required,
+        Validators.minLength(8),
+        passwordValidator(),
+      ]),
+    },
+    { validators: passwordMatchValidator }
+  );
 
   private authService = inject(AuthService);
   private toastrService = inject(ToastrService);
@@ -94,16 +101,9 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
         .subscribe(response => {
           if (response) {
             this.toastrService.success(response.message);
-            this.router.navigate(['/login']);
+            void this.router.navigate(['/login']);
           }
         });
     }
-  }
-
-  private passwordMatchValidator(control: AbstractControl) {
-    return control.get('password')?.value ===
-      control.get('confirmPassword')?.value
-      ? null
-      : { mismatch: true };
   }
 }
