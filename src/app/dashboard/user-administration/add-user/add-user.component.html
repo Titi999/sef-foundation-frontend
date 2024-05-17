@@ -6,16 +6,42 @@
   <form
     (ngSubmit)="submit()"
     [formGroup]="userForm"
-    class="login__form__container">
+    class="add-user__form__container">
     <mat-form-field appearance="outline">
       <mat-label>Name</mat-label>
       <input formControlName="name" id="name" matInput type="text" />
-      <mat-error class="login__error">Name is required</mat-error>
+      <mat-error>{{ getFormErrors('name') }}</mat-error>
     </mat-form-field>
     <mat-form-field appearance="outline">
-      <mat-label>Name</mat-label>
+      <mat-label>Email</mat-label>
       <input formControlName="email" id="email" matInput type="email" />
-      <mat-error class="login__error">Name is required</mat-error>
+      <mat-error>{{ getFormErrors('email') }}</mat-error>
     </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Select</mat-label>
+      <mat-select formControlName="role">
+        @for (role of roles; track role.value) {
+          <mat-option [value]="role.value">{{ role.name }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>{{ getFormErrors('email') }}</mat-error>
+    </mat-form-field>
+    <div class="actions">
+      <button class="submit__btn cancel" mat-flat-button type="button">
+        <span>Cancel</span>
+      </button>
+      <button
+        [disabled]="isLoading"
+        class="submit__btn"
+        mat-flat-button
+        color="primary"
+        type="submit">
+        @if (isLoading) {
+          <span class="loading">Loading...</span>
+        } @else {
+          <span>Send Invite</span>
+        }
+      </button>
+    </div>
   </form>
 </div>

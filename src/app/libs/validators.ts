@@ -14,3 +14,11 @@ export function passwordMatchValidator(control: AbstractControl) {
     ? null
     : { mismatch: true };
 }
+
+export function fullNameValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const regex: RegExp = /^[a-zA-Z'-]+\s[a-zA-Z'-]+$/;
+    const validFullName = regex.test(control.value);
+    return validFullName ? null : { invalidFullName: true };
+  };
+}

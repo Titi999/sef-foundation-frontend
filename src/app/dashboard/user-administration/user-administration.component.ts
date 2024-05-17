@@ -66,7 +66,7 @@ import { AddUserComponent } from '@app/dashboard/user-administration/add-user/ad
   ],
 })
 export class UserAdministrationComponent implements AfterViewInit, OnDestroy {
-  displayedColumns: string[] = [
+  public readonly displayedColumns: string[] = [
     'created_at',
     'name',
     'email',
@@ -74,14 +74,12 @@ export class UserAdministrationComponent implements AfterViewInit, OnDestroy {
     'status',
     'more',
   ];
-
-  data: User[] = [];
-
-  totalItems = 0;
-  isLoadingResults = true;
-  searchValue = new FormControl('');
+  public data: User[] = [];
+  public totalItems = 0;
+  public isLoadingResults = true;
+  public searchValue = new FormControl('');
   private readonly destroy = new Subject<void>();
-  page = new FormControl(1);
+  public page = new FormControl(1);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -135,6 +133,11 @@ export class UserAdministrationComponent implements AfterViewInit, OnDestroy {
   }
 
   addUser() {
-    this.dialog.open(AddUserComponent);
+    this.dialog.open(AddUserComponent, {
+      maxWidth: '400px',
+      maxHeight: '400px',
+      width: '100%',
+      height: '100%',
+    });
   }
 }

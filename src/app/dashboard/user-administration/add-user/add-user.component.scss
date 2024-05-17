@@ -23,3 +23,26 @@
     margin: 0.5rem 0;
   }
 }
+
+.add-user__form__container {
+  display: flex;
+  flex-direction: column;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 4rem;
+
+  .submit__btn {
+    border-radius: 6.25rem;
+    padding: 10px 24px;
+    height: 40px;
+  }
+
+  .cancel {
+    border: 1px solid $sys-light-outline;
+    color: $sys-light-outline
+  }
+}
