@@ -8,18 +8,16 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router, RouterLink } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
+import { AuthService } from '@app/auth/auth.service';
 import { catchError, finalize, of, Subject, takeUntil } from 'rxjs';
-import { AuthService } from '../services/auth.service';
-import { UserData } from '../types/user';
-import { serverError } from '../utils/constants';
-import { encodeToBase64, passwordValidator } from '../utils/functions';
-import { MatIconModule } from '@angular/material/icon';
+import { serverError } from '@app/libs/constants';
+import { ToastrService } from 'ngx-toastr';
+import { ForgotPasswordData } from '@app/auth/auth.type';
+import { encodeToBase64 } from '@app/libs/functions';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-forgot-password',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -27,33 +25,40 @@ import { MatIconModule } from '@angular/material/icon';
     MatInputModule,
     MatButtonModule,
     RouterLink,
-    MatProgressSpinnerModule,
-    MatIconModule,
   ],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
+  templateUrl: './forgot-password.component.html',
+  styleUrl: './forgot-password.component.scss',
 })
-export class LoginComponent implements OnDestroy {
-  public loginForm = new FormGroup({
+export class ForgotPasswordComponent implements OnDestroy {
+  public loading = false;
+
+  public emailForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required, passwordValidator]),
   });
 
-  public loading = false;
-  public togglePassword = true;
   private authService = inject(AuthService);
   private toastrService = inject(ToastrService);
   private router = inject(Router);
+
   private unsubscribe = new Subject<void>();
 
+  ngOnDestroy(): void {
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
+  }
+
   public onSubmit() {
-    if (this.loginForm.valid) {
-      const { email, password } = this.loginForm.value as UserData;
+    if (this.emailForm.valid) {
+      const { email } = this.emailForm.value as ForgotPasswordData;
+
+      if (!email) {
+        return;
+      }
 
       this.loading = true;
 
       this.authService
-        .login(email, password)
+        .forgotPassword(email)
         .pipe(
           catchError(error => {
             this.toastrService.error(
@@ -67,17 +72,12 @@ export class LoginComponent implements OnDestroy {
         )
         .subscribe(response => {
           if (response) {
-            this.toastrService.info(response.message, 'Verification needed');
-            const { id, email } = response.data;
+            this.toastrService.info(response.message);
+            const { email } = response.data;
             const encodedEmail = encodeToBase64(email);
-            void this.router.navigate(['/verification', id, encodedEmail]);
+            void this.router.navigate(['/check-email', encodedEmail]);
           }
         });
     }
-  }
-
-  ngOnDestroy(): void {
-    this.unsubscribe.next();
-    this.unsubscribe.complete();
   }
 }

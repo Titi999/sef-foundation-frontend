@@ -9,16 +9,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { AuthService } from '@app/services/auth.service';
+import { AuthService } from '@app/auth/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, finalize, of, Subject, takeUntil } from 'rxjs';
-import { ResetPasswordData } from '@app/types/user';
-import { serverError } from '@app/utils/constants';
+import { ResetPasswordData } from '@app/auth/auth.type';
+import { serverError } from '@app/libs/constants';
 import { MatIconModule } from '@angular/material/icon';
-import {
-  passwordMatchValidator,
-  passwordValidator,
-} from '@app/utils/functions';
+import { passwordMatchValidator, passwordValidator } from '@app/libs/functions';
 
 @Component({
   selector: 'app-reset-password',

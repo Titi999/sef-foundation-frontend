@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
 import { dashboardRoutes } from './dashboard/dashboard.routes';
-import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
-import { LoginComponent } from './login/login.component';
-import { NotFoundComponent } from './not-found/not-found.component';
-import { VerificationComponent } from './verification/verification.component';
-import { CheckEmailComponent } from '@app/check-email/check-email.component';
-import { ResetPasswordComponent } from '@app/reset-password/reset-password.component';
+import { ForgotPasswordComponent } from '@app/auth/forgot-password/forgot-password.component';
+import { LoginComponent } from '@app/auth/login/login.component';
+import { NotFoundComponent } from '@app/auth/not-found/not-found.component';
+import { VerificationComponent } from '@app/auth/verification/verification.component';
+import { CheckEmailComponent } from '@app/auth/check-email/check-email.component';
+import { ResetPasswordComponent } from '@app/auth/reset-password/reset-password.component';
 
 export const routes: Routes = [
   {
