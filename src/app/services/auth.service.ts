@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import {computed, Injectable, signal} from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
-import { Response, UserLoginResponse, VerifyLogin } from '../types/user';
+import { environment } from '@environments/environment';
+import { Response, User, VerifyLogin } from '../types/user';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +20,12 @@ export class AuthService {
     );
   }
 
+  public get userName() {
+    return computed(() => {
+      return this.loggedInUser()?.user.name;
+    });
+  }
+
   // Set user session
   public setUser(response: VerifyLogin) {
     window.localStorage.setItem('user', JSON.stringify(response));
@@ -27,8 +33,8 @@ export class AuthService {
   }
 
   // User login
-  public login(email: string, password: string): Observable<UserLoginResponse> {
-    return this.http.post<UserLoginResponse>(`${this.url}/login`, {
+  public login(email: string, password: string): Observable<Response<User>> {
+    return this.http.post<Response<User>>(`${this.url}/login`, {
       email,
       password,
     });
@@ -46,26 +52,27 @@ export class AuthService {
   }
 
   // Resend code
-  public resendCode(id: string): Observable<Response<UserLoginResponse>> {
-    return this.http.post<Response<UserLoginResponse>>(
-      `${this.url}/resend-code`,
-      { id }
-    );
+  public resendCode(id: string): Observable<Response<User>> {
+    return this.http.post<Response<User>>(`${this.url}/resend-code`, { id });
   }
 
   // Forgot password
-  public forgotPassword(
-    email: string
-  ): Observable<Response<UserLoginResponse>> {
-    return this.http.post<Response<UserLoginResponse>>(
-      `${this.url}/forgot-password`,
-      { email }
-    );
+  public forgotPassword(email: string): Observable<Response<User>> {
+    return this.http.post<Response<User>>(`${this.url}/forgot-password`, {
+      email,
+    });
   }
 
-  public get userName() {
-    return computed(() => {
-      return this.loggedInUser()?.user.name
-    })
+  // Reset password
+  public resetPassword(
+    token: string,
+    password: string,
+    confirmPassword: string
+  ): Observable<Response<User>> {
+    return this.http.post<Response<User>>(`${this.url}/reset-password`, {
+      token,
+      password,
+      confirmPassword,
+    });
   }
 }

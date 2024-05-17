@@ -32,3 +32,9 @@ export interface Response<T> {
   message: string;
   data: T;
 }
+
+export type ForgotPasswordData = Pick<UserData, 'email'>;
+
+export type ResetPasswordData = {
+  confirmPassword: string;
+} & Pick<UserData, 'password'>;

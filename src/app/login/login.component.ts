@@ -1,4 +1,4 @@
-import { Component, OnDestroy, inject } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -6,19 +6,17 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import {
-  MAT_FORM_FIELD_DEFAULT_OPTIONS,
-  MatFormFieldModule,
-} from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router, RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Subject, catchError, finalize, of, takeUntil } from 'rxjs';
+import { catchError, finalize, of, Subject, takeUntil } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { UserData } from '../types/user';
 import { serverError } from '../utils/constants';
 import { encodeToBase64, passwordValidator } from '../utils/functions';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-login',
@@ -30,15 +28,10 @@ import { encodeToBase64, passwordValidator } from '../utils/functions';
     MatButtonModule,
     RouterLink,
     MatProgressSpinnerModule,
+    MatIconModule,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
-  providers: [
-    {
-      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
-      useValue: { appearance: 'outline' },
-    },
-  ],
 })
 export class LoginComponent implements OnDestroy {
   public loginForm = new FormGroup({
@@ -47,6 +40,11 @@ export class LoginComponent implements OnDestroy {
   });
 
   public loading = false;
+  public togglePassword = true;
+  private authService = inject(AuthService);
+  private toastrService = inject(ToastrService);
+  private router = inject(Router);
+  private unsubscribe = new Subject<void>();
 
   public onSubmit() {
     if (this.loginForm.valid) {
@@ -70,19 +68,13 @@ export class LoginComponent implements OnDestroy {
         .subscribe(response => {
           if (response) {
             this.toastrService.info(response.message, 'Verification needed');
-            const { id, email } = response.data.user;
+            const { id, email } = response.data;
             const encodedEmail = encodeToBase64(email);
             this.router.navigate(['/verification', id, encodedEmail]);
           }
         });
     }
   }
-
-  private authService = inject(AuthService);
-  private toastrService = inject(ToastrService);
-  private router = inject(Router);
-
-  private unsubscribe = new Subject<void>();
 
   ngOnDestroy(): void {
     this.unsubscribe.next();
