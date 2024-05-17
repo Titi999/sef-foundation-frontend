@@ -1,0 +1,21 @@
+@use '../../../scss/colors' as colors;
+
+.inputContainer {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  padding-left: 40px;
+  border-radius: 100px;
+  height: 44px;
+  border: 1px solid colors.$sys-light-outline;
+  outline: none;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 10px;
+}

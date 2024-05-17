@@ -45,6 +45,7 @@ mat-toolbar{
 
 mat-sidenav-container {
   height: 100vh;
+  background-color: white;
 }
 
 mat-sidenav {
@@ -97,5 +98,3 @@ mat-sidenav-content{
   flex-direction: column;
   margin-top: 3rem;
 }
-
-
