@@ -1,7 +1,7 @@
 <main class="login__container">
   <section class="login__wrapper">
     <div class="login__illustration">
-      <img src="../../assets/saving_money.svg" alt="saving_money" />
+      <img alt="saving_money" src="../../assets/saving_money.svg" />
       <div class="login__company__name">
         <span
           >Seanenyuiawo <br />
@@ -12,19 +12,19 @@
     </div>
     <div class="login__form">
       <div class="login__logo">
-        <img src="../../assets/logo.svg" alt="logo" />
+        <img alt="logo" src="../../assets/logo.svg" />
       </div>
       <div class="login__header">
         <h1>Login</h1>
         <p>Please enter your details to login</p>
       </div>
       <form
-        [formGroup]="loginForm"
         (ngSubmit)="onSubmit()"
+        [formGroup]="loginForm"
         class="login__form__container">
-        <mat-form-field>
-          <mat-label for="email">Email </mat-label>
-          <input matInput id="email" type="email" formControlName="email" />
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input formControlName="email" id="email" matInput type="email" />
         </mat-form-field>
         @if (
           loginForm.get('email')?.invalid && loginForm.get('email')?.touched
@@ -34,18 +34,21 @@
           }
           @if (loginForm.get('email')?.errors?.['email']) {
             <mat-error class="login__error"
-              >Please enter a valid email address</mat-error
-            >
+              >Please enter a valid email address
+            </mat-error>
           }
         }
 
-        <mat-form-field>
-          <mat-label for="password">Password </mat-label>
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
           <input
-            matInput
+            [type]="togglePassword ? 'password' : 'text'"
+            formControlName="password"
             id="password"
-            type="password"
-            formControlName="password" />
+            matInput />
+          <mat-icon (click)="togglePassword = !togglePassword" matSuffix
+            >{{ togglePassword ? 'visibility_off' : 'visibility' }}
+          </mat-icon>
         </mat-form-field>
         @if (
           loginForm.get('password')?.invalid &&
@@ -56,22 +59,22 @@
           }
           @if (loginForm.get('password')?.errors?.['minLength']) {
             <mat-error class="login__error"
-              >Password should be at least 8 characters</mat-error
-            >
+              >Password should be at least 8 characters
+            </mat-error>
           }
           @if (loginForm.get('password')?.errors?.['weakPassword']) {
             <mat-error class="login__error"
-              >Please enter a valid password</mat-error
-            >
+              >Please enter a valid password
+            </mat-error>
           }
         }
 
         <div class="login__action">
           <button
-            mat-flat-button
-            type="submit"
+            [disabled]="loading"
             class="submit__btn"
-            [disabled]="loading">
+            mat-flat-button
+            type="submit">
             @if (loading) {
               <span class="loading">Loading...</span>
             } @else {
@@ -79,9 +82,9 @@
             }
           </button>
           <a
+            ariaCurrentWhenActive="page"
             routerLink="/forgot-password"
             routerLinkActive="active"
-            ariaCurrentWhenActive="page"
             >Forgot password?</a
           >
         </div>
