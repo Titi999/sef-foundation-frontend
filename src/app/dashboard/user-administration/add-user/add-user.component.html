@@ -1,0 +1,22 @@
+<div class="main-container">
+  <div class="title">
+    <span class="main">Add a new user</span>
+    <span class="sub">kindly fill in the details to create a new user</span>
+  </div>
+  <form
+    (ngSubmit)="submit()"
+    [formGroup]="userForm"
+    mouse
+    class="login__form__container">
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input formControlName="name" id="name" matInput type="text" />
+      <mat-error class="login__error">Name is required</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input formControlName="email" id="email" matInput type="email" />
+      <mat-error class="login__error">Name is required</mat-error>
+    </mat-form-field>
+  </form>
+</div>

@@ -20,7 +20,11 @@
           <mat-icon>download</mat-icon>
           Download CSV
         </button>
-        <button class="add__btn btn" mat-flat-button color="primary">
+        <button
+          (click)="addUser()"
+          class="add__btn btn"
+          mat-flat-button
+          color="primary">
           <mat-icon>add</mat-icon>
           New user
         </button>
@@ -111,7 +115,9 @@
     <mat-paginator
       [length]="totalItems"
       [pageSize]="10"
-      pa
+      (page)="onPaginationChange($event)"
+      [pageIndex]="page.value ? page.value - 1 : 0"
+      [pageSizeOptions]="[]"
       aria-label="Select page of GitHub search results"></mat-paginator>
   </div>
 </div>

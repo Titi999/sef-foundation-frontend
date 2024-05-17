@@ -39,6 +39,8 @@ import { UserAdministrationService } from '@app/dashboard/user-administration/us
 import { User } from '@app/types/user';
 import { MatChip } from '@angular/material/chips';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
+import { MatDialog } from '@angular/material/dialog';
+import { AddUserComponent } from '@app/dashboard/user-administration/add-user/add-user.component';
 
 @Component({
   selector: 'app-user-administration',
@@ -87,27 +89,23 @@ export class UserAdministrationComponent implements AfterViewInit, OnDestroy {
   isLoadingResults = true;
   searchValue = new FormControl('');
   private readonly destroy = new Subject<void>();
+  page = new FormControl(1);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
-    private readonly userAdministrationService: UserAdministrationService
+    private readonly userAdministrationService: UserAdministrationService,
+    private readonly dialog: MatDialog
   ) {}
 
   ngAfterViewInit() {
-    this.searchValue.valueChanges.subscribe(value => {
-      console.log('value', value);
-    });
-    // If the user changes the sort order, reset back to the first page.
-    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
-
     combineLatest([
       this.searchValue.valueChanges.pipe(
         startWith(''),
         filter((searchValue): searchValue is string => searchValue !== null)
       ),
-      this.sort.sortChange.pipe(startWith('')),
+      this.page.valueChanges.pipe(startWith(1)),
       this.paginator.page.pipe(startWith(new PageEvent())),
     ])
       .pipe(
@@ -128,6 +126,7 @@ export class UserAdministrationComponent implements AfterViewInit, OnDestroy {
           if (data === null) {
             return [];
           }
+          this.totalItems = data.data.total;
           return data.data.items;
         })
       )
@@ -137,5 +136,13 @@ export class UserAdministrationComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.destroy.next();
     this.destroy.complete();
+  }
+
+  onPaginationChange(event: PageEvent): void {
+    this.page.setValue(event.pageIndex + 1);
+  }
+
+  addUser() {
+    this.dialog.open(AddUserComponent);
   }
 }
