@@ -12,7 +12,26 @@
           >notifications_outline
         </mat-icon>
         <span>{{ userName() }}</span>
-        <ngx-avatars [name]="userName()" size="40" src=""></ngx-avatars>
+        <ngx-avatars
+          class="avatar"
+          [name]="userName()"
+          size="40"
+          src=""
+          [matMenuTriggerFor]="avatar"></ngx-avatars>
+        <mat-menu #avatar="matMenu">
+          <button mat-menu-item>
+            <mat-icon>person</mat-icon>
+            <span>Profile</span>
+          </button>
+          <button mat-menu-item disabled>
+            <mat-icon>settings</mat-icon>
+            <span>Settings</span>
+          </button>
+          <button (click)="logout()" mat-menu-item>
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
+          </button>
+        </mat-menu>
       </div>
     </div>
   </mat-toolbar>
@@ -112,7 +131,7 @@
                 }
               </span>
             </a>
-            <a class="nav-item" mat-list-item>
+            <a (click)="logout()" class="nav-item" mat-list-item>
               <span
                 class="entry"
                 matTooltip="Logout"

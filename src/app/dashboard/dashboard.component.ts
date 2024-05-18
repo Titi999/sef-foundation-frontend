@@ -7,13 +7,19 @@ import {
   MatSidenavContent,
 } from '@angular/material/sidenav';
 import { MatListItem, MatNavList } from '@angular/material/list';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import {
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
 import { MatIconButton } from '@angular/material/button';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { NgClass, NgOptimizedImage } from '@angular/common';
 import { AvatarModule } from 'ngx-avatars';
 import { MatTooltip } from '@angular/material/tooltip';
 import { AuthService } from '@app/auth/auth.service';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
   selector: 'app-dashboard',
@@ -34,6 +40,9 @@ import { AuthService } from '@app/auth/auth.service';
     RouterLinkActive,
     RouterLink,
     MatTooltip,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -47,7 +56,8 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private observer: BreakpointObserver,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -64,5 +74,9 @@ export class DashboardComponent implements OnInit {
       void this.sidenav.open();
       this.isCollapsed = !this.isCollapsed;
     }
+  }
+
+  logout() {
+    this.authService.logout().subscribe();
   }
 }
