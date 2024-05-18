@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import {
   MatPaginator,
   MatPaginatorModule,
@@ -9,9 +9,13 @@ import {
   combineLatest,
   debounceTime,
   filter,
+  finalize,
+  first,
+  of,
   of as observableOf,
   Subject,
   takeUntil,
+  tap,
 } from 'rxjs';
 import { catchError, map, startWith, switchMap } from 'rxjs/operators';
 import { MatTableModule } from '@angular/material/table';
@@ -35,6 +39,15 @@ import { MatChip } from '@angular/material/chips';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { AddUserComponent } from '@app/dashboard/user-administration/add-user/add-user.component';
+import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
+import {
+  ActionModalData,
+  ActionModalIllustration,
+} from '@app/shared/action-modal/action-modal.type';
+import { AddUser } from '@app/dashboard/user-administration/add-user/add-user.type';
+import { serverError } from '@app/libs/constants';
+import { ToastrService } from 'ngx-toastr';
+import { ngxCsv } from 'ngx-csv/ngx-csv';
 
 @Component({
   selector: 'app-user-administration',
@@ -86,7 +99,8 @@ export class UserAdministrationComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     private readonly userAdministrationService: UserAdministrationService,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private toastrService: ToastrService
   ) {}
 
   ngAfterViewInit() {
@@ -133,11 +147,194 @@ export class UserAdministrationComponent implements AfterViewInit, OnDestroy {
   }
 
   addUser() {
-    this.dialog.open(AddUserComponent, {
+    const dialogRef = this.dialog.open(AddUserComponent, {
       maxWidth: '400px',
       maxHeight: '400px',
       width: '100%',
       height: '100%',
+    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        first(),
+        tap((user: User) => {
+          if (user) {
+            this.page.setValue(1);
+          }
+        })
+      )
+      .subscribe();
+  }
+
+  ediUser(user: User) {
+    const data: AddUser & { id: string } = {
+      id: user.id,
+      role: user.role,
+      email: user.email,
+      name: user.name,
+    };
+    const dialogRef = this.dialog.open(AddUserComponent, {
+      maxWidth: '400px',
+      maxHeight: '400px',
+      width: '100%',
+      height: '100%',
+      data,
+    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        first(),
+        tap((user: User) => {
+          if (user) {
+            this.page.setValue(1);
+          }
+        })
+      )
+      .subscribe();
+  }
+
+  deleteUser(id: string) {
+    const data: ActionModalData = {
+      actionIllustration: ActionModalIllustration.delete,
+      title: 'Delete user',
+      actionColor: 'warn',
+      subtext: 'are you sure you want to delete this user from the system?',
+      actionType: 'decision',
+      decisionText: 'Delete',
+    };
+    const dialogRef = this.dialog.open(ActionModalComponent, {
+      maxWidth: '400px',
+      maxHeight: '400px',
+      width: '100%',
+      height: '100%',
+      data,
+    });
+    dialogRef.componentInstance.decisionEmitter
+      .pipe(
+        takeUntil(this.destroy),
+        catchError(error => {
+          this.toastrService.error(
+            error.error.message,
+            error.error.error || serverError
+          );
+          return of(null);
+        }),
+        finalize(() => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.disableClose = false;
+        }),
+        tap(() => {
+          dialogRef.disableClose = true;
+          dialogRef.componentInstance.isLoading = true;
+        }),
+        switchMap(() => this.userAdministrationService.deleteUser(id)),
+        tap(() => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.close();
+          this.page.setValue(1);
+          const data: ActionModalData = {
+            actionIllustration: ActionModalIllustration.delete,
+            title: 'completed',
+            actionColor: 'warn',
+            subtext: 'The user has successfully been delete from the system',
+            actionType: 'close',
+          };
+          this.dialog.open(ActionModalComponent, {
+            maxWidth: '400px',
+            maxHeight: '400px',
+            width: '100%',
+            height: '100%',
+            data,
+          });
+        })
+      )
+      .subscribe();
+  }
+
+  changeStatus(status: string, id: string) {
+    const isActivate = status === 'active';
+    const data: ActionModalData = {
+      actionIllustration: isActivate
+        ? ActionModalIllustration.deactivate
+        : ActionModalIllustration.activate,
+      title: isActivate ? 'Deactivate user' : 'Activate user',
+      actionColor: isActivate ? 'warn' : 'primary',
+      subtext: isActivate
+        ? 'are you sure you want to deactivate this user?'
+        : 'are you sure you want activate this for the role?',
+      actionType: 'decision',
+      decisionText: isActivate ? 'Deactivate' : 'Activate',
+    };
+    const dialogRef = this.dialog.open(ActionModalComponent, {
+      maxWidth: '400px',
+      maxHeight: '400px',
+      width: '100%',
+      height: '100%',
+      data,
+    });
+
+    dialogRef.componentInstance.decisionEmitter
+      .pipe(
+        takeUntil(this.destroy),
+        catchError(error => {
+          this.toastrService.error(
+            error.error.message,
+            error.error.error || serverError
+          );
+          return of(null);
+        }),
+        finalize(() => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.disableClose = false;
+        }),
+        tap(() => {
+          dialogRef.componentInstance.isLoading = true;
+          dialogRef.disableClose = true;
+        }),
+        switchMap(() => this.userAdministrationService.changeStatus(id)),
+        tap(response => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.close();
+          const isActive = response.data.status === 'active';
+          this.page.setValue(1);
+          const data: ActionModalData = {
+            actionIllustration: isActive
+              ? ActionModalIllustration.success
+              : ActionModalIllustration.deactivate,
+            title: isActive ? 'Congratulations!' : 'Completed',
+            actionColor: isActive ? 'primary' : 'warn',
+            subtext: isActive
+              ? 'you have successfully activated the new user'
+              : 'The user has been successfully deactivated',
+            actionType: 'close',
+          };
+          this.dialog.open(ActionModalComponent, {
+            maxWidth: '400px',
+            maxHeight: '400px',
+            width: '100%',
+            height: '100%',
+            data,
+          });
+        })
+      )
+      .subscribe();
+  }
+
+  downloadCSV() {
+    new ngxCsv(this.data, 'users', {
+      headers: [
+        'ID',
+        'EMAIL',
+        'NAME',
+        'ROLE',
+        'STATUS',
+        'PERMISSIONS',
+        'REMEMBER TOKEN',
+        'DATE EMAIL VERIFIED',
+        'FIRST LOGIN',
+        'DATE CREATED',
+        'DATE UPDATED',
+      ],
     });
   }
 }

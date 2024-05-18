@@ -1,7 +1,7 @@
 <div class="main-container">
   <div class="title">
-    <span class="main">Add a new user</span>
-    <span class="sub">kindly fill in the details to create a new user</span>
+    <span class="main">{{ title }}</span>
+    <span class="sub">{{ subtext }}</span>
   </div>
   <form
     (ngSubmit)="submit()"
@@ -27,7 +27,12 @@
       <mat-error>{{ getFormErrors('email') }}</mat-error>
     </mat-form-field>
     <div class="actions">
-      <button class="submit__btn cancel" mat-flat-button type="button">
+      <button
+        [disabled]="isLoading"
+        class="submit__btn cancel"
+        mat-flat-button
+        mat-dialog-close
+        type="button">
         <span>Cancel</span>
       </button>
       <button
@@ -39,7 +44,7 @@
         @if (isLoading) {
           <span class="loading">Loading...</span>
         } @else {
-          <span>Send Invite</span>
+          <span>{{ buttonText }}</span>
         }
       </button>
     </div>

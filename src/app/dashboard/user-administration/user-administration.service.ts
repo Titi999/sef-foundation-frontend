@@ -16,4 +16,28 @@ export class UserAdministrationService {
       `${this.url}?searchTerm=${search}`
     );
   }
+
+  inviteUser(email: string, name: string, role: string) {
+    return this.http.post<Response<User>>(`${this.url}/invite`, {
+      email,
+      name,
+      role,
+    });
+  }
+
+  editUser(id: string, email: string, name: string, role: string) {
+    return this.http.post<Response<User>>(`${this.url}/edit/${id}`, {
+      email,
+      name,
+      role,
+    });
+  }
+
+  deleteUser(id: string) {
+    return this.http.delete<Response<User>>(`${this.url}/${id}`);
+  }
+
+  changeStatus(id: string) {
+    return this.http.get<Response<User>>(`${this.url}/status/${id}`);
+  }
 }
