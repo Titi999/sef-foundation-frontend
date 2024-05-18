@@ -1,9 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, Injectable, signal } from '@angular/core';
-import { Observable } from 'rxjs';
+import { finalize, Observable } from 'rxjs';
 import { environment } from '@environments/environment';
 import { LoginResponse, User, VerifyLogin } from './auth.type';
 import { Response } from '@app/shared/shared.type';
+import {
+  endSession,
+  getSession,
+  sessionMap,
+  setSession,
+} from '@app/libs/session';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -15,10 +22,11 @@ export class AuthService {
 
   private url = `${environment.apiUrl}/authentication`;
 
-  constructor(private http: HttpClient) {
-    this.userSignal.set(
-      JSON.parse(window.localStorage.getItem('user') as string)
-    );
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {
+    this.userSignal.set(getSession(sessionMap.loginResponseTokens));
   }
 
   public get userName() {
@@ -29,7 +37,7 @@ export class AuthService {
 
   // Set user session
   public setUser(response: VerifyLogin) {
-    window.localStorage.setItem('user', JSON.stringify(response));
+    setSession(sessionMap.loginResponseTokens, response);
     this.userSignal.set(response);
   }
 
@@ -80,5 +88,26 @@ export class AuthService {
       password,
       confirmPassword,
     });
+  }
+
+  public refreshToken(): Observable<Response<{ accessToken: string }>> {
+    return this.http.post<Response<{ accessToken: string }>>(
+      `${this.url}/refresh-token`,
+      {
+        refreshToken: this.loggedInUser()?.refreshToken,
+      }
+    );
+  }
+
+  public logout(): Observable<{ message: string }> {
+    return this.http
+      .post<{ message: string }>(`${this.url}/invalidate-token`, {})
+      .pipe(
+        finalize(() => {
+          this.userSignal.set(undefined);
+          endSession();
+          void this.router.navigateByUrl('/login');
+        })
+      );
   }
 }

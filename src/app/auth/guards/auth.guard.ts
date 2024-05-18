@@ -14,3 +14,14 @@ export const authGuard: CanActivateFn = () => {
     return false;
   }
 };
+
+export const canActivateAuthPages: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+  if (!authService.loggedInUser()) {
+    return true;
+  } else {
+    void router.navigate(['/dashboard/overview']);
+    return false;
+  }
+};
