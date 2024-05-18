@@ -66,10 +66,18 @@ export class LoginComponent implements OnDestroy {
         )
         .subscribe(response => {
           if (response) {
-            this.toastrService.info(response.message, 'Verification needed');
-            const { id, email } = response.data;
-            const encodedEmail = encodeToBase64(email);
-            void this.router.navigate(['/verification', id, encodedEmail]);
+            if (response.data.token) {
+              this.toastrService.info(response.message, 'Reset your password');
+              void this.router.navigate([
+                '/reset-password',
+                response.data.token,
+              ]);
+            } else {
+              this.toastrService.info(response.message, 'Verification needed');
+              const { id, email } = response.data.user;
+              const encodedEmail = encodeToBase64(email);
+              void this.router.navigate(['/verification', id, encodedEmail]);
+            }
           }
         });
     }

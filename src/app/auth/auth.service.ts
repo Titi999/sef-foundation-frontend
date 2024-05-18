@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { computed, Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '@environments/environment';
-import { User, VerifyLogin } from './auth.type';
+import { LoginResponse, User, VerifyLogin } from './auth.type';
 import { Response } from '@app/shared/shared.type';
 
 @Injectable({
@@ -34,8 +34,11 @@ export class AuthService {
   }
 
   // AuthType login
-  public login(email: string, password: string): Observable<Response<User>> {
-    return this.http.post<Response<User>>(`${this.url}/login`, {
+  public login(
+    email: string,
+    password: string
+  ): Observable<Response<LoginResponse>> {
+    return this.http.post<Response<LoginResponse>>(`${this.url}/login`, {
       email,
       password,
     });
