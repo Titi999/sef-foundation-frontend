@@ -14,12 +14,18 @@ export interface User {
   created_at: string;
   updated_at: string;
   status: string;
+  firstLogin: boolean;
 }
 
 export interface VerifyLogin {
   accessToken: string;
   refreshToken: string;
   user: User;
+}
+
+export interface LoginResponse {
+  user: User;
+  token?: string;
 }
 
 export type ForgotPasswordData = Pick<UserLoginData, 'email'>;
