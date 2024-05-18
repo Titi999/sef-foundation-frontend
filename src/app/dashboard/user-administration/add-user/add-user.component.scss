@@ -1,0 +1,48 @@
+@import "../../../../scss/colors";
+
+.main-container {
+  margin: 20px 30px;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .main {
+    font-weight: 500;
+    font-size: 22px;
+    color: map-get($primary-palette, 500);
+  }
+
+  .sub {
+    font-size: 14px;
+    color: $sys-light-on-surface-variant;
+    max-width: 14rem;
+    text-align: center;
+    margin: 0.5rem 0;
+  }
+}
+
+.add-user__form__container {
+  display: flex;
+  flex-direction: column;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 4rem;
+
+  .submit__btn {
+    border-radius: 6.25rem;
+    padding: 10px 24px;
+    height: 40px;
+  }
+
+  .cancel {
+    border: 1px solid $sys-light-outline;
+    color: $sys-light-outline
+  }
+}

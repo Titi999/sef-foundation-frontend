@@ -15,7 +15,10 @@ import { catchError, finalize, of, Subject, takeUntil } from 'rxjs';
 import { ResetPasswordData } from '@app/auth/auth.type';
 import { serverError } from '@app/libs/constants';
 import { MatIconModule } from '@angular/material/icon';
-import { passwordMatchValidator, passwordValidator } from '@app/libs/functions';
+import {
+  passwordMatchValidator,
+  passwordValidator,
+} from '@app/libs/validators';
 
 @Component({
   selector: 'app-reset-password',

@@ -8,15 +8,15 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router, RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, finalize, of, Subject, takeUntil } from 'rxjs';
 import { serverError } from '@app/libs/constants';
-import { encodeToBase64, passwordValidator } from '@app/libs/functions';
+import { passwordValidator } from '@app/libs/validators';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '@app/auth/auth.service';
 import { UserLoginData } from '@app/auth/auth.type';
+import { encodeToBase64 } from '@app/libs/base64';
 
 @Component({
   selector: 'app-login',
@@ -27,7 +27,6 @@ import { UserLoginData } from '@app/auth/auth.type';
     MatInputModule,
     MatButtonModule,
     RouterLink,
-    MatProgressSpinnerModule,
     MatIconModule,
   ],
   templateUrl: './login.component.html',

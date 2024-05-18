@@ -34,7 +34,7 @@
                 class="entry"
                 matTooltip="Overview"
                 matTooltipPosition="right"
-                routerLink="/dashboard"
+                routerLink="overview"
                 routerLinkActive="entry__active">
                 <mat-icon>grid_view</mat-icon>
                 @if (!isCollapsed) {
@@ -66,12 +66,14 @@
             </a>
             <a class="nav-item" mat-list-item>
               <span
+                matTooltip="User administration"
+                matTooltipPosition="right"
+                routerLink="user-administration"
                 class="entry"
-                matTooltip="AuthType administration"
-                matTooltipPosition="right">
+                routerLinkActive="entry__active">
                 <mat-icon>person</mat-icon>
                 @if (!isCollapsed) {
-                  <span>AuthType administration</span>
+                  <span>User administration</span>
                 }
               </span>
             </a>
@@ -126,7 +128,6 @@
       </mat-nav-list>
     </mat-sidenav>
     <mat-sidenav-content>
-      <h2>Content</h2>
       <router-outlet></router-outlet>
     </mat-sidenav-content>
   </mat-sidenav-container>

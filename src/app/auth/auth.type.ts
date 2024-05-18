@@ -3,7 +3,7 @@ export interface UserLoginData {
   password: string;
 }
 
-export interface AuthType {
+export interface User {
   id: string;
   email: string;
   name: string;
@@ -13,17 +13,13 @@ export interface AuthType {
   email_verified_at: string;
   created_at: string;
   updated_at: string;
+  status: string;
 }
 
 export interface VerifyLogin {
   accessToken: string;
   refreshToken: string;
-  user: AuthType;
-}
-
-export interface Response<T> {
-  message: string;
-  data: T;
+  user: User;
 }
 
 export type ForgotPasswordData = Pick<UserLoginData, 'email'>;

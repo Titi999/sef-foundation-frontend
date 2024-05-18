@@ -1,0 +1,63 @@
+<div class="main-container">
+  <div class="illustration-container">
+    @switch (actionIllustration) {
+      @case ('success') {
+        <img width="200" src="assets/enthusiastic.svg" alt="enthusiastic" />
+      }
+      @case ('delete') {
+        <img width="200" src="assets/delete.svg" alt="delete" />
+      }
+      @case ('deactivate') {
+        <img width="200" src="assets/deactivate.svg" alt="delete" />
+      }
+      @case ('activate') {
+        <img width="200" src="assets/activate.svg" alt="delete" />
+      }
+    }
+  </div>
+  <div class="text-container">
+    <span
+      [class.primary]="color === 'primary'"
+      [class.warn]="color === 'warn'"
+      class="title"
+      >{{ title }}</span
+    >
+    <span class="subtext">{{ subtext }}</span>
+  </div>
+  <div class="action-container">
+    @if (actionType === 'close') {
+      <div class="action__close">
+        <button
+          mat-dialog-close
+          class="submit__btn"
+          mat-flat-button
+          [color]="color">
+          Done
+        </button>
+      </div>
+    } @else if (actionType === 'decision') {
+      <div class="actions">
+        <button
+          [disabled]="isLoading"
+          mat-dialog-close
+          class="submit__btn cancel"
+          mat-flat-button
+          type="button">
+          <span>Cancel</span>
+        </button>
+        <button
+          [disabled]="isLoading"
+          (click)="decision()"
+          class="submit__btn"
+          mat-flat-button
+          [color]="color">
+          @if (isLoading) {
+            <span class="loading">Loading...</span>
+          } @else {
+            <span>{{ decisionButton }}</span>
+          }
+        </button>
+      </div>
+    }
+  </div>
+</div>

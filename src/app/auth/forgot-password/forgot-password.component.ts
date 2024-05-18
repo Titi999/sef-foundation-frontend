@@ -14,7 +14,8 @@ import { catchError, finalize, of, Subject, takeUntil } from 'rxjs';
 import { serverError } from '@app/libs/constants';
 import { ToastrService } from 'ngx-toastr';
 import { ForgotPasswordData } from '@app/auth/auth.type';
-import { encodeToBase64 } from '@app/libs/functions';
+
+import { encodeToBase64 } from '@app/libs/base64';
 
 @Component({
   selector: 'app-forgot-password',

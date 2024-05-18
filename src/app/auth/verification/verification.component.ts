@@ -6,7 +6,8 @@ import { ToastrService } from 'ngx-toastr';
 import { catchError, finalize, of, Subject, takeUntil } from 'rxjs';
 import { serverError } from '@app/libs/constants';
 import { AuthService } from '@app/auth/auth.service';
-import { decodeFromBase64 } from '@app/libs/functions';
+
+import { decodeFromBase64 } from '@app/libs/base64';
 
 @Component({
   selector: 'app-verification',

@@ -15,10 +15,10 @@ export function passwordMatchValidator(control: AbstractControl) {
     : { mismatch: true };
 }
 
-export function encodeToBase64(data: string) {
-  return btoa(encodeURIComponent(data));
-}
-
-export function decodeFromBase64(encodedData: string) {
-  return decodeURIComponent(atob(encodedData));
+export function fullNameValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const regex: RegExp = /^[a-zA-Z'-]+\s[a-zA-Z'-]+$/;
+    const validFullName = regex.test(control.value);
+    return validFullName ? null : { invalidFullName: true };
+  };
 }

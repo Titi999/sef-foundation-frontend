@@ -1,0 +1,40 @@
+@use '../../../scss/colors' as colors;
+@use '../../../scss/global' as font;
+
+* {
+  color: colors.$sys-light-on-surface-variant;
+}
+
+.grid-container {
+  margin: 20px;
+
+  .overview__title {
+    font-size: 22px;
+    color: map-get(colors.$primary-palette, 500);
+    margin-left: 15px;
+  }
+
+  .overview__description {
+    font-size: font.$font-size-sm;
+    margin-left: 15px;
+    margin-top: 10px;
+  }
+}
+
+.dashboard-card {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+}
+
+.more-button {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+}
+
+.dashboard-card-content {
+  text-align: center;
+}
