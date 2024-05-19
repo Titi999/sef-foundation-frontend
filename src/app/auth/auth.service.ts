@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, Injectable, signal } from '@angular/core';
-import { finalize, Observable } from 'rxjs';
+import { catchError, finalize, first, Observable, of, take } from 'rxjs';
 import { environment } from '@environments/environment';
 import { LoginResponse, User, VerifyLogin } from './auth.type';
 import { Response } from '@app/shared/shared.type';
@@ -19,6 +19,8 @@ export class AuthService {
   private userSignal = signal<VerifyLogin | undefined>(undefined);
 
   public readonly loggedInUser = this.userSignal.asReadonly();
+
+  public readonly isRefreshing = signal(false);
 
   private url = `${environment.apiUrl}/authentication`;
 
@@ -99,14 +101,28 @@ export class AuthService {
     );
   }
 
+  public logoutSession() {
+    this.userSignal.set(undefined);
+    endSession();
+  }
+
+  public exchangeAccessToken(accessToken: string) {
+    const loggedInData = this.loggedInUser();
+    if (loggedInData) {
+      this.userSignal.set({
+        refreshToken: loggedInData.refreshToken,
+        user: loggedInData.user,
+        accessToken,
+      });
+    }
+  }
+
   public logout(): Observable<{ message: string }> {
     return this.http
       .post<{ message: string }>(`${this.url}/invalidate-token`, {})
       .pipe(
         finalize(() => {
-          this.userSignal.set(undefined);
-          endSession();
-          void this.router.navigateByUrl('/login');
+          this.logoutSession();
         })
       );
   }
