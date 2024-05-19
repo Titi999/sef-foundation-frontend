@@ -33,8 +33,57 @@
   position: absolute;
   top: 5px;
   right: 10px;
+  border: 1px solid colors.$schemes-surface-variant;
+  border-radius: 10px;
 }
 
 .dashboard-card-content {
   text-align: center;
+}
+
+.card__container {
+  position: relative;
+  width: 100%;
+}
+
+.select__wrapper {
+  position: absolute;
+  right: 0;
+  top: -80px;
+  width: 120px;
+}
+
+.mat-mdc-card-content:last-child {
+  padding-top: 50px;
+  padding-bottom: 16px;
+}
+
+.figure {
+  font-size: font.$font-size-xxl;
+  position: relative;
+
+  span {
+    position: absolute;
+    left: 0;
+    bottom: -20px;
+  }
+}
+
+
+.status__chip__active {
+  background-color: colors.$schemes-primary !important;
+
+  span {
+    color: map-get(colors.$primary-palette, 500);
+    font-weight: 500;
+  }
+}
+
+.status__chip__inactive {
+  background-color: colors.$schemes-error-container !important;
+
+  span {
+    color: colors.$schemes-error;
+    font-weight: 500;
+  }
 }

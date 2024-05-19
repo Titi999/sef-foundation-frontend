@@ -13,17 +13,17 @@
         </mat-icon>
         <span>{{ userName() }}</span>
         <ngx-avatars
-          class="avatar"
+          [matMenuTriggerFor]="avatar"
           [name]="userName()"
+          class="avatar"
           size="40"
-          src=""
-          [matMenuTriggerFor]="avatar"></ngx-avatars>
+          src=""></ngx-avatars>
         <mat-menu #avatar="matMenu">
           <button mat-menu-item>
             <mat-icon>person</mat-icon>
             <span>Profile</span>
           </button>
-          <button mat-menu-item disabled>
+          <button disabled mat-menu-item>
             <mat-icon>settings</mat-icon>
             <span>Settings</span>
           </button>
@@ -83,19 +83,21 @@
                 }
               </span>
             </a>
-            <a class="nav-item" mat-list-item>
-              <span
-                matTooltip="User administration"
-                matTooltipPosition="right"
-                routerLink="user-administration"
-                class="entry"
-                routerLinkActive="entry__active">
-                <mat-icon>person</mat-icon>
-                @if (!isCollapsed) {
-                  <span>User administration</span>
-                }
-              </span>
-            </a>
+            @if (getUserRole() === 'super admin') {
+              <a class="nav-item" mat-list-item>
+                <span
+                  matTooltip="User administration"
+                  matTooltipPosition="right"
+                  routerLink="user-administration"
+                  class="entry"
+                  routerLinkActive="entry__active">
+                  <mat-icon>person</mat-icon>
+                  @if (!isCollapsed) {
+                    <span>User administration</span>
+                  }
+                </span>
+              </a>
+            }
             <a class="nav-item" mat-list-item>
               <span
                 class="entry"

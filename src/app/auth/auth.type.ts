@@ -7,7 +7,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: string;
+  role: UserRoles;
   permissions: string[] | null;
   remember_token: string | null;
   email_verified_at: string;
@@ -33,3 +33,9 @@ export type ForgotPasswordData = Pick<UserLoginData, 'email'>;
 export type ResetPasswordData = {
   confirmPassword: string;
 } & Pick<UserLoginData, 'password'>;
+
+export enum UserRoles {
+  SUPER_ADMIN = 'super admin',
+  ADMIN = 'admin',
+  BENEFICIARY = 'beneficiary',
+}
