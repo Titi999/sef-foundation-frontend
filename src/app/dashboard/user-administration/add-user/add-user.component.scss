@@ -1,4 +1,4 @@
-@import "../../../../scss/colors";
+@import '../../../../scss/colors';
 
 .main-container {
   margin: 20px 30px;
@@ -43,6 +43,6 @@
 
   .cancel {
     border: 1px solid $sys-light-outline;
-    color: $sys-light-outline
+    color: $sys-light-outline;
   }
 }

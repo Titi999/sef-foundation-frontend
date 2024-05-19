@@ -26,7 +26,7 @@
 }
 
 .primary {
-  color: map-get($primary-palette, 500)
+  color: map-get($primary-palette, 500);
 }
 
 .warn {
@@ -64,6 +64,6 @@
 
   .cancel {
     border: 1px solid $sys-light-outline;
-    color: $sys-light-outline
+    color: $sys-light-outline;
   }
 }

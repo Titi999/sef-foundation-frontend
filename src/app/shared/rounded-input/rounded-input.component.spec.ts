@@ -8,10 +8,9 @@ describe('RoundedInputComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RoundedInputComponent]
-    })
-    .compileComponents();
-    
+      imports: [RoundedInputComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(RoundedInputComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
