@@ -11,9 +11,8 @@ import { MatInput } from '@angular/material/input';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { MatButton } from '@angular/material/button';
 import { UserAdministrationService } from '@app/dashboard/user-administration/user-administration.service';
-import { UserLoginData } from '@app/auth/auth.type';
 import { AddUser } from '@app/dashboard/user-administration/add-user/add-user.type';
-import { catchError, finalize, first, of, take } from 'rxjs';
+import { catchError, finalize, first, of } from 'rxjs';
 import { serverError } from '@app/libs/constants';
 import { ToastrService } from 'ngx-toastr';
 import {
@@ -27,6 +26,7 @@ import {
   ActionModalIllustration,
 } from '@app/shared/action-modal/action-modal.type';
 import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
+import { UserRoles } from '@app/auth/auth.type';
 
 @Component({
   selector: 'app-add-user',
@@ -56,9 +56,9 @@ export class AddUserComponent {
   });
 
   public roles = [
-    { name: 'Super Admin', value: 'super admin' },
-    { name: 'Admin', value: 'admin' },
-    { name: 'Beneficiary', value: 'beneficiary' },
+    { name: 'Super Admin', value: UserRoles.SUPER_ADMIN },
+    { name: 'Admin', value: UserRoles.ADMIN },
+    { name: 'Beneficiary', value: UserRoles.BENEFICIARY },
   ];
 
   constructor(

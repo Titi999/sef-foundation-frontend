@@ -37,6 +37,12 @@ export class AuthService {
     });
   }
 
+  public get role() {
+    return computed(() => {
+      return this.loggedInUser()?.user.role;
+    });
+  }
+
   // Set user session
   public setUser(response: VerifyLogin) {
     setSession(sessionMap.loginResponseTokens, response);

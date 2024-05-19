@@ -20,6 +20,7 @@ import { AvatarModule } from 'ngx-avatars';
 import { MatTooltip } from '@angular/material/tooltip';
 import { AuthService } from '@app/auth/auth.service';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
+import { UserRoles } from '@app/auth/auth.type';
 
 @Component({
   selector: 'app-dashboard',
@@ -53,6 +54,7 @@ export class DashboardComponent implements OnInit {
   isMobile = true;
   isCollapsed = true;
   userName = this.authService.userName;
+  protected readonly UserRoles = UserRoles;
 
   constructor(
     private observer: BreakpointObserver,
@@ -78,5 +80,9 @@ export class DashboardComponent implements OnInit {
 
   logout() {
     this.authService.logout().subscribe();
+  }
+
+  getUserRole(): UserRoles | undefined {
+    return this.authService.role();
   }
 }

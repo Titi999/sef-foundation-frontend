@@ -9,11 +9,145 @@
         <mat-card class="dashboard-card">
           <mat-card-header>
             <mat-card-title>
-              {{ card.title }}
+              <div>{{ card.title }}</div>
+              @switch (card.id) {
+                @case (1) {
+                  <button mat-icon-button class="more-button" aria-label="Icon">
+                    <mat-icon>attach_money</mat-icon>
+                  </button>
+                }
+                @case (2) {
+                  <button mat-icon-button class="more-button" aria-label="Icon">
+                    <mat-icon>attach_money</mat-icon>
+                  </button>
+                }
+                @case (3) {
+                  <button mat-icon-button class="more-button" aria-label="Icon">
+                    <mat-icon>people</mat-icon>
+                  </button>
+                }
+              }
             </mat-card-title>
           </mat-card-header>
           <mat-card-content class="dashboard-card-content">
-            <div>Card Content Here</div>
+            @switch (card.id) {
+              @case (1) {
+                <div class="figure">
+                  <span>10.89k</span>
+                </div>
+              }
+              @case (2) {
+                <div class="figure">
+                  <span>26.67k</span>
+                </div>
+              }
+              @case (3) {
+                <div class="figure">
+                  <span>1.34k</span>
+                </div>
+              }
+              @case (4) {
+                <div class="">
+                  <canvas
+                    baseChart
+                    [data]="doughnutChartData"
+                    [type]="doughnutChartType">
+                  </canvas>
+                </div>
+              }
+              @case (5) {
+                <div class="card__container">
+                  <mat-form-field appearance="outline" class="select__wrapper">
+                    <mat-label>Year</mat-label>
+                    <mat-select>
+                      <mat-option value="2024">2024</mat-option>
+                      <mat-option value="2024">2023</mat-option>
+                      <mat-option value="2024">2022</mat-option>
+                      <mat-option value="2024">2021</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <canvas
+                    class="canvas"
+                    baseChart
+                    [data]="lineChartData"
+                    [options]="lineChartOptions"
+                    [type]="lineChartType"></canvas>
+                </div>
+              }
+              @case (6) {
+                <table
+                  mat-table
+                  [dataSource]="tableData"
+                  class="example-table"
+                  matSort
+                  matSortActive="created"
+                  matSortDisableClear
+                  matSortDirection="desc">
+                  <!-- Recipient Column -->
+                  <ng-container matColumnDef="recipient">
+                    <th mat-header-cell *matHeaderCellDef>Recipient</th>
+                    <td mat-cell *matCellDef="let row">{{ row.recipient }}</td>
+                  </ng-container>
+
+                  <!-- Category Column -->
+                  <ng-container matColumnDef="category">
+                    <th mat-header-cell *matHeaderCellDef>Category</th>
+                    <td mat-cell *matCellDef="let row">
+                      {{ row.category }}
+                    </td>
+                  </ng-container>
+
+                  <!-- Amount allocated Column -->
+                  <ng-container matColumnDef="amountAllocated">
+                    <th mat-header-cell *matHeaderCellDef>
+                      Amount Allocated ($)
+                    </th>
+                    <td mat-cell *matCellDef="let row">
+                      {{ row.amountAllocated }}
+                    </td>
+                  </ng-container>
+
+                  <!-- Date allocated Column -->
+                  <ng-container matColumnDef="dateAllocated">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                      Date allocated
+                    </th>
+                    <td mat-cell *matCellDef="let row">
+                      {{ row.dateAllocated | date }}
+                    </td>
+                  </ng-container>
+
+                  <!-- Date disbursed Column -->
+                  <ng-container matColumnDef="dateDisbursed">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                      Date disbursed
+                    </th>
+                    <td mat-cell *matCellDef="let row">
+                      {{ row.dateDisbursed | date }}
+                    </td>
+                  </ng-container>
+
+                  <!-- Status Column -->
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                    <td mat-cell *matCellDef="let row">
+                      <mat-chip
+                        [class.status__chip__active]="row.status === 'active'"
+                        [class.status__chip__inactive]="
+                          row.status === 'inactive'
+                        ">
+                        <span>{{ row.status | titlecase }}</span>
+                      </mat-chip>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr
+                    mat-row
+                    *matRowDef="let row; columns: displayedColumns"></tr>
+                </table>
+              }
+            }
           </mat-card-content>
         </mat-card>
       </mat-grid-tile>

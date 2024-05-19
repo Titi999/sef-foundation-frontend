@@ -80,8 +80,9 @@ table {
   height: 40px;
 }
 
-.filter__btn, .download__btn {
-  border: 1px solid colors.$sys-light-outline
+.filter__btn,
+.download__btn {
+  border: 1px solid colors.$sys-light-outline;
 }
 
 .status__chip__active {
@@ -103,4 +104,3 @@ table {
 .delete__btn {
   color: colors.$schemes-error !important;
 }
-
