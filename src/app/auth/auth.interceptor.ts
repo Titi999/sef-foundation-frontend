@@ -38,12 +38,18 @@ const handle401Error = (request: HttpRequest<unknown>, next: HttpHandlerFn) => {
   if (!authService.isRefreshing()) {
     authService.isRefreshing.set(true);
     return authService.refreshToken().pipe(
-      map(response =>
-        authService.exchangeAccessToken(response.data.accessToken)
-      ),
-      switchMap(() => {
+      map(response => {
+        authService.exchangeAccessToken(response.data.accessToken);
+        return response.data.accessToken;
+      }),
+      switchMap(newToken => {
         authService.isRefreshing.set(false);
-        return next(request);
+        const updateRequest = request.clone({
+          setHeaders: {
+            Authorization: `Bearer ${newToken}`,
+          },
+        });
+        return next(updateRequest);
       }),
       catchError((error: HttpErrorResponse) => {
         authService.isRefreshing.set(false);

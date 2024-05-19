@@ -12,5 +12,5 @@ export const getSession = (key: sessionMap) => {
 
 export const endSession = () => {
   window.localStorage.clear();
-  window.location.href = '/login';
+  window.location.reload();
 };
