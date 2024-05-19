@@ -54,6 +54,7 @@ export class DashboardComponent implements OnInit {
   isMobile = true;
   isCollapsed = true;
   userName = this.authService.userName;
+  protected readonly UserRoles = UserRoles;
 
   constructor(
     private observer: BreakpointObserver,
