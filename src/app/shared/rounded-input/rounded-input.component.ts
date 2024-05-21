@@ -26,4 +26,7 @@ export class RoundedInputComponent {
 
   @Input()
   control!: FormControl;
+
+  @Input()
+  disabled: boolean = false;
 }

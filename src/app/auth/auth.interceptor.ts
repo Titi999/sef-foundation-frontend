@@ -7,7 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  const authToken = authService.loggedInUser()?.accessToken;
+  const authToken = authService.accessToken();
   const toastrService = inject(ToastrService);
 
   if (authToken) {

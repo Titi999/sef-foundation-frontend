@@ -5,20 +5,20 @@
   background: white;
   margin: 20px;
 
-  .user__title {
+  .students__title {
     font-size: 22px;
     color: map-get(colors.$primary-palette, 500);
     margin-left: 15px;
   }
 
-  .user__description {
+  .students__description {
     font-size: font.$font-size-sm;
     margin-left: 15px;
     margin-top: 10px;
   }
 }
 
-.user__table__container {
+.students__table__container {
   margin-left: 15px;
   position: relative;
   margin-top: 20px;
@@ -27,7 +27,7 @@
   padding: 10px;
 }
 
-.user-table-container {
+.students-table-container {
   position: relative;
   min-height: 200px;
   overflow: auto;
