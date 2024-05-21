@@ -1,0 +1,65 @@
+<div class="main-container">
+  <div class="title">
+    <span class="main">{{ title }}</span>
+    <span class="sub">{{ subtext }}</span>
+  </div>
+  <form
+    (ngSubmit)="submit()"
+    [formGroup]="studentForm"
+    class="add-user__form__container">
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input formControlName="name" id="name" matInput type="text" />
+      <mat-error>{{ getFormErrors('name') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Parent's Name</mat-label>
+      <input formControlName="parent" id="parent" matInput type="text" />
+      <mat-error>{{ getFormErrors('parent') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>School</mat-label>
+      <input formControlName="school" id="school" matInput type="text" />
+      <mat-error>{{ getFormErrors('school') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Class</mat-label>
+      <input formControlName="level" id="class" matInput type="text" />
+      <mat-error>{{ getFormErrors('level') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Phone</mat-label>
+      <input formControlName="phone" id="phone" matInput type="tel" />
+      <mat-error>{{ getFormErrors('phone') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Extra Info</mat-label>
+      <textarea
+        matInput
+        placeholder="Add any description or comment"></textarea>
+      <mat-error>{{ getFormErrors('description') }}</mat-error>
+    </mat-form-field>
+    <div class="actions">
+      <button
+        [disabled]="isLoading"
+        class="submit__btn cancel"
+        mat-flat-button
+        mat-dialog-close
+        type="button">
+        <span>Cancel</span>
+      </button>
+      <button
+        [disabled]="isLoading"
+        class="submit__btn"
+        mat-flat-button
+        color="primary"
+        type="submit">
+        @if (isLoading) {
+          <span class="loading">Loading...</span>
+        } @else {
+          <span>{{ buttonText }}</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

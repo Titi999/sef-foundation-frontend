@@ -132,4 +132,8 @@ export class AuthService {
         })
       );
   }
+
+  public get accessToken() {
+    return computed(() => this.userSignal()?.accessToken);
+  }
 }
