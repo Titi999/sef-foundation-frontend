@@ -38,6 +38,7 @@ import { StudentsService } from '@app/dashboard/students/students.service';
 import { User } from '@app/auth/auth.type';
 import { AddStudentComponent } from '@app/dashboard/students/add-student/add-student.component';
 import { MatDialog } from '@angular/material/dialog';
+import { UserProfileComponent } from '../user-profile/user-profile.component';
 
 @Component({
   selector: 'app-students',
@@ -66,6 +67,7 @@ import { MatDialog } from '@angular/material/dialog';
     MatRow,
     MatRowDef,
     MatPaginator,
+    UserProfileComponent,
   ],
   templateUrl: './students.component.html',
   styleUrl: './students.component.scss',
@@ -87,6 +89,8 @@ export class StudentsComponent implements AfterViewInit, OnDestroy {
   public page = new FormControl(1);
   private readonly destroy = new Subject<void>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  public selectedStudent: Student | null = null;
 
   constructor(
     private readonly studentsService: StudentsService,
@@ -175,5 +179,13 @@ export class StudentsComponent implements AfterViewInit, OnDestroy {
 
   onPaginationChange(event: PageEvent) {
     console.log(event);
+  }
+
+  selectStudent(student: Student) {
+    this.selectedStudent = student;
+  }
+
+  backToTableView() {
+    this.selectedStudent = null;
   }
 }

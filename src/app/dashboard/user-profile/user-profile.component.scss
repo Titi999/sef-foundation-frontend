@@ -1,0 +1,50 @@
+@use '../../../scss/colors' as colors;
+@use '../../../scss/global' as font;
+
+.user-profile__container {
+  padding: 1rem 3rem;
+  .user-profile__title {
+    font-size: 22px;
+    color: map-get(colors.$primary-palette, 500);
+    margin-left: 15px;
+  }
+
+  .user-profile__description {
+    font-size: font.$font-size-sm;
+    margin-left: 15px;
+    margin-top: 10px;
+  }
+
+  .avatar {
+    margin: 1rem;
+  }
+
+  .card__header {
+    background-color: #e5e8ed;
+    color: colors.$dark-primary-text;
+    padding: 24px 16px;
+    height: 72px;
+  }
+
+  .user-profile-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    grid-column-gap: 50px;
+    grid-row-gap: 50px;
+    margin: 1rem;
+
+    .card-content__left,
+    .card-content__right {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 850px) {
+    .user-profile-form {
+      grid-template-columns: repeat(1, 1fr);
+      grid-template-rows: repeat(6, 1fr);
+    }
+  }
+}
