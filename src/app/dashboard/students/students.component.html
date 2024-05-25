@@ -8,18 +8,31 @@
         <div class="search__input__wrapper">
           <app-rounded-input
             [control]="searchValue"
-            [disabled]="!data.length"
             placeholder="Search name, school" />
         </div>
       </div>
       <div class="actions__right">
         <button
-          [disabled]="!data.length"
+          [matMenuTriggerFor]="filter"
           class="filter__btn btn"
           mat-flat-button>
           <mat-icon>filter_list</mat-icon>
           Filter by
         </button>
+        <mat-menu #filter="matMenu">
+          <button mat-menu-item [matMenuTriggerFor]="status">Status</button>
+        </mat-menu>
+        <mat-menu #status="matMenu">
+          <mat-radio-group [formControl]="statusControl">
+            @for (status of statusFilters; track status.value) {
+              <button mat-menu-item>
+                <mat-radio-button [value]="status.value" color="primary">
+                  {{ status.label }}
+                </mat-radio-button>
+              </button>
+            }
+          </mat-radio-group>
+        </mat-menu>
         <button
           [disabled]="!data.length"
           (click)="downloadCSV()"
@@ -86,7 +99,7 @@
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
-              <button (click)="addStudent()" mat-menu-item>
+              <button (click)="editStudent(row)" mat-menu-item>
                 <mat-icon>edit</mat-icon>Edit
               </button>
               <button
