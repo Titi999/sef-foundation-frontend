@@ -23,7 +23,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatButtonToggle } from '@angular/material/button-toggle';
-import { FormControl, FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   MatFormField,
   MatInput,
@@ -34,7 +34,7 @@ import {
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { RoundedInputComponent } from '@app/shared/rounded-input/rounded-input.component';
 import { UserAdministrationService } from '@app/dashboard/user-administration/user-administration.service';
-import { User } from '@app/auth/auth.type';
+import { User, UserRoles } from '@app/auth/auth.type';
 import { MatChip } from '@angular/material/chips';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
@@ -45,9 +45,11 @@ import {
   ActionModalIllustration,
 } from '@app/shared/action-modal/action-modal.type';
 import { AddUser } from '@app/dashboard/user-administration/add-user/add-user.type';
-import { serverError } from '@app/libs/constants';
+import { serverError, statusFilters } from '@app/libs/constants';
 import { ToastrService } from 'ngx-toastr';
 import { ngxCsv } from 'ngx-csv/ngx-csv';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 
 @Component({
   selector: 'app-user-administration',
@@ -76,6 +78,10 @@ import { ngxCsv } from 'ngx-csv/ngx-csv';
     MatMenuTrigger,
     MatMenu,
     MatMenuItem,
+    MatCheckbox,
+    MatRadioButton,
+    MatRadioGroup,
+    ReactiveFormsModule,
   ],
 })
 export class UserAdministrationComponent implements AfterViewInit, OnDestroy {
@@ -93,6 +99,15 @@ export class UserAdministrationComponent implements AfterViewInit, OnDestroy {
   public searchValue = new FormControl('');
   private readonly destroy = new Subject<void>();
   public page = new FormControl(1);
+  public roleControl = new FormControl('');
+  public statusControl = new FormControl('');
+  public rolesFilters = [
+    { label: 'All', value: '' },
+    { label: 'Super Admin', value: UserRoles.SUPER_ADMIN },
+    { label: 'Admin', value: UserRoles.ADMIN },
+    { label: 'Beneficiary', value: UserRoles.BENEFICIARY },
+  ];
+  public statusFilters = statusFilters;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -110,19 +125,21 @@ export class UserAdministrationComponent implements AfterViewInit, OnDestroy {
         filter((searchValue): searchValue is string => searchValue !== null)
       ),
       this.page.valueChanges.pipe(startWith(1)),
+      this.roleControl.valueChanges.pipe(startWith('')),
+      this.statusControl.valueChanges.pipe(startWith('')),
       this.paginator.page.pipe(startWith(new PageEvent())),
     ])
       .pipe(
         takeUntil(this.destroy),
         debounceTime(1000),
-        switchMap(([search, sort, page]) => {
-          console.log(sort, 'sort');
-          console.log(page, 'paginator');
-          console.log(search, 'search');
+        switchMap(([search, page, role, status]) => {
           this.isLoadingResults = true;
-          return this.userAdministrationService!.getUsers(search).pipe(
-            catchError(() => observableOf(null))
-          );
+          return this.userAdministrationService!.getUsers(
+            page || 1,
+            search,
+            role || '',
+            status || ''
+          ).pipe(catchError(() => observableOf(null)));
         }),
         map(data => {
           this.isLoadingResults = false;

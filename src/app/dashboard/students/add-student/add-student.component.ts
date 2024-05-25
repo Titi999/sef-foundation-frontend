@@ -62,7 +62,7 @@ export class AddStudentComponent {
 
   constructor(
     public dialogRef: MatDialogRef<AddStudentComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: Student & { id: string },
+    @Inject(MAT_DIALOG_DATA) public data: Student,
     private readonly studentService: StudentsService,
     private readonly toastrService: ToastrService,
     private readonly dialog: MatDialog
@@ -87,6 +87,44 @@ export class AddStudentComponent {
       if (!this.data) {
         this.studentService
           .addStudent(studentData)
+          .pipe(
+            first(),
+            catchError(error => {
+              this.toastrService.error(
+                error.error.message,
+                error.error.error || serverError
+              );
+              return of(null);
+            }),
+            finalize(() => {
+              this.isLoading = false;
+              this.dialogRef.disableClose = false;
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              this.dialogRef.close(response.data);
+              const data: ActionModalData = {
+                actionIllustration: ActionModalIllustration.success,
+                title: 'Awesome!',
+                actionColor: 'primary',
+                subtext: 'Great, student has been successfully edited',
+                actionType: 'close',
+              };
+              this.dialog.open(ActionModalComponent, {
+                maxWidth: '400px',
+                maxHeight: '400px',
+                width: '100%',
+                height: '100%',
+                data,
+              });
+            }
+          });
+      } else {
+        const { id } = this.data;
+        const student = this.studentForm.value as Omit<Student, 'id'>;
+        this.studentService
+          .editStudent(id, student)
           .pipe(
             first(),
             catchError(error => {

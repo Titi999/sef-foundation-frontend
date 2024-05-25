@@ -15,7 +15,7 @@ import {
 } from '@angular/material/table';
 import { MatChip } from '@angular/material/chips';
 import { RoundedInputComponent } from '@app/shared/rounded-input/rounded-input.component';
-import { FormControl } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ngxCsv } from 'ngx-csv';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { Student } from '@app/dashboard/students/students.interface';
@@ -38,6 +38,8 @@ import { StudentsService } from '@app/dashboard/students/students.service';
 import { User } from '@app/auth/auth.type';
 import { AddStudentComponent } from '@app/dashboard/students/add-student/add-student.component';
 import { MatDialog } from '@angular/material/dialog';
+import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
+import { statusFilters } from '@app/libs/constants';
 
 @Component({
   selector: 'app-students',
@@ -66,6 +68,9 @@ import { MatDialog } from '@angular/material/dialog';
     MatRow,
     MatRowDef,
     MatPaginator,
+    MatRadioButton,
+    MatRadioGroup,
+    ReactiveFormsModule,
   ],
   templateUrl: './students.component.html',
   styleUrl: './students.component.scss',
@@ -87,6 +92,8 @@ export class StudentsComponent implements AfterViewInit, OnDestroy {
   public page = new FormControl(1);
   private readonly destroy = new Subject<void>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  public statusControl = new FormControl('');
+  public statusFilters = statusFilters;
 
   constructor(
     private readonly studentsService: StudentsService,
@@ -100,18 +107,16 @@ export class StudentsComponent implements AfterViewInit, OnDestroy {
         filter((searchValue): searchValue is string => searchValue !== null)
       ),
       this.page.valueChanges.pipe(startWith(1)),
+      this.statusControl.valueChanges.pipe(startWith('')),
       this.paginator.page.pipe(startWith(new PageEvent())),
     ])
       .pipe(
         takeUntil(this.destroy),
         debounceTime(1000),
-        switchMap(([search, sort, page]) => {
-          console.log(sort, 'sort');
-          console.log(page, 'paginator');
-          console.log(search, 'search');
+        switchMap(([search, page, status]) => {
           this.isLoadingResults = true;
           return this.studentsService
-            .getStudents(this.page.value?.toString() || '1', search)
+            .getStudents(page || 1, search, status || '')
             .pipe(catchError(() => observableOf(null)));
         }),
         map(data => {
@@ -152,7 +157,7 @@ export class StudentsComponent implements AfterViewInit, OnDestroy {
   addStudent() {
     const dialogRef = this.dialog.open(AddStudentComponent, {
       maxWidth: '500px',
-      maxHeight: '600px',
+      maxHeight: '700px',
       width: '100%',
       height: '100%',
     });
@@ -169,11 +174,33 @@ export class StudentsComponent implements AfterViewInit, OnDestroy {
       .subscribe();
   }
 
+  editStudent(student: Student) {
+    const data: Student = student;
+    const dialogRef = this.dialog.open(AddStudentComponent, {
+      maxWidth: '500px',
+      maxHeight: '700px',
+      width: '100%',
+      height: '100%',
+      data,
+    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        first(),
+        tap((student: Student) => {
+          if (student) {
+            this.page.setValue(1);
+          }
+        })
+      )
+      .subscribe();
+  }
+
   deleteStudent(id: string) {
     console.log(id);
   }
 
   onPaginationChange(event: PageEvent) {
-    console.log(event);
+    this.page.setValue(event.pageIndex + 1);
   }
 }

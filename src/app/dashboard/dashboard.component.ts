@@ -69,6 +69,7 @@ export class DashboardComponent implements OnInit {
   }
 
   toggleMenu() {
+    console.log('toggle');
     if (this.isMobile) {
       void this.sidenav.toggle();
       this.isCollapsed = false;

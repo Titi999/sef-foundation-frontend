@@ -18,9 +18,16 @@ export class StudentsService {
     );
   }
 
-  public getStudents(page: string, searchTerm: string) {
+  public getStudents(page: number, searchTerm: string, status: string) {
     return this.http.get<Response<Pagination<Student[]>>>(
-      `${this.url}?page=${page}&searchTerm=${searchTerm}`
+      `${this.url}?page=${page}&searchTerm=${searchTerm}&status=${status}`
+    );
+  }
+
+  public editStudent(id: string, student: Omit<Student, 'id'>) {
+    return this.http.patch<Response<Student>>(
+      `${this.url}/edit-student/${id}`,
+      student
     );
   }
 }
