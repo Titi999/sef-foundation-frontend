@@ -1,0 +1,186 @@
+<div class="">
+  @if (showBanner) {
+    <app-banner
+      [text]="'Please complete your profile details below'"
+      [backgroundColor]="'blue'"
+      (closeBtn)="closeBanner()" />
+  }
+  <!-- <app-user-profile /> -->
+  <div class="user-profile__container">
+    <div class="user-profile__wrapper">
+      <h1 class="user-profile__title">Account information</h1>
+      <p class="user-profile__description">
+        Account details of the beneficiary
+      </p>
+      <ngx-avatars
+        [name]="userName"
+        class="avatar"
+        size="120"
+        src=""></ngx-avatars>
+
+      <mat-card class="card__container">
+        <mat-card-header class="card__header">
+          Personal information
+        </mat-card-header>
+        <mat-card-content class="card__content">
+          <form [formGroup]="userProfileForm">
+            <div class="user-profile-form">
+              <!-- Left -->
+              <div class="card-content__left">
+                <mat-form-field appearance="outline">
+                  <mat-label>Parent's Name</mat-label>
+                  <input
+                    matInput
+                    formControlName="parent"
+                    id="parent"
+                    type="text" />
+                  @if (userProfileForm.get('parent')?.hasError('required')) {
+                    <mat-error> Parent's name is required </mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Student's bio</mat-label>
+                  <textarea
+                    matInput
+                    cdkTextareaAutosize
+                    #autosize="cdkTextareaAutosize"
+                    cdkAutosizeMinRows="1"
+                    cdkAutosizeMaxRows="5"
+                    formControlName="description"
+                    id="description"
+                    type="">
+                  </textarea>
+                  @if (
+                    userProfileForm.get('description')?.hasError('required')
+                  ) {
+                    <mat-error> Student's name is required </mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Name</mat-label>
+                  <input
+                    matInput
+                    formControlName="name"
+                    id="name"
+                    type="text" />
+                  @if (userProfileForm.get('name')?.hasError('required')) {
+                    <mat-error> Name is required </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <!-- Right -->
+              <div class="card-content__right">
+                <mat-form-field appearance="outline">
+                  <mat-label>Phone</mat-label>
+                  <input
+                    matInput
+                    formControlName="phone"
+                    id="phone"
+                    type="tel" />
+                  @if (userProfileForm.get('phone')?.hasError('required')) {
+                    <mat-error> Phone number is required </mat-error>
+                  }
+                  @if (userProfileForm.get('phone')?.hasError('pattern')) {
+                    <mat-error> Invalid phone number </mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Parent's Phone</mat-label>
+                  <input
+                    matInput
+                    formControlName="parentPhone"
+                    id="parentPhone"
+                    type="text" />
+                  @if (
+                    userProfileForm.get('parentPhone')?.hasError('required')
+                  ) {
+                    <mat-error> Parent's phone number is required </mat-error>
+                  }
+                  @if (
+                    userProfileForm.get('parentPhone')?.hasError('pattern')
+                  ) {
+                    <mat-error> Invalid phone number </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="education-container">
+        <mat-card-header class="card__header">
+          Education information
+        </mat-card-header>
+        <mat-card-content class="eductaion-content">
+          <form [formGroup]="userProfileForm">
+            <div class="user-profile-form">
+              <!-- Left -->
+              <div class="card-content__left">
+                <mat-form-field appearance="outline">
+                  <mat-label>School</mat-label>
+                  <input
+                    matInput
+                    formControlName="school"
+                    id="school"
+                    type="text" />
+                  @if (userProfileForm.get('school')?.hasError('required')) {
+                    <mat-error> School is required </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <!-- Right -->
+              <div class="card-content__right">
+                <mat-form-field appearance="outline">
+                  <mat-label>Level</mat-label>
+                  <input
+                    matInput
+                    formControlName="level"
+                    id="level"
+                    type="text" />
+                  @if (userProfileForm.get('level')?.hasError('required')) {
+                    <mat-error> Level is required </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="btn__wrapper">
+              @if (showBanner) {
+                <button
+                  [disabled]="userProfileForm.invalid || isLoading"
+                  class="submit__btn"
+                  mat-flat-button
+                  color="primary"
+                  type="submit"
+                  (click)="createBeneficiary()">
+                  @if (isLoading) {
+                    <span class="loading">Loading...</span>
+                  } @else {
+                    <span>Save</span>
+                  }
+                </button>
+              } @else {
+                <button
+                  [disabled]="userProfileForm.invalid || isUpdateLoading"
+                  class="submit__btn"
+                  mat-flat-button
+                  color="primary"
+                  type="submit"
+                  (click)="updateBeneficiary()">
+                  @if (isUpdateLoading) {
+                    <span class="loading">Loading...</span>
+                  } @else {
+                    <span>Update</span>
+                  }
+                </button>
+              }
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

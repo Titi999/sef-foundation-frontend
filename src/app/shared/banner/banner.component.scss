@@ -1,0 +1,38 @@
+@use '../../../scss/colors' as colors;
+
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding: 0 20px;
+  color: white;
+  font-size: 16px;
+  margin: 10px 50px;
+  border-radius: 10px;
+
+  &.blue {
+    background-color: map-get(colors.$primary-palette, A400);
+  }
+
+  &.green {
+    background-color: green;
+  }
+
+  &.red {
+    background-color: red;
+  }
+}
+
+.banner-text {
+  flex: 1;
+  padding-left: 10px;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}

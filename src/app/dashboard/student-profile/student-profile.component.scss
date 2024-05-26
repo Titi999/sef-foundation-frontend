@@ -1,0 +1,74 @@
+@use '../../../scss/colors' as colors;
+@use '../../../scss/global' as font;
+
+.user-profile__container {
+  padding: 1rem 3rem;
+  .user-profile__title {
+    font-size: 22px;
+    color: map-get(colors.$primary-palette, 500);
+  }
+
+  .user-profile__description {
+    font-size: font.$font-size-sm;
+    margin-top: 10px;
+  }
+
+  .avatar {
+    margin: 1rem;
+  }
+
+  .card__header {
+    background-color: #e5e8ed;
+    color: colors.$dark-primary-text;
+    padding: 24px 16px;
+    height: 72px;
+  }
+
+  .user-profile-form {
+    display: flex;
+    justify-content: space-between;
+    gap: 3rem;
+    margin: 1rem;
+
+    .card-content__left,
+    .card-content__right {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+  }
+
+  .mat-mdc-card-content {
+    height: 40vh;
+  }
+  .education-container {
+    margin-top: 40px;
+  }
+  .eductaion-content {
+    height: 25vh;
+  }
+
+  @media (max-width: 850px) {
+    .user-profile-form {
+      display: block;
+    }
+    .mat-mdc-card-content {
+      height: 70vh;
+    }
+    .eductaion-content {
+      height: 40vh;
+    }
+  }
+
+  .btn__wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .submit__btn {
+      border-radius: 6.25rem;
+      padding: 10px 24px;
+      height: 40px;
+    }
+  }
+}

@@ -1,0 +1,15 @@
+<div class="banner" [ngClass]="backgroundColor">
+  @switch (backgroundColor) {
+    @case ('blue') {
+      <mat-icon>info</mat-icon>
+    }
+    @case ('green') {
+      <mat-icon>done</mat-icon>
+    }
+    @case ('red') {
+      <mat-icon>error</mat-icon>
+    }
+  }
+  <span class="banner-text">{{ text }}</span>
+  <button class="close-button" (click)="onClose()">&#10005;</button>
+</div>
