@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import {
@@ -15,7 +21,12 @@ import {
 } from '@angular/material/table';
 import { MatChip } from '@angular/material/chips';
 import { RoundedInputComponent } from '@app/shared/rounded-input/rounded-input.component';
-import { FormControl } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { ngxCsv } from 'ngx-csv';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { Student } from '@app/dashboard/students/students.interface';
@@ -38,7 +49,10 @@ import { StudentsService } from '@app/dashboard/students/students.service';
 import { User } from '@app/auth/auth.type';
 import { AddStudentComponent } from '@app/dashboard/students/add-student/add-student.component';
 import { MatDialog } from '@angular/material/dialog';
-import { UserProfileComponent } from '../user-profile/user-profile.component';
+import { Router } from '@angular/router';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { AuthService } from '@app/auth/auth.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-students',
@@ -67,12 +81,11 @@ import { UserProfileComponent } from '../user-profile/user-profile.component';
     MatRow,
     MatRowDef,
     MatPaginator,
-    UserProfileComponent,
   ],
   templateUrl: './students.component.html',
   styleUrl: './students.component.scss',
 })
-export class StudentsComponent implements AfterViewInit, OnDestroy {
+export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
   public readonly displayedColumns: string[] = [
     'created_at',
     'name',
@@ -88,14 +101,45 @@ export class StudentsComponent implements AfterViewInit, OnDestroy {
   public totalItems = 0;
   public page = new FormControl(1);
   private readonly destroy = new Subject<void>();
+  public userProfileForm!: FormGroup;
+  public isLoading = false;
+
+  @ViewChild('autosize') autosize!: CdkTextareaAutosize;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   public selectedStudent: Student | null = null;
 
   constructor(
     private readonly studentsService: StudentsService,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private readonly router: Router,
+    private authService: AuthService,
+    private fb: FormBuilder,
+    private readonly toastrService: ToastrService
   ) {}
+
+  ngOnInit(): void {
+    this.userProfileForm = this.fb.group({
+      userId: [{ value: '', disabled: true }],
+      email: [
+        { value: '', disabled: true },
+        [Validators.required, Validators.email],
+      ],
+      parent: ['', Validators.required],
+      name: ['', Validators.required],
+      phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      parentPhone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      school: ['', [Validators.required]],
+      level: ['', [Validators.required]],
+      description: [''],
+    });
+
+    this.userProfileForm.patchValue({
+      userId: this.authService.loggedInUser()?.user.id,
+      email: this.authService.loggedInUser()?.user.email,
+      name: this.authService.loggedInUser()?.user.name,
+    });
+  }
 
   ngAfterViewInit() {
     combineLatest([
@@ -182,7 +226,8 @@ export class StudentsComponent implements AfterViewInit, OnDestroy {
   }
 
   selectStudent(student: Student) {
-    this.selectedStudent = student;
+    // this.selectedStudent = student;
+    this.router.navigateByUrl(`dashboard/student-profile/${student.id}`);
   }
 
   backToTableView() {

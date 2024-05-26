@@ -4,6 +4,7 @@ import { authGuard } from '@app/auth/guards/auth.guard';
 import { HomeComponent } from './home/home.component';
 import { UserAdministrationComponent } from '@app/dashboard/user-administration/user-administration.component';
 import { StudentsComponent } from '@app/dashboard/students/students.component';
+import { StudentProfileComponent } from './student-profile/student-profile.component';
 
 export const dashboardRoutes: Routes = [
   {
@@ -22,6 +23,10 @@ export const dashboardRoutes: Routes = [
       {
         path: 'students',
         component: StudentsComponent,
+      },
+      {
+        path: 'student-profile/:id',
+        component: StudentProfileComponent,
       },
     ],
   },

@@ -116,3 +116,12 @@ table {
 .delete__btn {
   color: colors.$schemes-error !important;
 }
+
+.row {
+  cursor: pointer;
+}
+
+.back__btn {
+  margin-left: 3rem;
+  margin-top: 2rem;
+}

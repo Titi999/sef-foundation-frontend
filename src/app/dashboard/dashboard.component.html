@@ -61,19 +61,39 @@
                 }
               </span>
             </a>
-            <a class="nav-item" mat-list-item>
-              <span
-                class="entry"
-                matTooltip="Students"
-                matTooltipPosition="right"
-                routerLink="students"
-                routerLinkActive="entry__active">
-                <mat-icon>groups</mat-icon>
-                @if (!isCollapsed) {
-                  <span>Students</span>
-                }
-              </span>
-            </a>
+            @if (
+              getUserRole() === UserRoles.ADMIN ||
+              getUserRole() === UserRoles.SUPER_ADMIN
+            ) {
+              <a class="nav-item" mat-list-item>
+                <span
+                  class="entry"
+                  matTooltip="Students"
+                  matTooltipPosition="right"
+                  routerLink="students"
+                  routerLinkActive="entry__active">
+                  <mat-icon>groups</mat-icon>
+                  @if (!isCollapsed) {
+                    <span>Students</span>
+                  }
+                </span>
+              </a>
+            }
+            @if (getUserRole() === UserRoles.BENEFICIARY) {
+              <a class="nav-item" mat-list-item>
+                <span
+                  class="entry"
+                  matTooltip="Profile"
+                  matTooltipPosition="right"
+                  [routerLink]="'student-profile/' + userId()"
+                  routerLinkActive="entry__active">
+                  <mat-icon>person_pin</mat-icon>
+                  @if (!isCollapsed) {
+                    <span>Profile</span>
+                  }
+                </span>
+              </a>
+            }
             <a class="nav-item" mat-list-item>
               <span
                 class="entry"

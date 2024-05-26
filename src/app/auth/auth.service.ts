@@ -1,16 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, Injectable, signal } from '@angular/core';
-import { catchError, finalize, first, Observable, of, take } from 'rxjs';
-import { environment } from '@environments/environment';
-import { LoginResponse, User, VerifyLogin } from './auth.type';
-import { Response } from '@app/shared/shared.type';
+import { Router } from '@angular/router';
 import {
   endSession,
   getSession,
   sessionMap,
   setSession,
 } from '@app/libs/session';
-import { Router } from '@angular/router';
+import { Response } from '@app/shared/shared.type';
+import { environment } from '@environments/environment';
+import { finalize, Observable } from 'rxjs';
+import { LoginResponse, User, VerifyLogin } from './auth.type';
 
 @Injectable({
   providedIn: 'root',

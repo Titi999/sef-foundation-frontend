@@ -85,4 +85,8 @@ export class DashboardComponent implements OnInit {
   getUserRole(): UserRoles | undefined {
     return this.authService.role();
   }
+
+  userId() {
+    return this.authService.loggedInUser()?.user.id;
+  }
 }

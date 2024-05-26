@@ -6,12 +6,10 @@
   .user-profile__title {
     font-size: 22px;
     color: map-get(colors.$primary-palette, 500);
-    margin-left: 15px;
   }
 
   .user-profile__description {
     font-size: font.$font-size-sm;
-    margin-left: 15px;
     margin-top: 10px;
   }
 
@@ -27,24 +25,50 @@
   }
 
   .user-profile-form {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    grid-column-gap: 50px;
-    grid-row-gap: 50px;
+    display: flex;
+    justify-content: space-between;
+    gap: 3rem;
     margin: 1rem;
 
     .card-content__left,
     .card-content__right {
       display: flex;
       flex-direction: column;
+      width: 100%;
     }
+  }
+
+  .mat-mdc-card-content {
+    height: 40vh;
+  }
+  .education-container {
+    margin-top: 40px;
+  }
+  .eductaion-content {
+    height: 25vh;
   }
 
   @media (max-width: 850px) {
     .user-profile-form {
-      grid-template-columns: repeat(1, 1fr);
-      grid-template-rows: repeat(6, 1fr);
+      display: block;
+    }
+    .mat-mdc-card-content {
+      height: 70vh;
+    }
+    .eductaion-content {
+      height: 40vh;
+    }
+  }
+
+  .btn__wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .submit__btn {
+      border-radius: 6.25rem;
+      padding: 10px 24px;
+      height: 40px;
     }
   }
 }
