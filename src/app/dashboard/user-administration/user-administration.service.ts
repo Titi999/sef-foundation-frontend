@@ -11,9 +11,9 @@ export class UserAdministrationService {
   private readonly url = `${environment.apiUrl}/users`;
   constructor(private readonly http: HttpClient) {}
 
-  getUsers(search: string = '') {
+  getUsers(page: number, search: string = '', role: string, status: string) {
     return this.http.get<Response<Pagination<User[]>>>(
-      `${this.url}?searchTerm=${search}`
+      `${this.url}?page=${page}&searchTerm=${search}&status=${status}&role=${role}`
     );
   }
 

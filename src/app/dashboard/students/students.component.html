@@ -1,155 +1,155 @@
-<div class="">
-  <div class="grid-container">
-    <h1 class="students__title">Beneficiaries</h1>
-    <p class="students__description">List of all beneficiaries of SEF</p>
-    <div class="students__table__container">
-      <div class="actions__wrapper">
-        <div class="actions__left">
-          <span>Students</span>
-          <div class="search__input__wrapper">
-            <app-rounded-input
-              [control]="searchValue"
-              [disabled]="!data.length"
-              placeholder="Search name, school" />
-          </div>
-        </div>
-        <div class="actions__right">
-          <button
-            [disabled]="!data.length"
-            class="filter__btn btn"
-            mat-flat-button>
-            <mat-icon>filter_list</mat-icon>
-            Filter by
-          </button>
-          <button
-            [disabled]="!data.length"
-            (click)="downloadCSV()"
-            class="download__btn btn"
-            mat-flat-button>
-            <mat-icon>download</mat-icon>
-            Download CSV
-          </button>
-          <button
-            (click)="addStudent()"
-            class="add__btn btn"
-            mat-flat-button
-            color="primary">
-            <mat-icon>add</mat-icon>
-            New Student
-          </button>
+<div class="grid-container">
+  <h1 class="students__title">Beneficiaries</h1>
+  <p class="students__description">List of all beneficiaries of SEF</p>
+  <div class="students__table__container">
+    <div class="actions__wrapper">
+      <div class="actions__left">
+        <span>Students</span>
+        <div class="search__input__wrapper">
+          <app-rounded-input
+            [control]="searchValue"
+            placeholder="Search name, school" />
         </div>
       </div>
-      @if (isLoadingResults) {
-        <div class="empty-table loading-results">
-          @if (isLoadingResults) {
-            <mat-spinner></mat-spinner>
-          }
-        </div>
-      }
-      @if (!isLoadingResults && !data.length) {
-        <div class="empty-table no-results">
-          <span>No students found</span>
-        </div>
-      }
-
-      <div class="students-table-container">
-        <table
-          mat-table
-          [dataSource]="data"
-          class="example-table"
-          matSort
-          matSortActive="created"
-          matSortDisableClear
-          matSortDirection="desc">
-          <!-- Number Column -->
-          <ng-container matColumnDef="school">
-            <th mat-header-cell *matHeaderCellDef>School</th>
-            <td mat-cell *matCellDef="let row">{{ row.school }}</td>
-          </ng-container>
-          <ng-container matColumnDef="parent">
-            <th mat-header-cell *matHeaderCellDef>Parent</th>
-            <td mat-cell *matCellDef="let row">{{ row.parent }}</td>
-          </ng-container>
-          <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>Status</th>
-            <td mat-cell *matCellDef="let row">
-              <mat-chip
-                [class.status__chip__active]="row.status === 'active'"
-                [class.status__chip__inactive]="row.status === 'inactive'">
-                <span>{{ row.status | titlecase }}</span>
-              </mat-chip>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="more">
-            <th mat-header-cell *matHeaderCellDef>More</th>
-            <td mat-cell *matCellDef="let row">
-              <button [matMenuTriggerFor]="menu" mat-icon-button>
-                <mat-icon>more_vert</mat-icon>
+      <div class="actions__right">
+        <button
+          [matMenuTriggerFor]="filter"
+          class="filter__btn btn"
+          mat-flat-button>
+          <mat-icon>filter_list</mat-icon>
+          Filter by
+        </button>
+        <mat-menu #filter="matMenu">
+          <button mat-menu-item [matMenuTriggerFor]="status">Status</button>
+        </mat-menu>
+        <mat-menu #status="matMenu">
+          <mat-radio-group [formControl]="statusControl">
+            @for (status of statusFilters; track status.value) {
+              <button mat-menu-item>
+                <mat-radio-button [value]="status.value" color="primary">
+                  {{ status.label }}
+                </mat-radio-button>
               </button>
-              <mat-menu #menu="matMenu">
-                <button (click)="addStudent()" mat-menu-item>
-                  <mat-icon>edit</mat-icon>Edit
-                </button>
-                <button
-                  (click)="deleteStudent(row.id)"
-                  class="delete__btn"
-                  mat-menu-item>
-                  <mat-icon color="warn">delete</mat-icon>Delete
-                </button>
-                @if (row.status === 'active') {
-                  <button (click)="addStudent()" mat-menu-item>
-                    <mat-icon>hide_source</mat-icon>Deactivate
-                  </button>
-                }
-                @if (row.status === 'inactive') {
-                  <button (click)="addStudent()" mat-menu-item>
-                    <mat-icon>check</mat-icon>Activate
-                  </button>
-                }
-              </mat-menu>
-            </td>
-          </ng-container>
-
-          <!-- Title Column -->
-          <ng-container matColumnDef="class">
-            <th mat-header-cell *matHeaderCellDef>Class</th>
-            <td mat-cell *matCellDef="let row">
-              {{ row.level | titlecase }}
-            </td>
-          </ng-container>
-
-          <!-- State Column -->
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Name</th>
-            <td mat-cell *matCellDef="let row">{{ row.name }}</td>
-          </ng-container>
-
-          <!-- Created Column -->
-          <ng-container matColumnDef="created_at">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>
-              Created at
-            </th>
-            <td mat-cell *matCellDef="let row">
-              {{ row.created_at | date }}
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr
-            mat-row
-            *matRowDef="let row; columns: displayedColumns"
-            (click)="selectStudent(row)"
-            class="row"></tr>
-        </table>
+            }
+          </mat-radio-group>
+        </mat-menu>
+        <button
+          [disabled]="!data.length"
+          (click)="downloadCSV()"
+          class="download__btn btn"
+          mat-flat-button>
+          <mat-icon>download</mat-icon>
+          Download CSV
+        </button>
+        <button
+          (click)="addStudent()"
+          class="add__btn btn"
+          mat-flat-button
+          color="primary">
+          <mat-icon>add</mat-icon>
+          New Student
+        </button>
       </div>
-
-      <mat-paginator
-        [length]="totalItems"
-        [pageSize]="10"
-        (page)="onPaginationChange($event)"
-        [pageIndex]="page.value ? page.value - 1 : 0"
-        [pageSizeOptions]="[]"></mat-paginator>
     </div>
+    @if (isLoadingResults) {
+      <div class="empty-table loading-results">
+        @if (isLoadingResults) {
+          <mat-spinner></mat-spinner>
+        }
+      </div>
+    }
+    @if (!isLoadingResults && !data.length) {
+      <div class="empty-table no-results">
+        <span>No students found</span>
+      </div>
+    }
+    <div class="students-table-container">
+      <table
+        mat-table
+        [dataSource]="data"
+        class="example-table"
+        matSort
+        matSortActive="created"
+        matSortDisableClear
+        matSortDirection="desc">
+        <!-- Number Column -->
+        <ng-container matColumnDef="school">
+          <th mat-header-cell *matHeaderCellDef>School</th>
+          <td mat-cell *matCellDef="let row">{{ row.school }}</td>
+        </ng-container>
+        <ng-container matColumnDef="parent">
+          <th mat-header-cell *matHeaderCellDef>Parent</th>
+          <td mat-cell *matCellDef="let row">{{ row.parent }}</td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-chip
+              [class.status__chip__active]="row.status === 'active'"
+              [class.status__chip__inactive]="row.status === 'inactive'">
+              <span>{{ row.status | titlecase }}</span>
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="more">
+          <th mat-header-cell *matHeaderCellDef>More</th>
+          <td mat-cell *matCellDef="let row">
+            <button [matMenuTriggerFor]="menu" mat-icon-button>
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button (click)="editStudent(row)" mat-menu-item>
+                <mat-icon>edit</mat-icon>Edit
+              </button>
+              <button
+                (click)="deleteStudent(row.id)"
+                class="delete__btn"
+                mat-menu-item>
+                <mat-icon color="warn">delete</mat-icon>Delete
+              </button>
+              @if (row.status === 'active') {
+                <button (click)="addStudent()" mat-menu-item>
+                  <mat-icon>hide_source</mat-icon>Deactivate
+                </button>
+              }
+              @if (row.status === 'inactive') {
+                <button (click)="addStudent()" mat-menu-item>
+                  <mat-icon>check</mat-icon>Activate
+                </button>
+              }
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <!-- Title Column -->
+        <ng-container matColumnDef="class">
+          <th mat-header-cell *matHeaderCellDef>Class</th>
+          <td mat-cell *matCellDef="let row">{{ row.level | titlecase }}</td>
+        </ng-container>
+
+        <!-- State Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+        </ng-container>
+
+        <!-- Created Column -->
+        <ng-container matColumnDef="created_at">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Created at</th>
+          <td mat-cell *matCellDef="let row">{{ row.created_at | date }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="totalItems"
+      [pageSize]="10"
+      (page)="onPaginationChange($event)"
+      [pageIndex]="page.value ? page.value - 1 : 0"
+      [pageSizeOptions]="[]"></mat-paginator>
   </div>
 </div>

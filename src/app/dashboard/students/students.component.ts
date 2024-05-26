@@ -1,10 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import {
@@ -21,12 +15,7 @@ import {
 } from '@angular/material/table';
 import { MatChip } from '@angular/material/chips';
 import { RoundedInputComponent } from '@app/shared/rounded-input/rounded-input.component';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ngxCsv } from 'ngx-csv';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { Student } from '@app/dashboard/students/students.interface';
@@ -49,10 +38,8 @@ import { StudentsService } from '@app/dashboard/students/students.service';
 import { User } from '@app/auth/auth.type';
 import { AddStudentComponent } from '@app/dashboard/students/add-student/add-student.component';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
-import { CdkTextareaAutosize } from '@angular/cdk/text-field';
-import { AuthService } from '@app/auth/auth.service';
-import { ToastrService } from 'ngx-toastr';
+import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
+import { statusFilters } from '@app/libs/constants';
 
 @Component({
   selector: 'app-students',
@@ -81,11 +68,14 @@ import { ToastrService } from 'ngx-toastr';
     MatRow,
     MatRowDef,
     MatPaginator,
+    MatRadioButton,
+    MatRadioGroup,
+    ReactiveFormsModule,
   ],
   templateUrl: './students.component.html',
   styleUrl: './students.component.scss',
 })
-export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class StudentsComponent implements AfterViewInit, OnDestroy {
   public readonly displayedColumns: string[] = [
     'created_at',
     'name',
@@ -101,45 +91,14 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
   public totalItems = 0;
   public page = new FormControl(1);
   private readonly destroy = new Subject<void>();
-  public userProfileForm!: FormGroup;
-  public isLoading = false;
-
-  @ViewChild('autosize') autosize!: CdkTextareaAutosize;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-
-  public selectedStudent: Student | null = null;
+  public statusControl = new FormControl('');
+  public statusFilters = statusFilters;
 
   constructor(
     private readonly studentsService: StudentsService,
-    private readonly dialog: MatDialog,
-    private readonly router: Router,
-    private authService: AuthService,
-    private fb: FormBuilder,
-    private readonly toastrService: ToastrService
+    private readonly dialog: MatDialog
   ) {}
-
-  ngOnInit(): void {
-    this.userProfileForm = this.fb.group({
-      userId: [{ value: '', disabled: true }],
-      email: [
-        { value: '', disabled: true },
-        [Validators.required, Validators.email],
-      ],
-      parent: ['', Validators.required],
-      name: ['', Validators.required],
-      phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
-      parentPhone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
-      school: ['', [Validators.required]],
-      level: ['', [Validators.required]],
-      description: [''],
-    });
-
-    this.userProfileForm.patchValue({
-      userId: this.authService.loggedInUser()?.user.id,
-      email: this.authService.loggedInUser()?.user.email,
-      name: this.authService.loggedInUser()?.user.name,
-    });
-  }
 
   ngAfterViewInit() {
     combineLatest([
@@ -148,18 +107,16 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
         filter((searchValue): searchValue is string => searchValue !== null)
       ),
       this.page.valueChanges.pipe(startWith(1)),
+      this.statusControl.valueChanges.pipe(startWith('')),
       this.paginator.page.pipe(startWith(new PageEvent())),
     ])
       .pipe(
         takeUntil(this.destroy),
         debounceTime(1000),
-        switchMap(([search, sort, page]) => {
-          console.log(sort, 'sort');
-          console.log(page, 'paginator');
-          console.log(search, 'search');
+        switchMap(([search, page, status]) => {
           this.isLoadingResults = true;
           return this.studentsService
-            .getStudents(this.page.value?.toString() || '1', search)
+            .getStudents(page || 1, search, status || '')
             .pipe(catchError(() => observableOf(null)));
         }),
         map(data => {
@@ -200,7 +157,7 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
   addStudent() {
     const dialogRef = this.dialog.open(AddStudentComponent, {
       maxWidth: '500px',
-      maxHeight: '600px',
+      maxHeight: '700px',
       width: '100%',
       height: '100%',
     });
@@ -217,20 +174,33 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe();
   }
 
+  editStudent(student: Student) {
+    const data: Student = student;
+    const dialogRef = this.dialog.open(AddStudentComponent, {
+      maxWidth: '500px',
+      maxHeight: '700px',
+      width: '100%',
+      height: '100%',
+      data,
+    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        first(),
+        tap((student: Student) => {
+          if (student) {
+            this.page.setValue(1);
+          }
+        })
+      )
+      .subscribe();
+  }
+
   deleteStudent(id: string) {
     console.log(id);
   }
 
   onPaginationChange(event: PageEvent) {
-    console.log(event);
-  }
-
-  selectStudent(student: Student) {
-    // this.selectedStudent = student;
-    this.router.navigateByUrl(`dashboard/student-profile/${student.id}`);
-  }
-
-  backToTableView() {
-    this.selectedStudent = null;
+    this.page.setValue(event.pageIndex + 1);
   }
 }
