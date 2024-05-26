@@ -44,6 +44,7 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
   public userProfileForm!: FormGroup;
   public isLoading = false;
   public isUpdateLoading = false;
+  public userId!: string;
   private unsubscribe = new Subject<void>();
 
   @ViewChild('autosize') autosize!: CdkTextareaAutosize;
@@ -58,6 +59,7 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.route.params.pipe(take(1)).subscribe(params => {
+      this.userId = params['id'];
       this.getBeneficiary(params['id']);
     });
 
@@ -142,12 +144,11 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
   public updateBeneficiary() {
     const { name, level, parent, parentPhone, phone, school, description } =
       this.userProfileForm.value;
-    const userId = this.authService.loggedInUser()?.user.id;
-    if (userId && this.userProfileForm.valid) {
+    if (this.userId && this.userProfileForm.valid) {
       this.isUpdateLoading = true;
       this.studentService
         .updateBeneficiary(
-          userId,
+          this.userId,
           name,
           parent,
           school,
