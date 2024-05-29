@@ -1,0 +1,94 @@
+@use '../../../scss/colors' as colors;
+@use '../../../scss/global' as font;
+
+.settings__container {
+  margin: 20px 30px;
+
+  .settings__header {
+    h1 {
+      font-size: 22px;
+      color: map-get(colors.$primary-palette, 500);
+    }
+
+    p {
+      font-size: font.$font-size-sm;
+      margin-top: 10px;
+    }
+  }
+
+  .settings__profile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid colors.$schemes-surface-variant;
+    border-radius: 8px;
+    padding: 10px 20px;
+    margin: 20px 0;
+
+    .delete__btn,
+    .upload__btn {
+      border-radius: 6.25rem;
+      padding: 10px 24px;
+      height: 40px;
+    }
+
+    .edit__btn {
+      border-radius: 6.25rem;
+      padding: 10px 24px;
+      height: 40px;
+    }
+
+    .delete__btn {
+      border: 1px solid red;
+    }
+
+    .settings__profile__actions {
+      display: flex;
+      gap: 20px;
+    }
+
+    @media (max-width: 560px) {
+      .settings__profile__actions {
+        flex-direction: column;
+      }
+    }
+  }
+
+  .edit__mode,
+  .not__edit__mode {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    margin: 20px;
+
+    .edit__left,
+    .edit__right {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 20px;
+
+      h4 {
+        background-color: #f6fafe;
+        width: fit-content;
+        padding: 2px;
+      }
+    }
+  }
+
+  .settings__card__header {
+    background-color: #e5e8ed;
+    color: colors.$dark-primary-text;
+    padding: 24px 16px;
+    height: 72px;
+
+    .edit__mode__btn {
+      display: flex;
+      gap: 10px;
+    }
+  }
+
+  .settings__password__info {
+    margin-top: 20px;
+  }
+}

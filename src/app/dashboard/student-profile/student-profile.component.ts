@@ -79,7 +79,7 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
     this.unsubscribe.complete();
   }
 
-  public getBeneficiary(id: string) {
+  private getBeneficiary(id: string) {
     if (id) {
       this.studentService
         .getBeneficiary(id)

@@ -1,0 +1,260 @@
+<div class="settings__container">
+  <div class="settings__wrapper">
+    <div class="settings__header">
+      <h1>Settings</h1>
+      <p>Change, edit and update your details</p>
+    </div>
+
+    <div class="settings__profile">
+      <div class="">
+        <ngx-avatars
+          [name]="userName"
+          class="avatar"
+          size="120"
+          src=""></ngx-avatars>
+      </div>
+      <div class="settings__profile__actions">
+        <button
+          class="delete__btn"
+          mat-stroked-button
+          color="warn"
+          type="button">
+          <mat-icon>delete_outline</mat-icon>
+          Delete
+        </button>
+        <button
+          class="upload__btn"
+          mat-flat-button
+          color="primary"
+          type="button">
+          <mat-icon>upload</mat-icon>
+          Upload
+        </button>
+      </div>
+    </div>
+
+    <div class="settings__general__info">
+      <mat-card>
+        <mat-card-header class="settings__card__header">
+          <mat-card-title-group>
+            <mat-card-title>General Information</mat-card-title>
+            <div class="edit__mode__btn">
+              @if (!isGeneralInfoEditMode) {
+                <button
+                  style="border-radius: 6rem"
+                  mat-flat-button
+                  color="primary"
+                  type="button"
+                  (click)="toggleGeneralInfoEditMode()">
+                  <mat-icon>edit</mat-icon>
+                  Edit
+                </button>
+              }
+              @if (isGeneralInfoEditMode) {
+                <button
+                  style="border-radius: 6rem"
+                  mat-stroked-button
+                  color="primary"
+                  type="button"
+                  (click)="cancelGeneralInfoEdit()">
+                  Cancel
+                </button>
+                <button
+                  style="border-radius: 6rem"
+                  mat-flat-button
+                  color="primary"
+                  type="button">
+                  Save Changes
+                </button>
+              }
+            </div>
+          </mat-card-title-group>
+        </mat-card-header>
+
+        <mat-card-content>
+          <form [formGroup]="generalInfoForm">
+            @if (!isGeneralInfoEditMode) {
+              <div class="not__edit__mode">
+                <div class="edit__left">
+                  <div>
+                    <h4>Full Name</h4>
+                    <p>{{ generalInfoForm.get('name')?.value }}</p>
+                  </div>
+                  <div>
+                    <h4>Role</h4>
+                    <p>{{ generalInfoForm.get('role')?.value }}</p>
+                  </div>
+                </div>
+
+                <div class="edit__right">
+                  <div>
+                    <h4>Email</h4>
+                    <p>{{ generalInfoForm.get('email')?.value }}</p>
+                  </div>
+                  <div>
+                    <h4>Phone</h4>
+                    <p>{{ generalInfoForm.get('phone')?.value }}</p>
+                  </div>
+                </div>
+              </div>
+            } @else {
+              <div class="edit__mode">
+                <div class="edit__left">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Full Name</mat-label>
+                    <input matInput formControlName="name" />
+                    @if (generalInfoForm.get('name')?.invalid) {
+                      <mat-error>Name is required</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Role</mat-label>
+                    <input matInput formControlName="role" />
+                    @if (generalInfoForm.get('role')?.invalid) {
+                      <mat-error>Role is required</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <div class="edit__right">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Email</mat-label>
+                    <input matInput formControlName="email" />
+                    @if (generalInfoForm.get('email')?.invalid) {
+                      <mat-error>Enter a valid email</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Phone</mat-label>
+                    <input matInput formControlName="phone" />
+                    @if (generalInfoForm.get('phone')?.invalid) {
+                      <mat-error>Enter a valid 10-digit phone number</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+              </div>
+            }
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="settings__password__info">
+      <mat-card>
+        <mat-card-header class="settings__card__header">
+          <mat-card-title-group>
+            <mat-card-title>Password</mat-card-title>
+            <div class="edit__mode__btn">
+              @if (!isPasswordEditMode) {
+                <button
+                  style="border-radius: 6rem"
+                  mat-flat-button
+                  color="primary"
+                  type="button"
+                  (click)="togglePasswordEditMode()">
+                  <mat-icon>edit</mat-icon>
+                  Edit
+                </button>
+              }
+              @if (isPasswordEditMode) {
+                <button
+                  style="border-radius: 6rem"
+                  mat-stroked-button
+                  color="primary"
+                  type="button"
+                  (click)="cancelPasswordEdit()">
+                  Cancel
+                </button>
+                <button
+                  style="border-radius: 6rem"
+                  mat-flat-button
+                  color="primary"
+                  type="button">
+                  Save Changes
+                </button>
+              }
+            </div>
+          </mat-card-title-group>
+        </mat-card-header>
+
+        <mat-card-content>
+          <form [formGroup]="passwordForm">
+            @if (!isPasswordEditMode) {
+              <div class="not__edit__mode">
+                <div class="edit__left">
+                  <div>
+                    <h4>Current Password</h4>
+                    <p>{{ passwordForm.get('currentPassword')?.value }}</p>
+                  </div>
+                  <div>
+                    <h4>Confirm New Password</h4>
+                    <p>{{ passwordForm.get('confirmNewPassword')?.value }}</p>
+                  </div>
+                </div>
+
+                <div class="edit__right">
+                  <div>
+                    <h4>New Password</h4>
+                    <p>{{ passwordForm.get('newPassword')?.value }}</p>
+                  </div>
+                  <div>
+                    <h4>Two-Factor Authentication</h4>
+                    <p>
+                      {{ passwordForm.get('twoFactorAuthentication')?.value }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            } @else {
+              <div class="edit__mode">
+                <div class="edit__left">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Current Password</mat-label>
+                    <input
+                      matInput
+                      formControlName="currentPassword"
+                      type="password" />
+                    @if (passwordForm.get('currentPassword')?.invalid) {
+                      <mat-error>Current Password is required</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Confirm New Password</mat-label>
+                    <input
+                      matInput
+                      formControlName="confirmNewPassword"
+                      type="password" />
+                    @if (passwordForm.get('confirmNewPassword')?.invalid) {
+                      <mat-error>Confirm New Password is required</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <div class="edit__right">
+                  <mat-form-field appearance="outline">
+                    <mat-label>New Password</mat-label>
+                    <input
+                      matInput
+                      formControlName="newPassword"
+                      type="password" />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Phone</mat-label>
+                    <input matInput formControlName="twoFactorAuthentication" />
+                    @if (passwordForm.get('twoFactorAuthentication')?.invalid) {
+                      <mat-error>Enter a valid 10-digit phone number</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+              </div>
+            }
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
