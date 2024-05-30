@@ -113,15 +113,8 @@ mat-sidenav-content {
 .navigation-items {
   display: flex;
   flex-direction: column;
+  height: 82vh;
   justify-content: space-between;
-  align-content: space-between;
-  height: 100%;
-}
-
-.navigation-bottom-items {
-  display: flex;
-  flex-direction: column;
-  margin-top: 3rem;
 }
 
 .avatar {
