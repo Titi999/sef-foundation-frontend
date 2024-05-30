@@ -18,7 +18,8 @@
           class="delete__btn"
           mat-stroked-button
           color="warn"
-          type="button">
+          type="button"
+          (click)="deleteUser()">
           <mat-icon>delete_outline</mat-icon>
           Delete
         </button>
@@ -82,7 +83,7 @@
                   </div>
                   <div>
                     <h4>Role</h4>
-                    <p>{{ generalInfoForm.get('role')?.value }}</p>
+                    <p>{{ generalInfoForm.get('role')?.value | titlecase }}</p>
                   </div>
                 </div>
 
@@ -90,10 +91,6 @@
                   <div>
                     <h4>Email</h4>
                     <p>{{ generalInfoForm.get('email')?.value }}</p>
-                  </div>
-                  <div>
-                    <h4>Phone</h4>
-                    <p>{{ generalInfoForm.get('phone')?.value }}</p>
                   </div>
                 </div>
               </div>
@@ -110,7 +107,7 @@
 
                   <mat-form-field appearance="outline">
                     <mat-label>Role</mat-label>
-                    <input matInput formControlName="role" />
+                    <input matInput formControlName="role" [disabled]="true" />
                     @if (generalInfoForm.get('role')?.invalid) {
                       <mat-error>Role is required</mat-error>
                     }
@@ -120,17 +117,13 @@
                 <div class="edit__right">
                   <mat-form-field appearance="outline">
                     <mat-label>Email</mat-label>
-                    <input matInput formControlName="email" />
+                    <input
+                      matInput
+                      formControlName="email"
+                      type="email"
+                      [disabled]="true" />
                     @if (generalInfoForm.get('email')?.invalid) {
                       <mat-error>Enter a valid email</mat-error>
-                    }
-                  </mat-form-field>
-
-                  <mat-form-field appearance="outline">
-                    <mat-label>Phone</mat-label>
-                    <input matInput formControlName="phone" />
-                    @if (generalInfoForm.get('phone')?.invalid) {
-                      <mat-error>Enter a valid 10-digit phone number</mat-error>
                     }
                   </mat-form-field>
                 </div>
@@ -243,7 +236,7 @@
                   </mat-form-field>
 
                   <mat-form-field appearance="outline">
-                    <mat-label>Phone</mat-label>
+                    <mat-label>Two-Factor Authentication</mat-label>
                     <input matInput formControlName="twoFactorAuthentication" />
                     @if (passwordForm.get('twoFactorAuthentication')?.invalid) {
                       <mat-error>Enter a valid 10-digit phone number</mat-error>
