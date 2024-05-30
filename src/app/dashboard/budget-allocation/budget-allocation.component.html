@@ -1,0 +1,222 @@
+<div class="grid-container">
+  <h1 class="overview__title">Budget Allocation</h1>
+  <p class="overview__description">
+    an overview of the total funds disbursed and allocated etc .
+  </p>
+  <mat-grid-list cols="3" rowHeight="200px">
+    @for (card of cards | async; track card) {
+      <mat-grid-tile [colspan]="card.cols" [rowspan]="card.rows">
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>
+              <div>{{ card.title }}</div>
+              @switch (card.id) {
+                @case (1) {
+                  <button mat-icon-button class="more-button" aria-label="Icon">
+                    <mat-icon>attach_money</mat-icon>
+                  </button>
+                }
+                @case (2) {
+                  <button mat-icon-button class="more-button" aria-label="Icon">
+                    <mat-icon>attach_money</mat-icon>
+                  </button>
+                }
+                @case (3) {
+                  <button mat-icon-button class="more-button" aria-label="Icon">
+                    <mat-icon>attach_money</mat-icon>
+                  </button>
+                }
+              }
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="dashboard-card-content">
+            @switch (card.id) {
+              @case (1) {
+                <div class="figure">
+                  <span>10.89k</span>
+                </div>
+              }
+              @case (2) {
+                <div class="figure">
+                  <span>26.67k</span>
+                </div>
+              }
+              @case (3) {
+                <div class="figure">
+                  <span>1.34k</span>
+                </div>
+              }
+            }
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile>
+    }
+  </mat-grid-list>
+</div>
+<div class="grid-container">
+  <div class="user__table__container">
+    <div class="actions__wrapper">
+      <div class="actions__left">
+        <span>Budget</span>
+        <div class="search__input__wrapper">
+          <app-rounded-input
+            [control]="searchValue"
+            placeholder="Search name, email" />
+        </div>
+      </div>
+      <div class="actions__right">
+        <button
+          [matMenuTriggerFor]="filter"
+          class="filter__btn btn"
+          mat-flat-button>
+          <mat-icon>filter_list</mat-icon>
+          Filter by
+        </button>
+        <mat-menu #filter="matMenu">
+          <button mat-menu-item [matMenuTriggerFor]="role">Role</button>
+          <button mat-menu-item [matMenuTriggerFor]="status">Status</button>
+        </mat-menu>
+        <mat-menu #role="matMenu">
+          <mat-radio-group [formControl]="roleControl">
+            @for (role of rolesFilters; track role.value) {
+              <button mat-menu-item>
+                <mat-radio-button [value]="role.value" color="primary">
+                  {{ role.label }}
+                </mat-radio-button>
+              </button>
+            }
+          </mat-radio-group>
+        </mat-menu>
+        <mat-menu #status="matMenu">
+          <mat-radio-group [formControl]="statusControl">
+            @for (status of statusFilters; track status.value) {
+              <button mat-menu-item>
+                <mat-radio-button color="primary" [value]="status.value">
+                  {{ status.label }}
+                </mat-radio-button>
+              </button>
+            }
+          </mat-radio-group>
+        </mat-menu>
+        <button
+          [disabled]="!data.length"
+          (click)="downloadCSV()"
+          class="download__btn btn"
+          mat-flat-button>
+          <mat-icon>download</mat-icon>
+          Download CSV
+        </button>
+        <button
+          (click)="addUser()"
+          class="add__btn btn"
+          mat-flat-button
+          color="primary">
+          <mat-icon>add</mat-icon>
+          New Budget
+        </button>
+      </div>
+    </div>
+    @if (isLoadingResults) {
+      <div class="empty-table loading-results">
+        @if (isLoadingResults) {
+          <mat-spinner></mat-spinner>
+        }
+      </div>
+    }
+    @if (!isLoadingResults && !data.length) {
+      <div class="empty-table no-results">
+        <span>No budgets found</span>
+      </div>
+    }
+    <div class="user-table-container">
+      <table
+        mat-table
+        [dataSource]="data"
+        class="example-table"
+        matSort
+        matSortActive="created"
+        matSortDisableClear
+        matSortDirection="desc">
+        <!-- Number Column -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let row">{{ row.email }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-chip
+              [class.status__chip__active]="row.status === 'active'"
+              [class.status__chip__inactive]="row.status === 'inactive'">
+              <span>{{ row.status | titlecase }}</span>
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="more">
+          <th mat-header-cell *matHeaderCellDef>More</th>
+          <td mat-cell *matCellDef="let row">
+            <button [matMenuTriggerFor]="menu" mat-icon-button>
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button (click)="ediUser(row)" mat-menu-item>
+                <mat-icon>edit</mat-icon>Edit
+              </button>
+              <button
+                (click)="deleteUser(row.id)"
+                class="delete__btn"
+                mat-menu-item>
+                <mat-icon color="warn">delete</mat-icon>Delete
+              </button>
+              @if (row.status === 'active') {
+                <button
+                  (click)="changeStatus(row.status, row.id)"
+                  mat-menu-item>
+                  <mat-icon>hide_source</mat-icon>Deactivate
+                </button>
+              }
+              @if (row.status === 'inactive') {
+                <button
+                  (click)="changeStatus(row.status, row.id)"
+                  mat-menu-item>
+                  <mat-icon>check</mat-icon>Activate
+                </button>
+              }
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <!-- Title Column -->
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>Role</th>
+          <td mat-cell *matCellDef="let row">{{ row.role | titlecase }}</td>
+        </ng-container>
+
+        <!-- State Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+        </ng-container>
+
+        <!-- Created Column -->
+        <ng-container matColumnDef="created_at">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Created at</th>
+          <td mat-cell *matCellDef="let row">{{ row.created_at | date }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="totalItems"
+      [pageSize]="10"
+      (page)="onPaginationChange($event)"
+      [pageIndex]="page.value ? page.value - 1 : 0"
+      [pageSizeOptions]="[]"
+      aria-label="Select page of GitHub search results"></mat-paginator>
+  </div>
+</div>

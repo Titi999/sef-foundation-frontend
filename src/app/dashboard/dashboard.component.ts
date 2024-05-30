@@ -1,54 +1,99 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatToolbar } from '@angular/material/toolbar';
-import { MatIcon } from '@angular/material/icon';
-import {
-  MatSidenav,
-  MatSidenavContainer,
-  MatSidenavContent,
-} from '@angular/material/sidenav';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatListItem, MatNavList } from '@angular/material/list';
-import {
-  Router,
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-} from '@angular/router';
-import { MatIconButton } from '@angular/material/button';
+import { ActivatedRoute, Route, Router, RouterModule } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { NgClass, NgOptimizedImage } from '@angular/common';
 import { AvatarModule } from 'ngx-avatars';
 import { MatTooltip } from '@angular/material/tooltip';
 import { AuthService } from '@app/auth/auth.service';
-import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
+import { MatMenuModule } from '@angular/material/menu';
 import { UserRoles } from '@app/auth/auth.type';
+import {
+  MatTreeFlatDataSource,
+  MatTreeFlattener,
+  MatTreeModule,
+} from '@angular/material/tree';
+import { FlatTreeControl } from '@angular/cdk/tree';
+import { MatIconButton } from '@angular/material/button';
+import { map } from 'rxjs/operators';
+
+/**
+ * Food data with nested structure.
+ * Each node has a name and an optional list of children.
+ */
+interface FoodNode {
+  name: string;
+  routerLink: string;
+  children?: FoodNode[];
+}
+
+const TREE_DATA: FoodNode[] = [
+  {
+    name: 'Finance',
+    routerLink: 'finance',
+    children: [
+      { name: 'Budget Allocation', routerLink: 'finance/budget-allocation' },
+    ],
+  },
+];
+
+/** Flat node with expandable and level information */
+interface ExampleFlatNode {
+  expandable: boolean;
+  name: string;
+  level: number;
+  routerLink: string;
+}
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
     MatToolbar,
-    MatIcon,
-    MatSidenavContainer,
-    MatSidenavContent,
+    MatSidenavModule,
     MatNavList,
-    RouterOutlet,
-    MatSidenav,
-    MatIconButton,
+    MatIconModule,
     MatListItem,
     NgClass,
     NgOptimizedImage,
     AvatarModule,
-    RouterLinkActive,
-    RouterLink,
+    RouterModule,
     MatTooltip,
-    MatMenu,
-    MatMenuItem,
-    MatMenuTrigger,
+    MatMenuModule,
+    MatTreeModule,
+    MatIconButton,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
+  private _transformer = (node: FoodNode, level: number) => {
+    return {
+      expandable: !!node.children && node.children.length > 0,
+      name: node.name,
+      level: level,
+      routerLink: node.routerLink,
+    };
+  };
+
+  treeControl = new FlatTreeControl<ExampleFlatNode>(
+    node => node.level,
+    node => node.expandable
+  );
+
+  treeFlattener = new MatTreeFlattener(
+    this._transformer,
+    node => node.level,
+    node => node.expandable,
+    node => node.children
+  );
+
+  dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+
+  hasChild = (_: number, node: ExampleFlatNode) => node.expandable;
   @ViewChild(MatSidenav)
   sidenav!: MatSidenav;
   isMobile = true;
@@ -59,8 +104,11 @@ export class DashboardComponent implements OnInit {
   constructor(
     private observer: BreakpointObserver,
     private authService: AuthService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private activatedRoute: ActivatedRoute
+  ) {
+    this.dataSource.data = TREE_DATA;
+  }
 
   ngOnInit() {
     this.observer.observe(['(max-width: 800px)']).subscribe(screenSize => {
@@ -88,5 +136,30 @@ export class DashboardComponent implements OnInit {
 
   userId() {
     return this.authService.loggedInUser()?.user.id;
+  }
+
+  getFinanceActiveCSS(name: string) {
+    return (
+      this.router.url.startsWith('/dashboard/finance') && name === 'Finance'
+    );
+  }
+
+  getOtherFinanceActiveCSS(name: string) {
+    const dashboardUrl = '/dashboard/finance';
+    switch (name) {
+      case 'Budget Allocation':
+        return this.router.url === `${dashboardUrl}/budget-allocation`;
+      default:
+        return false;
+    }
+  }
+
+  routeFinance(type: string) {
+    switch (type) {
+      case 'finance':
+        return;
+      case 'Budget Allocation':
+        void this.router.navigate(['dashboard/finance/budget-allocation']);
+    }
   }
 }

@@ -5,6 +5,7 @@ import { HomeComponent } from './home/home.component';
 import { UserAdministrationComponent } from '@app/dashboard/user-administration/user-administration.component';
 import { StudentsComponent } from '@app/dashboard/students/students.component';
 import { StudentProfileComponent } from './student-profile/student-profile.component';
+import { BudgetAllocationComponent } from '@app/dashboard/budget-allocation/budget-allocation.component';
 
 export const dashboardRoutes: Routes = [
   {
@@ -27,6 +28,15 @@ export const dashboardRoutes: Routes = [
       {
         path: 'student-profile/:id',
         component: StudentProfileComponent,
+      },
+      {
+        path: 'finance',
+        children: [
+          {
+            path: 'budget-allocation',
+            component: BudgetAllocationComponent,
+          },
+        ],
       },
     ],
   },

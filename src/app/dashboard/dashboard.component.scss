@@ -97,6 +97,12 @@ mat-sidenav {
 
 .nav-item {
   margin: 5px 0;
+  height: 100%;
+}
+
+
+.tree-entry {
+  font-size: 16px;
 }
 
 mat-sidenav-content {
@@ -131,3 +137,9 @@ mat-sidenav-content {
 .username__mobile {
   padding: 1rem;
 }
+
+.tree--entry__active {
+  color: map-get(colors.$primary-palette, 500);
+  font-weight: 600;
+}
+
