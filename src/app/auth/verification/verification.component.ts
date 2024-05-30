@@ -65,10 +65,7 @@ export class VerificationComponent implements OnInit, OnDestroy {
         .subscribe(response => {
           if (response) {
             this.authService.setUser(response.data);
-            this.toastrService.success(
-              response.message,
-              `Welcome ${response.data.user.name}`
-            );
+            this.toastrService.success(`Welcome ${response.data.user.name}`);
             void this.router.navigate(['/dashboard/overview']);
           }
         });
