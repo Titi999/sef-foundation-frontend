@@ -19,13 +19,13 @@ import {
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatIconButton } from '@angular/material/button';
 
-interface FinanceNoe {
+interface FinanceNode {
   name: string;
   routerLink: string;
-  children?: FinanceNoe[];
+  children?: FinanceNode[];
 }
 
-const TREE_DATA: FinanceNoe[] = [
+const TREE_DATA: FinanceNode[] = [
   {
     name: 'Finance',
     routerLink: 'finance',
@@ -65,7 +65,7 @@ interface ExampleFlatNode {
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
-  private _transformer = (node: FinanceNoe, level: number) => {
+  private _transformer = (node: FinanceNode, level: number) => {
     return {
       expandable: !!node.children && node.children.length > 0,
       name: node.name,
