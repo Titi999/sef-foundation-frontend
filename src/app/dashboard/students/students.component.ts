@@ -40,6 +40,7 @@ import { AddStudentComponent } from '@app/dashboard/students/add-student/add-stu
 import { MatDialog } from '@angular/material/dialog';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 import { statusFilters } from '@app/libs/constants';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-students',
@@ -97,7 +98,8 @@ export class StudentsComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     private readonly studentsService: StudentsService,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private readonly router: Router
   ) {}
 
   ngAfterViewInit() {
@@ -202,5 +204,9 @@ export class StudentsComponent implements AfterViewInit, OnDestroy {
 
   onPaginationChange(event: PageEvent) {
     this.page.setValue(event.pageIndex + 1);
+  }
+
+  selectStudent(student: Student) {
+    this.router.navigateByUrl(`dashboard/student-profile/${student.id}`);
   }
 }

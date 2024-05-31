@@ -97,9 +97,7 @@ mat-sidenav {
 
 .nav-item {
   margin: 5px 0;
-  height: 100%;
 }
-
 
 .tree-entry {
   font-size: 16px;
@@ -119,7 +117,7 @@ mat-sidenav-content {
 .navigation-items {
   display: flex;
   flex-direction: column;
-  height: 82vh;
+  height: 80vh;
   justify-content: space-between;
 }
 
@@ -135,4 +133,3 @@ mat-sidenav-content {
   color: map-get(colors.$primary-palette, 500);
   font-weight: 600;
 }
-
