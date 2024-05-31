@@ -6,6 +6,9 @@ import { UserAdministrationComponent } from '@app/dashboard/user-administration/
 import { StudentsComponent } from '@app/dashboard/students/students.component';
 import { StudentProfileComponent } from './student-profile/student-profile.component';
 import { SettingsComponent } from './settings/settings.component';
+import { BudgetAllocationComponent } from '@app/dashboard/finance/budget-allocation/budget-allocation.component';
+import { CreateBudgetComponent } from '@app/dashboard/finance/create-budget/create-budget.component';
+import { BudgetStatisticsComponent } from '@app/dashboard/finance/budget-statistics/budget-statistics.component';
 
 export const dashboardRoutes: Routes = [
   {
@@ -32,6 +35,20 @@ export const dashboardRoutes: Routes = [
       {
         path: 'settings',
         component: SettingsComponent,
+      },
+      {
+        path: 'finance',
+        component: BudgetStatisticsComponent,
+        children: [
+          {
+            path: 'budget-allocation',
+            component: BudgetAllocationComponent,
+          },
+          {
+            path: 'create-budget',
+            component: CreateBudgetComponent,
+          },
+        ],
       },
     ],
   },

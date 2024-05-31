@@ -1,0 +1,120 @@
+<app-info-card title="Term Dates">
+  <div viewMode></div>
+  <div editMode [formGroup]="budgetForm" class="container">
+    <mat-form-field appearance="outline">
+      <mat-label>Start Date</mat-label>
+      <input
+        [matDatepicker]="startDate"
+        formControlName="startDate"
+        id="startDate"
+        matInput />
+      <mat-datepicker-toggle
+        matIconSuffix
+        [for]="startDate"></mat-datepicker-toggle>
+      <mat-datepicker #startDate></mat-datepicker>
+      <mat-error></mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>End Date</mat-label>
+      <input
+        [matDatepicker]="endDate"
+        formControlName="endDate"
+        id="endDate"
+        matInput />
+      <mat-datepicker-toggle
+        matIconSuffix
+        [for]="endDate"></mat-datepicker-toggle>
+      <mat-datepicker #endDate></mat-datepicker>
+      <mat-error></mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Budget Allocation</mat-label>
+      <input
+        formControlName="total"
+        matInput
+        type="number"
+        class="currency-right-align"
+        placeholder="0" />
+      <span matTextPrefix>GH&#8373;&nbsp;</span>
+      <span matTextSuffix>.00</span>
+    </mat-form-field>
+  </div>
+</app-info-card>
+<app-info-card title="Category Distribution">
+  <div viewMode></div>
+  <div editMode>
+    <div class="container">
+      <mat-form-field appearance="outline">
+        <mat-label>Category</mat-label>
+        <mat-select [formControl]="distributionForm.controls.title">
+          @for (distribution of getCategories(); track distribution.value) {
+            <mat-option [value]="distribution.value">{{
+              distribution.label
+            }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Amount</mat-label>
+        <input
+          [formControl]="distributionForm.controls.amount"
+          matInput
+          type="number"
+          class="currency-right-align"
+          placeholder="0" />
+        <span matTextPrefix>GH&#8373;&nbsp;</span>
+        <span matTextSuffix>.00</span>
+      </mat-form-field>
+    </div>
+    <div class="add__distribution">
+      <button
+        [disabled]="distributionForm.invalid"
+        class="submit__btn"
+        mat-flat-button
+        color="primary"
+        (click)="addDistribution()"
+        type="submit">
+        <span>Add</span>
+      </button>
+    </div>
+    <div class="distribution-lists">
+      @for (
+        distribution of budgetDistributions.value;
+        track distribution;
+        let index = $index
+      ) {
+        <div class="distribution-list">
+          <span>{{ distribution.title }}</span>
+          <span>GH&#8373;&nbsp;{{ distribution.amount }}</span>
+          <button (click)="deleteDistribution(index)" mat-icon-button>
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</app-info-card>
+<div class="actions">
+  <button
+    (click)="cancel()"
+    [disabled]="isLoading"
+    class="submit__btn cancel"
+    mat-flat-button
+    mat-dialog-close
+    type="button">
+    <span>Cancel</span>
+  </button>
+  <button
+    [disabled]="isLoading"
+    class="submit__btn"
+    mat-flat-button
+    color="primary"
+    (click)="submit()"
+    type="submit">
+    @if (isLoading) {
+      <span class="loading">Loading...</span>
+    } @else {
+      <span>Save</span>
+    }
+  </button>
+</div>

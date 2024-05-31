@@ -1,0 +1,87 @@
+@use '../../../../scss/colors' as colors;
+@use '../../../../scss/global' as font;
+
+* {
+  color: colors.$sys-light-on-surface-variant;
+}
+
+.grid-container {
+  margin: 20px;
+
+  .overview__title {
+    font-size: 22px;
+    color: map-get(colors.$primary-palette, 500);
+    margin-left: 15px;
+  }
+
+  .overview__description {
+    font-size: font.$font-size-sm;
+    margin-left: 15px;
+    margin-top: 10px;
+  }
+}
+
+.dashboard-card {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+}
+
+.dashboard-card-content {
+  text-align: center;
+}
+
+.card__container {
+  position: relative;
+  width: 100%;
+}
+
+.mat-mdc-card-content:last-child {
+  padding-top: 50px;
+  padding-bottom: 16px;
+}
+
+.figure {
+  font-size: font.$font-size-xl;
+  position: relative;
+
+  span {
+    position: absolute;
+    left: 0;
+    bottom: -20px;
+  }
+}
+
+
+.more-button {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  border: 1px solid colors.$schemes-surface-variant;
+  border-radius: 10px;
+}
+
+.back__btn--wrapper {
+  margin-bottom: 1rem;
+
+  .back__btn {
+    font-size: 16px;
+    display: flex;
+    outline: none;
+    background-color: white;
+    border:  none;
+    align-items: center;
+    column-gap: 0.5rem;
+    cursor: pointer;
+    color: colors.$sys-light-on-surface-variant;
+
+    &:hover {
+      span, mat-icon {
+        color: map-get(colors.$primary-palette, 500);
+      }
+    }
+  }
+}
+
