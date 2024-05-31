@@ -1,72 +1,8 @@
-@use '../../../scss/colors' as colors;
-@use '../../../scss/global' as font;
-
-* {
-  color: colors.$sys-light-on-surface-variant;
-}
+@use '../../../../scss/colors' as colors;
+@use '../../../../scss/global' as font;
 
 .grid-container {
   margin: 20px;
-
-  .overview__title {
-    font-size: 22px;
-    color: map-get(colors.$primary-palette, 500);
-    margin-left: 15px;
-  }
-
-  .overview__description {
-    font-size: font.$font-size-sm;
-    margin-left: 15px;
-    margin-top: 10px;
-  }
-}
-
-.dashboard-card {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  right: 15px;
-  bottom: 15px;
-}
-
-.more-button {
-  position: absolute;
-  top: 5px;
-  right: 10px;
-  border: 1px solid colors.$schemes-surface-variant;
-  border-radius: 10px;
-}
-
-.dashboard-card-content {
-  text-align: center;
-}
-
-.card__container {
-  position: relative;
-  width: 100%;
-}
-
-.select__wrapper {
-  position: absolute;
-  right: 0;
-  top: -80px;
-  width: 120px;
-}
-
-.mat-mdc-card-content:last-child {
-  padding-top: 50px;
-  padding-bottom: 16px;
-}
-
-.figure {
-  font-size: font.$font-size-xl;
-  position: relative;
-
-  span {
-    position: absolute;
-    left: 0;
-    bottom: -20px;
-  }
 }
 
 .status__chip__active {
@@ -87,24 +23,7 @@
   }
 }
 
-.grid-container {
-  background: white;
-  margin: 20px;
-
-  .user__title {
-    font-size: 22px;
-    color: map-get(colors.$primary-palette, 500);
-    margin-left: 15px;
-  }
-
-  .user__description {
-    font-size: font.$font-size-sm;
-    margin-left: 15px;
-    margin-top: 10px;
-  }
-}
-
-.user__table__container {
+.table__container {
   margin-left: 15px;
   position: relative;
   margin-top: 20px;
@@ -113,7 +32,7 @@
   padding: 10px;
 }
 
-.user-table-container {
+.table-container {
   position: relative;
   min-height: 200px;
   overflow: auto;
@@ -203,3 +122,6 @@ table {
   color: colors.$schemes-error !important;
 }
 
+.add__btn {
+  color: white;
+}

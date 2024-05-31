@@ -1,0 +1,68 @@
+@import '../../../../scss/colors';
+
+.container {
+  margin-top: 2rem;
+  width: 100%;
+  display: grid;
+  column-gap: 2rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.currency-right-align {
+  text-align: right;
+}
+
+input.currency-right-align::-webkit-outer-spin-button,
+input.currency-right-align::-webkit-inner-spin-button {
+  display: none;
+}
+
+input.currency-right-align {
+  -moz-appearance: textfield;
+}
+
+.add__distribution {
+  display: flex;
+  justify-content: end;
+  align-items: end;
+}
+
+.distribution-list {
+  display: flex;
+  width: 100%;
+  column-gap: 3rem;
+  align-items: center;
+  background-color: #e5e8ed;
+  max-width: fit-content;
+  padding: 5px 10px;
+  border-radius: 16px;
+}
+
+.distribution-lists {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 4rem;
+  margin-bottom: 2rem;
+
+  .submit__btn {
+    border-radius: 6.25rem;
+    padding: 10px 24px;
+    height: 40px;
+  }
+
+  .cancel {
+    border: 1px solid $sys-light-outline;
+    color: $sys-light-outline;
+  }
+}

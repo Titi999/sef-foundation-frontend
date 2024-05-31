@@ -1,0 +1,46 @@
+<div class="container">
+  <mat-card>
+    <mat-card-header class="card__header">
+      <mat-card-title-group>
+        <mat-card-title>{{ title }}</mat-card-title>
+        <div class="edit__mode__btn">
+          @if (!viewMode) {
+            <button
+              style="border-radius: 6rem"
+              mat-flat-button
+              color="primary"
+              type="button"
+              (click)="toggleMode()">
+              <mat-icon>edit</mat-icon>
+              Edit
+            </button>
+          } @else {
+            <button
+              style="border-radius: 6rem"
+              mat-stroked-button
+              color="primary"
+              type="button"
+              (click)="toggleMode()">
+              Cancel
+            </button>
+            <button
+              style="border-radius: 6rem"
+              mat-flat-button
+              color="primary"
+              type="button">
+              Save Changes
+            </button>
+          }
+        </div>
+      </mat-card-title-group>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (viewMode) {
+        <ng-content select="[viewMode]"></ng-content>
+      } @else {
+        <ng-content select="[editMode]"></ng-content>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

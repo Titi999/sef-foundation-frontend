@@ -17,3 +17,15 @@ export interface BudgetDistribution {
   created_at: Date;
   updated_at: Date;
 }
+
+export interface CreateBudget {
+  total: number;
+  startDate: Date;
+  endDate: Date;
+  distributions: CreateBudgetDistribution[];
+}
+
+export interface CreateBudgetDistribution {
+  title: string;
+  amount: number;
+}

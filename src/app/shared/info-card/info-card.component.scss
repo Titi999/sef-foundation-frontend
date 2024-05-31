@@ -1,0 +1,18 @@
+@use '../../../scss/colors' as colors;
+@use '../../../scss/global' as font;
+
+.container {
+  margin: 20px 30px;
+}
+
+.card__header {
+  background-color: #e5e8ed;
+  color: colors.$dark-primary-text;
+  padding: 24px 16px;
+  height: 72px;
+
+  .edit__mode__btn {
+    display: flex;
+    gap: 10px;
+  }
+}

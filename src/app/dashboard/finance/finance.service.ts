@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@environments/environment';
-import { BudgetAllocation } from '@app/dashboard/budget-allocation/budget-allocation.interface';
+import {
+  BudgetAllocation,
+  BudgetDistribution,
+  CreateBudget,
+} from '@app/dashboard/finance/budget-allocation/budget-allocation.interface';
 import { Observable } from 'rxjs';
 import { Pagination, Response } from '@app/shared/shared.type';
 
 @Injectable({
   providedIn: 'root',
 })
-export class BudgetAllocationService {
+export class FinanceService {
   private url = `${environment.apiUrl}/finance`;
   constructor(private readonly http: HttpClient) {}
 
@@ -17,6 +21,13 @@ export class BudgetAllocationService {
   ): Observable<Response<Pagination<BudgetAllocation[]>>> {
     return this.http.get<Response<Pagination<BudgetAllocation[]>>>(
       `${this.url}/budgets?page=${page}`
+    );
+  }
+
+  public createBudget(budgetData: CreateBudget) {
+    return this.http.post<Response<BudgetDistribution>>(
+      `${this.url}/budget`,
+      budgetData
     );
   }
 }
