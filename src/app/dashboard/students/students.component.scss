@@ -37,6 +37,14 @@ table {
   width: 100%;
 }
 
+.row {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgb(230, 230, 230);
+  }
+}
+
 .empty-table {
   position: absolute;
   top: 0;
