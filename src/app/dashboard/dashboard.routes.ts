@@ -1,6 +1,10 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
-import { authGuard } from '@app/auth/guards/auth.guard';
+import {
+  authGuard,
+  CanActiveAdmin,
+  CanActiveSuperAdmin,
+} from '@app/auth/guards/auth.guard';
 import { HomeComponent } from './home/home.component';
 import { UserAdministrationComponent } from '@app/dashboard/user-administration/user-administration.component';
 import { StudentsComponent } from '@app/dashboard/students/students.component';
@@ -9,6 +13,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { BudgetAllocationComponent } from '@app/dashboard/finance/budget-allocation/budget-allocation.component';
 import { CreateBudgetComponent } from '@app/dashboard/finance/create-budget/create-budget.component';
 import { BudgetStatisticsComponent } from '@app/dashboard/finance/budget-statistics/budget-statistics.component';
+import { DisbursementComponent } from '@app/dashboard/finance/disbursement/disbursement.component';
 
 export const dashboardRoutes: Routes = [
   {
@@ -23,10 +28,12 @@ export const dashboardRoutes: Routes = [
       {
         path: 'user-administration',
         component: UserAdministrationComponent,
+        canActivate: [CanActiveSuperAdmin],
       },
       {
         path: 'students',
         component: StudentsComponent,
+        canActivate: [CanActiveAdmin],
       },
       {
         path: 'student-profile/:id',
@@ -39,6 +46,7 @@ export const dashboardRoutes: Routes = [
       {
         path: 'finance',
         component: BudgetStatisticsComponent,
+        canActivate: [CanActiveSuperAdmin],
         children: [
           {
             path: 'budget-allocation',
@@ -47,6 +55,10 @@ export const dashboardRoutes: Routes = [
           {
             path: 'create-budget',
             component: CreateBudgetComponent,
+          },
+          {
+            path: 'disbursements',
+            component: DisbursementComponent,
           },
         ],
       },

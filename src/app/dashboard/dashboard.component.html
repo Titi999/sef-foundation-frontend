@@ -216,6 +216,14 @@
                     mat-menu-item>
                     Budget Allocation
                   </button>
+                  <button
+                    (click)="routeFinance('Disbursements')"
+                    [class.tree--entry__active]="
+                      getOtherFinanceActiveCSS('Disbursements')
+                    "
+                    mat-menu-item>
+                    Disbursements
+                  </button>
                 </mat-menu>
               }
             }

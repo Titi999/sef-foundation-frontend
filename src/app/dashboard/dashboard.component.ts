@@ -3,7 +3,7 @@ import { MatToolbar } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatListItem, MatNavList } from '@angular/material/list';
-import { ActivatedRoute, Route, Router, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { NgClass, NgOptimizedImage } from '@angular/common';
 import { AvatarModule } from 'ngx-avatars';
@@ -18,29 +18,24 @@ import {
 } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatIconButton } from '@angular/material/button';
-import { map } from 'rxjs/operators';
 
-/**
- * Food data with nested structure.
- * Each node has a name and an optional list of children.
- */
-interface FoodNode {
+interface FinanceNode {
   name: string;
   routerLink: string;
-  children?: FoodNode[];
+  children?: FinanceNode[];
 }
 
-const TREE_DATA: FoodNode[] = [
+const TREE_DATA: FinanceNode[] = [
   {
     name: 'Finance',
     routerLink: 'finance',
     children: [
       { name: 'Budget Allocation', routerLink: 'finance/budget-allocation' },
+      { name: 'Disbursements', routerLink: 'finance/disbursements' },
     ],
   },
 ];
 
-/** Flat node with expandable and level information */
 interface ExampleFlatNode {
   expandable: boolean;
   name: string;
@@ -70,7 +65,7 @@ interface ExampleFlatNode {
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
-  private _transformer = (node: FoodNode, level: number) => {
+  private _transformer = (node: FinanceNode, level: number) => {
     return {
       expandable: !!node.children && node.children.length > 0,
       name: node.name,
@@ -104,8 +99,7 @@ export class DashboardComponent implements OnInit {
   constructor(
     private observer: BreakpointObserver,
     private authService: AuthService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute
+    private router: Router
   ) {
     this.dataSource.data = TREE_DATA;
   }
@@ -149,6 +143,8 @@ export class DashboardComponent implements OnInit {
     switch (name) {
       case 'Budget Allocation':
         return this.router.url === `${dashboardUrl}/budget-allocation`;
+      case 'Disbursements':
+        return this.router.url === `${dashboardUrl}/disbursements`;
       default:
         return false;
     }
@@ -160,6 +156,10 @@ export class DashboardComponent implements OnInit {
         return;
       case 'Budget Allocation':
         void this.router.navigate(['dashboard/finance/budget-allocation']);
+        break;
+      case 'Disbursements':
+        void this.router.navigate(['dashboard/finance/disbursements']);
+        break;
     }
   }
 }
