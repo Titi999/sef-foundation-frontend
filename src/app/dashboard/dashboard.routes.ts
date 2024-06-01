@@ -14,6 +14,7 @@ import { BudgetAllocationComponent } from '@app/dashboard/finance/budget-allocat
 import { CreateBudgetComponent } from '@app/dashboard/finance/create-budget/create-budget.component';
 import { BudgetStatisticsComponent } from '@app/dashboard/finance/budget-statistics/budget-statistics.component';
 import { DisbursementComponent } from '@app/dashboard/finance/disbursement/disbursement.component';
+import { CreateDisbursementComponent } from '@app/dashboard/finance/create-disbursement/create-disbursement.component';
 
 export const dashboardRoutes: Routes = [
   {
@@ -59,6 +60,10 @@ export const dashboardRoutes: Routes = [
           {
             path: 'disbursements',
             component: DisbursementComponent,
+          },
+          {
+            path: 'create-disbursement',
+            component: CreateDisbursementComponent,
           },
         ],
       },

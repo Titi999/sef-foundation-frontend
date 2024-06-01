@@ -104,4 +104,8 @@ export class StudentsService {
       );
     }
   }
+
+  public getAllStudents(): Observable<Response<Student[]>> {
+    return this.http.get<Response<Student[]>>(`${this.url}/all`);
+  }
 }

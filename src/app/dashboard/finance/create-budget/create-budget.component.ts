@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -36,7 +36,7 @@ import {
   CreateBudgetDistribution,
 } from '@app/dashboard/finance/budget-allocation/budget-allocation.interface';
 import { FinanceService } from '@app/dashboard/finance/finance.service';
-import { catchError, finalize, first, of } from 'rxjs';
+import { catchError, finalize, first, of, tap } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import {
   ActionModalData,
@@ -44,6 +44,8 @@ import {
 } from '@app/shared/action-modal/action-modal.type';
 import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
 import { Router } from '@angular/router';
+import { BannerComponent } from '@app/shared/banner/banner.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-create-budget',
@@ -71,12 +73,14 @@ import { Router } from '@angular/router';
     MatIcon,
     MatIconButton,
     MatDialogClose,
+    BannerComponent,
+    MatProgressSpinner,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './create-budget.component.html',
   styleUrl: './create-budget.component.scss',
 })
-export class CreateBudgetComponent {
+export class CreateBudgetComponent implements OnInit {
   budgetForm = this.fb.group({
     startDate: ['', Validators.required],
     endDate: ['', Validators.required],
@@ -85,11 +89,14 @@ export class CreateBudgetComponent {
   });
   budgetDistributionsCategory = budgetDistributions;
   isLoading: boolean = false;
-
+  public startMinDate = new Date();
   distributionForm = this.fb.group({
     title: ['', Validators.required],
     amount: ['', Validators.required],
   });
+  showBanner = false;
+  bannerText = '';
+  totalDistribution = 0;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -100,11 +107,30 @@ export class CreateBudgetComponent {
     private readonly router: Router
   ) {}
 
+  ngOnInit() {
+    this.budgetForm.valueChanges
+      .pipe(
+        tap(() => {
+          const totalBudget = parseInt(
+            this.budgetForm.controls.total.value || '0'
+          );
+          if (this.totalDistribution > totalBudget) {
+            this.bannerText =
+              'You category distribution as exceeded your total budget. Please consider an adjustment';
+            this.showBanner = true;
+          }
+        })
+      )
+      .subscribe();
+  }
+
   addDistribution() {
+    const amount = this.distributionForm.controls.amount.value;
     const values = new FormGroup({
       title: new FormControl(this.distributionForm.controls.title.value),
-      amount: new FormControl(this.distributionForm.controls.amount.value),
+      amount: new FormControl(amount),
     });
+    this.totalDistribution += parseInt(amount as string);
     this.budgetDistributions.push(values);
     this.distributionForm.reset();
   }
@@ -114,6 +140,9 @@ export class CreateBudgetComponent {
   }
 
   deleteDistribution(index: number) {
+    this.totalDistribution -= parseInt(
+      this.budgetDistributions.at(index).value
+    );
     this.budgetDistributions.removeAt(index);
   }
 
@@ -179,5 +208,9 @@ export class CreateBudgetComponent {
 
   cancel() {
     this.location.back();
+  }
+
+  closeBanner() {
+    this.showBanner = false;
   }
 }

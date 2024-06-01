@@ -30,33 +30,17 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { RoundedInputComponent } from '@app/shared/rounded-input/rounded-input.component';
-import { User, UserRoles } from '@app/auth/auth.type';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
   combineLatest,
   debounceTime,
   filter,
-  finalize,
-  first,
-  of,
   of as observableOf,
   Subject,
   takeUntil,
-  tap,
 } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
-import { ToastrService } from 'ngx-toastr';
-import { AddUserComponent } from '@app/dashboard/user-administration/add-user/add-user.component';
-import { AddUser } from '@app/dashboard/user-administration/add-user/add-user.type';
-import {
-  ActionModalData,
-  ActionModalIllustration,
-} from '@app/shared/action-modal/action-modal.type';
-import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
-import { serverError, statusFilters } from '@app/libs/constants';
 import { ngxCsv } from 'ngx-csv';
 import { BudgetAllocation } from '@app/dashboard/finance/budget-allocation/budget-allocation.interface';
-import { UserAdministrationService } from '@app/dashboard/user-administration/user-administration.service';
 import { RouterLink } from '@angular/router';
 import { FinanceService } from '@app/dashboard/finance/finance.service';
 import { getShortMonthAndYear, getShortMonthName } from '@app/libs/date';
@@ -108,8 +92,10 @@ export class BudgetAllocationComponent implements AfterViewInit, OnDestroy {
     'created_at',
     'termDate',
     'total',
+    'totalDistribution',
     'utilized',
     'surplus',
+    'status',
     'more',
   ];
   public data: BudgetAllocation[] = [];
@@ -122,12 +108,7 @@ export class BudgetAllocationComponent implements AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(
-    private readonly financeService: FinanceService,
-    private readonly dialog: MatDialog,
-    private toastrService: ToastrService,
-    private userAdministrationService: UserAdministrationService
-  ) {}
+  constructor(private readonly financeService: FinanceService) {}
 
   ngAfterViewInit() {
     combineLatest([

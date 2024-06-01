@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnDestroy } from '@angular/core';
-import { DatePipe, TitleCasePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, TitleCasePipe } from '@angular/common';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { RoundedInputComponent } from '@app/shared/rounded-input/rounded-input.component';
@@ -22,6 +22,7 @@ import {
 } from 'rxjs';
 import { catchError, map, startWith, switchMap } from 'rxjs/operators';
 import { Disbursement } from '@app/dashboard/finance/disbursement/disbursement.interface';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-disbursement',
@@ -44,6 +45,8 @@ import { Disbursement } from '@app/dashboard/finance/disbursement/disbursement.i
     MatIcon,
     MatIconButton,
     MatPaginator,
+    RouterLink,
+    CurrencyPipe,
   ],
   templateUrl: './disbursement.component.html',
   styleUrl: './disbursement.component.scss',
@@ -52,8 +55,8 @@ export class DisbursementComponent implements AfterViewInit, OnDestroy {
   public readonly displayedColumns: string[] = [
     'created_at',
     'name',
-    'email',
-    'role',
+    'amount',
+    'school',
     'status',
     'more',
   ];
@@ -106,17 +109,13 @@ export class DisbursementComponent implements AfterViewInit, OnDestroy {
   }
 
   downloadCSV() {
-    new ngxCsv(this.data, 'users', {
+    new ngxCsv(this.data, 'disbursement', {
       headers: [
         'ID',
-        'EMAIL',
+        'AMOUNT',
         'NAME',
-        'ROLE',
+        'SCHOOL',
         'STATUS',
-        'PERMISSIONS',
-        'REMEMBER TOKEN',
-        'DATE EMAIL VERIFIED',
-        'FIRST LOGIN',
         'DATE CREATED',
         'DATE UPDATED',
       ],

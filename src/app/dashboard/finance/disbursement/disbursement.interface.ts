@@ -6,6 +6,7 @@ export interface Disbursement {
   student: Student;
   budget: BudgetAllocation;
   disbursementDistribution: DisbursementDistribution[];
+  __student__: Student;
   amount: number;
   created_at: Date;
   updated_at: Date;
@@ -18,4 +19,15 @@ export interface DisbursementDistribution {
   disbursement: Disbursement;
   created_at: Date;
   updated_at: Date;
+}
+
+export interface CreateDisbursement {
+  studentId: string;
+  amount: number;
+  disbursementDistribution: CreateDisbursementDistribution[];
+}
+
+export interface CreateDisbursementDistribution {
+  title: string;
+  amount: number;
 }
