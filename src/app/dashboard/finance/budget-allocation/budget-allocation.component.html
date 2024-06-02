@@ -55,24 +55,36 @@
         matSortDirection="desc">
         <!-- Number Column -->
         <ng-container matColumnDef="total">
-          <th mat-header-cell *matHeaderCellDef>Total Budget Allocated</th>
+          <th mat-header-cell *matHeaderCellDef>Total Allocated</th>
           <td mat-cell *matCellDef="let row">
             {{ row.total | currency: 'GH&#8373; ' }}
           </td>
         </ng-container>
 
-        <!--        <ng-container matColumnDef="surplus">-->
-        <!--          <th mat-header-cell *matHeaderCellDef>Status</th>-->
-        <!--          <td mat-cell *matCellDef="let row">-->
-        <!--            <mat-chip-->
-        <!--              [class.status__chip__active]="row.status === 'active'"-->
-        <!--              [class.status__chip__inactive]="row.status === 'inactive'">-->
-        <!--              <span>{{ row.status | titlecase }}</span>-->
-        <!--            </mat-chip>-->
-        <!--          </td>-->
-        <!--        </ng-container>-->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-chip
+              [class.status__chip__active]="row.status === 'active'"
+              [class.status__chip__inactive]="row.status === 'inactive'">
+              <span>{{ row.status | titlecase }}</span>
+            </mat-chip>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="totalDistribution">
+          <th mat-header-cell *matHeaderCellDef>Total Distribution</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-chip
+              [class.status__chip__active]="row.totalDistribution <= row.total"
+              [class.status__chip__inactive]="
+                row.totalDistribution > row.total
+              ">
+              <span>{{ row.totalDistribution | currency: 'GH&#8373; ' }}</span>
+            </mat-chip>
+          </td>
+        </ng-container>
         <ng-container matColumnDef="surplus">
-          <th mat-header-cell *matHeaderCellDef>Surpuls / Deficit</th>
+          <th mat-header-cell *matHeaderCellDef>Deficit</th>
           <td mat-cell *matCellDef="let row">
             {{ row.surplus | currency: 'GH&#8373; ' }}
           </td>
@@ -105,7 +117,7 @@
 
         <!-- Title Column -->
         <ng-container matColumnDef="utilized">
-          <th mat-header-cell *matHeaderCellDef>Total Budget Utilized</th>
+          <th mat-header-cell *matHeaderCellDef>Total Utilized</th>
           <td mat-cell *matCellDef="let row">
             {{ row.utilized | currency: 'GH&#8373; ' }}
           </td>

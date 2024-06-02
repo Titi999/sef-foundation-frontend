@@ -1,26 +1,34 @@
-<app-info-card title="Term Dates">
+@if (isLoadingStudents) {
+  <div class="empty-table loading-results">
+    <mat-spinner></mat-spinner>
+  </div>
+}
+<app-info-card title="Disbursement Details">
   <div viewMode></div>
-  <div editMode [formGroup]="budgetForm" class="container">
+  <div editMode [formGroup]="disbursementForm" class="container">
     <mat-form-field appearance="outline">
-      <mat-label>Enter a date range</mat-label>
-      <mat-date-range-input [min]="startMinDate" [rangePicker]="picker">
-        <input
-          matStartDate
-          formControlName="startDate"
-          placeholder="Start date" />
-        <input matEndDate formControlName="endDate" placeholder="End date" />
-      </mat-date-range-input>
-      <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
-      <mat-datepicker-toggle
-        matIconSuffix
-        [for]="picker"></mat-datepicker-toggle>
-      <mat-date-range-picker #picker></mat-date-range-picker>
-      <mat-error></mat-error>
+      <mat-select
+        [formControl]="disbursementForm.controls.studentId"
+        placeholder="Student Name"
+        #singleSelect>
+        <mat-option>
+          <ngx-mat-select-search
+            ngxMatSelectSearchClear="fsdfsd"
+            placeholderLabel="Search Students"
+            noEntriesFoundLabel="No student found"
+            [formControl]="studentsFilterCtrl"></ngx-mat-select-search>
+        </mat-option>
+        <mat-option
+          *ngFor="let student of filteredStudents | async"
+          [value]="student.id">
+          {{ student.name }}
+        </mat-option>
+      </mat-select>
     </mat-form-field>
     <mat-form-field appearance="outline">
-      <mat-label>Budget Allocation</mat-label>
+      <mat-label>Amount</mat-label>
       <input
-        formControlName="total"
+        formControlName="amount"
         matInput
         type="number"
         class="currency-right-align"
@@ -30,7 +38,7 @@
     </mat-form-field>
   </div>
 </app-info-card>
-<app-info-card title="Category Distribution">
+<app-info-card title="Disbursement Distribution">
   <div viewMode></div>
   <div editMode>
     @if (showBanner) {
@@ -41,14 +49,11 @@
     }
     <div class="container">
       <mat-form-field appearance="outline">
-        <mat-label>Category</mat-label>
-        <mat-select [formControl]="distributionForm.controls.title">
-          @for (distribution of getCategories(); track distribution.value) {
-            <mat-option [value]="distribution.value">{{
-              distribution.label
-            }}</mat-option>
-          }
-        </mat-select>
+        <mat-label>Title</mat-label>
+        <input
+          [formControl]="distributionForm.controls.title"
+          matInput
+          type="text" />
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Amount</mat-label>
@@ -75,7 +80,7 @@
     </div>
     <div class="distribution-lists">
       @for (
-        distribution of budgetDistributions.value;
+        distribution of disbursementDistributions.value;
         track distribution;
         let index = $index
       ) {
@@ -101,7 +106,7 @@
     <span>Cancel</span>
   </button>
   <button
-    [disabled]="isLoading"
+    [disabled]="isLoading || disbursementForm.invalid"
     class="submit__btn"
     mat-flat-button
     color="primary"

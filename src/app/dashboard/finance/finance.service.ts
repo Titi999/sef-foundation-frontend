@@ -8,7 +8,10 @@ import {
 } from '@app/dashboard/finance/budget-allocation/budget-allocation.interface';
 import { Observable } from 'rxjs';
 import { Pagination, Response } from '@app/shared/shared.type';
-import { Disbursement } from '@app/dashboard/finance/disbursement/disbursement.interface';
+import {
+  CreateDisbursement,
+  Disbursement,
+} from '@app/dashboard/finance/disbursement/disbursement.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -37,6 +40,13 @@ export class FinanceService {
   ): Observable<Response<Pagination<Disbursement[]>>> {
     return this.http.get<Response<Pagination<Disbursement[]>>>(
       `${this.url}/disbursements?page=${page}`
+    );
+  }
+
+  public createDisbursement(disbursementData: CreateDisbursement) {
+    return this.http.post<Response<Disbursement>>(
+      `${this.url}/disbursement`,
+      disbursementData
     );
   }
 }

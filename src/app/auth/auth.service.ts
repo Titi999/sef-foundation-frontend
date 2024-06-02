@@ -120,6 +120,7 @@ export class AuthService {
         user: loggedInData.user,
         accessToken,
       });
+      setSession(sessionMap.loginResponseTokens, this.loggedInUser());
     }
   }
 
