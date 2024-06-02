@@ -1,0 +1,53 @@
+<div class="main-container">
+  <div class="title">
+    <span class="main">{{ title }}</span>
+    <span class="sub">{{ subtext }}</span>
+  </div>
+  <form
+    (ngSubmit)="submit()"
+    [formGroup]="schoolForm"
+    class="add-school__form__container">
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input formControlName="name" id="name" matInput type="text" />
+      <mat-error>{{ getFormErrors('name') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input formControlName="email" id="email" matInput type="email" />
+      <mat-error>{{ getFormErrors('email') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Phone</mat-label>
+      <input formControlName="phone" id="phone" matInput type="tel" />
+      <mat-error>{{ getFormErrors('phone') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Location</mat-label>
+      <input formControlName="location" id="location" matInput type="text" />
+      <mat-error>{{ getFormErrors('location') }}</mat-error>
+    </mat-form-field>
+    <div class="actions">
+      <button
+        [disabled]="isLoading"
+        class="submit__btn cancel"
+        mat-flat-button
+        mat-dialog-close
+        type="button">
+        <span>Cancel</span>
+      </button>
+      <button
+        [disabled]="isLoading"
+        class="submit__btn"
+        mat-flat-button
+        color="primary"
+        type="submit">
+        @if (isLoading) {
+          <span class="loading">Loading...</span>
+        } @else {
+          <span>{{ buttonText }}</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>
