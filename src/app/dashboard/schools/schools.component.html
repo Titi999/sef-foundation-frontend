@@ -13,39 +13,6 @@
         </div>
       </div>
       <div class="actions__right">
-        <!-- <button
-            [matMenuTriggerFor]="filter"
-            class="filter__btn btn"
-            mat-flat-button>
-            <mat-icon>filter_list</mat-icon>
-            Filter by
-          </button> -->
-        <!-- <mat-menu #filter="matMenu">
-            <button mat-menu-item [matMenuTriggerFor]="role">Role</button>
-            <button mat-menu-item [matMenuTriggerFor]="status">Status</button>
-          </mat-menu> -->
-        <!-- <mat-menu #role="matMenu">
-            <mat-radio-group [formControl]="roleControl">
-              @for (role of rolesFilters; track role.value) {
-                <button mat-menu-item>
-                  <mat-radio-button [value]="role.value" color="primary">
-                    {{ role.label }}
-                  </mat-radio-button>
-                </button>
-              }
-            </mat-radio-group>
-          </mat-menu> -->
-        <!-- <mat-menu #status="matMenu">
-            <mat-radio-group [formControl]="statusControl">
-              @for (status of statusFilters; track status.value) {
-                <button mat-menu-item>
-                  <mat-radio-button color="primary" [value]="status.value">
-                    {{ status.label }}
-                  </mat-radio-button>
-                </button>
-              }
-            </mat-radio-group>
-          </mat-menu> -->
         <button
           [disabled]="!data.length"
           (click)="downloadCSV()"
@@ -73,7 +40,7 @@
     }
     @if (!isLoadingResults && !data.length) {
       <div class="empty-table no-results">
-        <span>No users found</span>
+        <span>No schools found</span>
       </div>
     }
 
