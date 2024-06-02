@@ -16,13 +16,24 @@ import { FinanceService } from '@app/dashboard/finance/finance.service';
 import {
   combineLatest,
   debounceTime,
+  finalize,
+  of,
   of as observableOf,
   Subject,
   takeUntil,
+  tap,
 } from 'rxjs';
 import { catchError, map, startWith, switchMap } from 'rxjs/operators';
 import { Disbursement } from '@app/dashboard/finance/disbursement/disbursement.interface';
 import { RouterLink } from '@angular/router';
+import {
+  ActionModalData,
+  ActionModalIllustration,
+} from '@app/shared/action-modal/action-modal.type';
+import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
+import { serverError } from '@app/libs/constants';
+import { MatDialog } from '@angular/material/dialog';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-disbursement',
@@ -73,7 +84,11 @@ export class DisbursementComponent implements AfterViewInit, OnDestroy {
   public page = new FormControl(1);
   private readonly destroy = new Subject<void>();
 
-  constructor(private readonly financeService: FinanceService) {}
+  constructor(
+    private readonly financeService: FinanceService,
+    private readonly dialog: MatDialog,
+    private readonly toastrService: ToastrService
+  ) {}
 
   ngAfterViewInit() {
     combineLatest([this.page.valueChanges.pipe(startWith(1))])
@@ -106,6 +121,77 @@ export class DisbursementComponent implements AfterViewInit, OnDestroy {
 
   onPaginationChange(event: PageEvent): void {
     this.page.setValue(event.pageIndex + 1);
+  }
+
+  changeStatus(status: 'approve' | 'decline', id: string) {
+    const approve = status === 'approve';
+    const data: ActionModalData = {
+      actionIllustration: approve
+        ? ActionModalIllustration.activate
+        : ActionModalIllustration.deactivate,
+      title: approve ? 'Approve Disbursement' : 'Decline Disbursement',
+      actionColor: approve ? 'primary' : 'warn',
+      subtext: approve
+        ? 'are you sure you want to approve this disbursement?'
+        : 'are you sure you want decline this disbursement?',
+      actionType: 'decision',
+      decisionText: approve ? 'Approve' : 'Decline',
+    };
+    const dialogRef = this.dialog.open(ActionModalComponent, {
+      maxWidth: '400px',
+      maxHeight: '400px',
+      width: '100%',
+      height: '100%',
+      data,
+    });
+    const request = approve
+      ? this.financeService.approveDisbursement(id)
+      : this.financeService.declineDisbursement(id);
+    dialogRef.componentInstance.decisionEmitter
+      .pipe(
+        takeUntil(this.destroy),
+        catchError(error => {
+          this.toastrService.error(
+            error.error.message,
+            error.error.error || serverError
+          );
+          return of(null);
+        }),
+        finalize(() => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.disableClose = false;
+        }),
+        tap(() => {
+          dialogRef.componentInstance.isLoading = true;
+          dialogRef.disableClose = true;
+        }),
+        switchMap(() => request),
+        tap(response => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.close();
+          const isApproved = response.data.status === 'approved';
+          this.page.setValue(1);
+          const data: ActionModalData = {
+            actionIllustration: isApproved
+              ? ActionModalIllustration.success
+              : ActionModalIllustration.deactivate,
+            title: isApproved ? 'Congratulations!' : 'Completed',
+            actionColor: isApproved ? 'primary' : 'warn',
+            subtext: isApproved
+              ? 'you have successfully approved disbursement'
+              : 'The user has been successfully decline disbursement',
+            actionType: 'close',
+          };
+          this.dialog.open(ActionModalComponent, {
+            maxWidth: '400px',
+            maxHeight: '400px',
+            width: '100%',
+            height: '100%',
+            data,
+          });
+        })
+      )
+      .subscribe();
   }
 
   downloadCSV() {

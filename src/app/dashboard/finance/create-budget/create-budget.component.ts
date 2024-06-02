@@ -116,7 +116,7 @@ export class CreateBudgetComponent implements OnInit {
           );
           if (this.totalDistribution > totalBudget) {
             this.bannerText =
-              'You category distribution as exceeded your total budget. Please consider an adjustment';
+              'Your category distribution as exceeded your total budget. Please consider making an adjustment';
             this.showBanner = true;
           }
         })

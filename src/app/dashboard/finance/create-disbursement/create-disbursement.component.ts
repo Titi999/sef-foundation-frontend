@@ -190,7 +190,7 @@ export class CreateDisbursementComponent implements OnInit, OnDestroy {
       );
       if (this.totalDistribution > totalBudget) {
         this.bannerText =
-          'You disbursement distribution as exceeded your total budget.';
+          'Your disbursement distribution as exceeded your total budget.';
         this.showBanner = true;
         return;
       }

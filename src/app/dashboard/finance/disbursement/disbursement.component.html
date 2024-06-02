@@ -96,8 +96,8 @@
           <th mat-header-cell *matHeaderCellDef>Status</th>
           <td mat-cell *matCellDef="let row">
             <mat-chip
-              [class.status__chip__active]="row.status === 'active'"
-              [class.status__chip__inactive]="row.status === 'inactive'">
+              [class.status__chip__active]="row.status === 'approved'"
+              [class.status__chip__inactive]="row.status === 'declined'">
               <span>{{ row.status | titlecase }}</span>
             </mat-chip>
           </td>
@@ -110,6 +110,16 @@
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
+              @if (row.status === 'pending') {
+                <button mat-menu-item (click)="changeStatus('approve', row.id)">
+                  <mat-icon>check_circle</mat-icon>Approve
+                </button>
+              }
+              @if (row.status === 'pending') {
+                <button mat-menu-item (click)="changeStatus('decline', row.id)">
+                  <mat-icon>hide_source</mat-icon>Decline
+                </button>
+              }
               <button mat-menu-item><mat-icon>edit</mat-icon>Edit</button>
               <button class="delete__btn" mat-menu-item>
                 <mat-icon color="warn">delete</mat-icon>Delete
