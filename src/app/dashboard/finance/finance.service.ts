@@ -43,6 +43,18 @@ export class FinanceService {
     );
   }
 
+  public approveDisbursement(id: string): Observable<Response<Disbursement>> {
+    return this.http.get<Response<Disbursement>>(
+      `${this.url}/disbursements/approve/${id}`
+    );
+  }
+
+  public declineDisbursement(id: string): Observable<Response<Disbursement>> {
+    return this.http.get<Response<Disbursement>>(
+      `${this.url}/disbursements/decline/${id}`
+    );
+  }
+
   public createDisbursement(disbursementData: CreateDisbursement) {
     return this.http.post<Response<Disbursement>>(
       `${this.url}/disbursement`,
