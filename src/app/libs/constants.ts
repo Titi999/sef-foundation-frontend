@@ -20,6 +20,21 @@ export const budgetDistributions = [
   { label: 'Professional Course Fees', value: 'Professional Course Fees' },
 ];
 
+export const monthNames = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
 export const schools = [
   {
     id: '1',

@@ -55,6 +55,7 @@ import {
 } from '@app/shared/action-modal/action-modal.type';
 import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
 import { Router } from '@angular/router';
+import { Papa } from 'ngx-papaparse';
 
 @Component({
   selector: 'app-create-disbursement',
@@ -117,7 +118,8 @@ export class CreateDisbursementComponent implements OnInit, OnDestroy {
     private toastrService: ToastrService,
     private readonly financeService: FinanceService,
     private readonly dialog: MatDialog,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly papa: Papa
   ) {}
 
   ngOnInit() {
@@ -266,5 +268,36 @@ export class CreateDisbursementComponent implements OnInit, OnDestroy {
       this.disbursementDistributions.at(index).value
     );
     this.disbursementDistributions.removeAt(index);
+  }
+
+  bulkUpload(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    this.papa.parse(file as Blob, {
+      complete: ({ data }) => {
+        const studentId = data[1][0];
+        const amount = data[1][1];
+        let totalDistribution = 0;
+        const distribution = [];
+        for (let i = 3; i < data.length; i++) {
+          if (data[i][0] && data[i][1]) {
+            totalDistribution += parseInt(data[i][1]);
+            distribution.push({
+              title: data[i][0],
+              amount: data[i][1],
+            });
+          }
+        }
+        if (totalDistribution > amount) {
+          this.toastrService.error('Total distribution exceeds total amount');
+          return;
+        }
+        this.disbursementForm.controls.amount.setValue(amount);
+        this.disbursementForm.controls.studentId.setValue(studentId);
+        distribution.forEach(distribution => {
+          this.distributionForm.setValue(distribution);
+          this.addDistribution();
+        });
+      },
+    });
   }
 }

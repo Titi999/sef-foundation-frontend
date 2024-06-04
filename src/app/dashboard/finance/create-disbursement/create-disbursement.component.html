@@ -3,6 +3,21 @@
     <mat-spinner></mat-spinner>
   </div>
 }
+<div class="upload-wrapper">
+  <button
+    (click)="fileUpload.click()"
+    class="add__btn btn"
+    mat-flat-button
+    color="primary">
+    <mat-icon>upload</mat-icon>
+    Upload Disbursement
+  </button>
+  <input
+    type="file"
+    class="file-input"
+    (change)="bulkUpload($event)"
+    #fileUpload />
+</div>
 <app-info-card title="Disbursement Details">
   <div viewMode></div>
   <div editMode [formGroup]="disbursementForm" class="container">

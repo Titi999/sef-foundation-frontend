@@ -116,3 +116,9 @@ table {
 .delete__btn {
   color: colors.$schemes-error !important;
 }
+
+.title-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
