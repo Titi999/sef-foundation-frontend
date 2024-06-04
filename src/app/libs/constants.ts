@@ -19,3 +19,18 @@ export const budgetDistributions = [
   { label: 'Second Degree Tuition Fees', value: 'Second Degree Tuition Fees' },
   { label: 'Professional Course Fees', value: 'Professional Course Fees' },
 ];
+
+export const monthNames = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];

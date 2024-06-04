@@ -28,6 +28,7 @@
     "ngx-avatars": "^1.7.0",
     "ngx-csv": "^0.3.2",
     "ngx-mat-select-search": "^7.0.6",
+    "ngx-papaparse": "^8.0.0",
     "ngx-toastr": "^18.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

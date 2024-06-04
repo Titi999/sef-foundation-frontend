@@ -9,3 +9,12 @@ export interface Response<T> {
   message: string;
   data: T;
 }
+
+export interface IOverviewStatistics {
+  totalFundingDisbursed: IMonthTotal[];
+}
+
+export interface IMonthTotal {
+  month: string;
+  total: number;
+}

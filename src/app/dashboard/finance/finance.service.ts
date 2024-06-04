@@ -7,7 +7,11 @@ import {
   CreateBudget,
 } from '@app/dashboard/finance/budget-allocation/budget-allocation.interface';
 import { Observable } from 'rxjs';
-import { Pagination, Response } from '@app/shared/shared.type';
+import {
+  IOverviewStatistics,
+  Pagination,
+  Response,
+} from '@app/shared/shared.type';
 import {
   CreateDisbursement,
   Disbursement,
@@ -59,6 +63,12 @@ export class FinanceService {
     return this.http.post<Response<Disbursement>>(
       `${this.url}/disbursement`,
       disbursementData
+    );
+  }
+
+  public getStatistics(): Observable<Response<IOverviewStatistics>> {
+    return this.http.get<Response<IOverviewStatistics>>(
+      `${this.url}/statistics`
     );
   }
 }

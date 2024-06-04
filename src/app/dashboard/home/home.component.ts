@@ -1,4 +1,12 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  OnInit,
+  Signal,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { AsyncPipe, DatePipe, TitleCasePipe } from '@angular/common';
 import {
   MatCard,
@@ -21,6 +29,15 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatChip } from '@angular/material/chips';
 import { MatMenu, MatMenuItem } from '@angular/material/menu';
+import { FinanceService } from '@app/dashboard/finance/finance.service';
+import { tap } from 'rxjs';
+import { monthNames } from '@app/libs/constants';
+import { MatInput } from '@angular/material/input';
+import {
+  MatDatepicker,
+  MatDatepickerInput,
+  MatDatepickerToggle,
+} from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-home',
@@ -49,24 +66,46 @@ import { MatMenu, MatMenuItem } from '@angular/material/menu';
     MatMenu,
     MatMenuItem,
     TitleCasePipe,
+    MatInput,
+    MatDatepickerInput,
+    MatDatepickerToggle,
+    MatDatepicker,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent {
-  public lineChartData: ChartConfiguration['data'] = {
-    datasets: [
-      {
-        data: [20, 30, 10, 40, 80, 50],
-        label: 'Total Funding Disbursed Over Time',
-        borderColor: 'rgba(31, 101, 135, 1)',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(148,159,177,0.8)',
-        pointStyle: 'line',
-      },
-    ],
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-  };
+export class HomeComponent implements OnInit {
+  public data = signal([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  public totalFundingDisbursed: Signal<ChartConfiguration['data']> = computed(
+    () => {
+      return {
+        datasets: [
+          {
+            data: this.data(),
+            label: 'Total Funding Disbursed Over Time',
+            borderColor: 'rgba(31, 101, 135, 1)',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgba(148,159,177,0.8)',
+            pointStyle: 'line',
+          },
+        ],
+        labels: [
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+          'Nov',
+          'Dec',
+        ],
+      };
+    }
+  );
   public lineChartOptions: ChartConfiguration['options'] = {
     elements: {
       line: {
@@ -185,4 +224,26 @@ export class HomeComponent {
       ];
     })
   );
+
+  constructor(private readonly financeService: FinanceService) {}
+
+  ngOnInit() {
+    this.financeService
+      .getStatistics()
+      .pipe(
+        tap(response => {
+          const data = monthNames.map(month => {
+            let amount = 0;
+            response.data.totalFundingDisbursed.forEach(item => {
+              if (month === item.month) {
+                amount = item.total;
+              }
+            });
+            return amount;
+          });
+          this.data.set(data);
+        })
+      )
+      .subscribe();
+  }
 }

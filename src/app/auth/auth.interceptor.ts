@@ -9,7 +9,6 @@ import {
   take,
   throwError,
 } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 
 const isRefreshing = new BehaviorSubject<boolean>(false);
@@ -28,31 +27,34 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(authRequest).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
+          //TODO: for some reason catchError in refreshToken does not work. This is a temporary fix till a solution is found
+          if (error.url?.endsWith('authentication/refresh-token')) {
+            isRefreshing.next(false);
+            toastrService.info('Your session has expired, Log in to continue');
+            authService.logoutSession();
+          }
           if (!isRefreshing.value) {
             isRefreshing.next(true);
             return authService.refreshToken().pipe(
+              switchMap(response => {
+                authToken = response.data.accessToken;
+                authService.exchangeAccessToken(authToken);
+                isRefreshing.next(false);
+                const updateRequest = req.clone({
+                  setHeaders: {
+                    Authorization: `Bearer ${authToken}`,
+                  },
+                });
+                return next(updateRequest);
+              }),
               catchError(refreshError => {
-                console.log('Refreshing token error', refreshError);
+                console.log('hmmm', refreshError);
                 isRefreshing.next(false);
                 toastrService.info(
                   'Your session has expired, Log in to continue'
                 );
                 authService.logoutSession();
                 return throwError(() => refreshError);
-              }),
-              map(response => {
-                authToken = response.data.accessToken;
-                authService.exchangeAccessToken(authToken);
-                isRefreshing.next(false);
-                return authToken;
-              }),
-              switchMap(newToken => {
-                const updateRequest = req.clone({
-                  setHeaders: {
-                    Authorization: `Bearer ${newToken}`,
-                  },
-                });
-                return next(updateRequest);
               })
             );
           } else {
