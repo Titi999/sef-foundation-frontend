@@ -48,7 +48,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                 return next(updateRequest);
               }),
               catchError(refreshError => {
-                console.log('hmmm', refreshError);
                 isRefreshing.next(false);
                 toastrService.info(
                   'Your session has expired, Log in to continue'
