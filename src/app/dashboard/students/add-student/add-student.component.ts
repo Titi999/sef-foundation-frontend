@@ -71,7 +71,10 @@ export class AddStudentComponent {
       this.title = 'Edit student details';
       this.subtext = 'kindly fill in the details to update the beneficiary';
       this.buttonText = 'Update';
-      this.studentForm.patchValue(data);
+      this.studentForm.patchValue({
+        ...data,
+        school: data.school.name,
+      });
     } else {
       this.title = 'Add a new student';
       this.subtext = 'kindly fill in the details to create a new beneficiary';
@@ -83,7 +86,7 @@ export class AddStudentComponent {
     if (this.studentForm.valid) {
       this.isLoading = true;
       this.dialogRef.disableClose = true;
-      const studentData = this.studentForm.value as Student;
+      const studentData = this.studentForm.value as unknown as Student;
       if (!this.data) {
         this.studentService
           .addStudent(studentData)
@@ -122,7 +125,10 @@ export class AddStudentComponent {
           });
       } else {
         const { id } = this.data;
-        const student = this.studentForm.value as Omit<Student, 'id'>;
+        const student = this.studentForm.value as unknown as Omit<
+          Student,
+          'id'
+        >;
         this.studentService
           .editStudent(id, student)
           .pipe(

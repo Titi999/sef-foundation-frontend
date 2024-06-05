@@ -1,3 +1,5 @@
+<app-spinner [isLoading]="loading" />
+
 <div class="">
   @if (showBanner) {
     <app-banner
@@ -119,15 +121,25 @@
               <!-- Left -->
               <div class="card-content__left">
                 <mat-form-field appearance="outline">
-                  <mat-label>School</mat-label>
-                  <input
-                    matInput
-                    formControlName="school"
-                    id="school"
-                    type="text" />
-                  @if (userProfileForm.get('school')?.hasError('required')) {
-                    <mat-error> School is required </mat-error>
-                  }
+                  <mat-select
+                    [formControl]="userProfileForm.controls.school"
+                    placeholder="School"
+                    #singleSelect>
+                    <mat-option>
+                      <ngx-mat-select-search
+                        ngxMatSelectSearchClear="fsdfsd"
+                        placeholderLabel="Search school"
+                        noEntriesFoundLabel="No school found"
+                        [formControl]="
+                          schoolFilterCtrl
+                        "></ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option
+                      *ngFor="let school of filteredSchools | async"
+                      [value]="'94dfe8bb-fdac-49ee-883f-a5f3db04cb3a'">
+                      {{ school.name }}
+                    </mat-option>
+                  </mat-select>
                 </mat-form-field>
               </div>
 

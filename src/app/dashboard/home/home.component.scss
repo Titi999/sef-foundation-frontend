@@ -86,3 +86,19 @@
     font-weight: 500;
   }
 }
+
+.doughnut-container {
+  height: 420px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.linechart-container {
+  height: 420px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

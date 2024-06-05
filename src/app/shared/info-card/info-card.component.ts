@@ -1,13 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
-import {
-  MatCard,
-  MatCardContent,
-  MatCardHeader,
-  MatCardModule,
-  MatCardTitleGroup,
-} from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 
 @Component({

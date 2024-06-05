@@ -1,4 +1,5 @@
 <div class="grid-container">
+  <app-spinner [isLoading]="isLoading" />
   <h1 class="overview__title">Overview</h1>
   <p class="overview__description">
     an overview of the total funds, number of students etc.
@@ -47,7 +48,7 @@
                 </div>
               }
               @case (4) {
-                <div class="">
+                <div class="doughnut-container">
                   <canvas
                     baseChart
                     [data]="doughnutChartData()"
@@ -66,12 +67,14 @@
                       <mat-option value="2024">2021</mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <canvas
-                    class="canvas"
-                    baseChart
-                    [data]="totalFundingDisbursed()"
-                    [options]="lineChartOptions"
-                    [type]="lineChartType"></canvas>
+                  <div class="linechart-container">
+                    <canvas
+                      class="canvas"
+                      baseChart
+                      [data]="totalFundingDisbursed()"
+                      [options]="lineChartOptions"
+                      [type]="lineChartType"></canvas>
+                  </div>
                 </div>
               }
               @case (6) {
