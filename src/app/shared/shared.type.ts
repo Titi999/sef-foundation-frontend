@@ -12,9 +12,15 @@ export interface Response<T> {
 
 export interface IOverviewStatistics {
   totalFundingDisbursed: IMonthTotal[];
+  fundingDistribution: ITitleAmount[];
 }
 
 export interface IMonthTotal {
   month: string;
   total: number;
+}
+
+export interface ITitleAmount {
+  title: string;
+  amount: number;
 }
