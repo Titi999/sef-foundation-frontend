@@ -13,6 +13,9 @@ export interface Response<T> {
 export interface IOverviewStatistics {
   totalFundingDisbursed: IMonthTotal[];
   fundingDistribution: ITitleAmount[];
+  fundsAllocated: number;
+  fundsDisbursed: number;
+  studentsSupported: number;
 }
 
 export interface IMonthTotal {

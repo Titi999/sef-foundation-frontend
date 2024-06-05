@@ -41,6 +41,7 @@ import {
 } from '@angular/material/datepicker';
 import { ToastrService } from 'ngx-toastr';
 import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
+import { formatNumber } from '@app/libs/numberFormatter';
 
 @Component({
   selector: 'app-home',
@@ -79,6 +80,9 @@ import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
+  public fundsAllocated = '';
+  public fundsDisbursed = '';
+  public studentsSupported = '';
   private data: WritableSignal<number[]> = signal([]);
   private doughnutLabel: WritableSignal<string[]> = signal([]);
   private doughnutData: WritableSignal<number[]> = signal([]);
@@ -243,6 +247,9 @@ export class HomeComponent implements OnInit {
       .pipe(
         first(),
         tap(({ data }) => {
+          this.fundsAllocated = formatNumber(data.fundsAllocated);
+          this.fundsDisbursed = formatNumber(data.fundsDisbursed);
+          this.studentsSupported = formatNumber(data.studentsSupported);
           const fundingData = monthNames.map(month => {
             let amount = 0;
             data.totalFundingDisbursed.forEach(item => {
