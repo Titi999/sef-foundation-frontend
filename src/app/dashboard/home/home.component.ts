@@ -3,9 +3,10 @@ import {
   computed,
   inject,
   OnInit,
-  Signal,
   signal,
+  Signal,
   ViewChild,
+  WritableSignal,
 } from '@angular/core';
 import { AsyncPipe, DatePipe, TitleCasePipe } from '@angular/common';
 import {
@@ -75,7 +76,9 @@ import {
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
-  public data = signal([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  private data: WritableSignal<number[]> = signal([]);
+  private doughnutLabel: WritableSignal<string[]> = signal([]);
+  private doughnutData: WritableSignal<number[]> = signal([]);
   public totalFundingDisbursed: Signal<ChartConfiguration['data']> = computed(
     () => {
       return {
@@ -118,28 +121,23 @@ export class HomeComponent implements OnInit {
   };
   public lineChartType: ChartType = 'line';
 
-  public doughnutChartLabels: string[] = [
-    'Scholarships',
-    'Stipends',
-    'Grants',
-    'Edu. Materials',
-  ];
-
-  public doughnutChartData: ChartData<'doughnut'> = {
-    labels: this.doughnutChartLabels,
-    datasets: [
-      {
-        data: [14800, 7400, 4440, 2960],
-        backgroundColor: [
-          'rgba(31, 101, 135, 1)',
-          'rgba(197, 231, 255, 1)',
-          'rgba(0, 30, 45, 1)',
-          'rgba(215, 218, 223, 1)',
-        ],
-        hoverOffset: 2,
-      },
-    ],
-  };
+  public doughnutChartData: Signal<ChartData<'doughnut'>> = computed(() => {
+    return {
+      labels: this.doughnutLabel(),
+      datasets: [
+        {
+          data: this.doughnutData(),
+          backgroundColor: [
+            'rgba(31, 101, 135, 1)',
+            'rgba(197, 231, 255, 1)',
+            'rgba(0, 30, 45, 1)',
+            'rgba(215, 218, 223, 1)',
+          ],
+          hoverOffset: 2,
+        },
+      ],
+    };
+  });
   public doughnutChartType: ChartType = 'doughnut';
   public tableData = [
     {
@@ -231,17 +229,25 @@ export class HomeComponent implements OnInit {
     this.financeService
       .getStatistics()
       .pipe(
-        tap(response => {
-          const data = monthNames.map(month => {
+        tap(({ data }) => {
+          const fundingData = monthNames.map(month => {
             let amount = 0;
-            response.data.totalFundingDisbursed.forEach(item => {
+            data.totalFundingDisbursed.forEach(item => {
               if (month === item.month) {
                 amount = item.total;
               }
             });
             return amount;
           });
-          this.data.set(data);
+          const doughnutLabel = data.fundingDistribution.map(item => {
+            return item.title;
+          });
+          const doughnutData = data.fundingDistribution.map(item => {
+            return item.amount;
+          });
+          this.doughnutLabel.set(doughnutLabel);
+          this.doughnutData.set(doughnutData);
+          this.data.set(fundingData);
         })
       )
       .subscribe();
