@@ -56,6 +56,7 @@ import {
 import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
 import { Router } from '@angular/router';
 import { Papa } from 'ngx-papaparse';
+import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
 
 @Component({
   selector: 'app-create-disbursement',
@@ -83,6 +84,7 @@ import { Papa } from 'ngx-papaparse';
     NgForOf,
     MatProgressSpinner,
     BannerComponent,
+    SpinnerComponent,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './create-disbursement.component.html',

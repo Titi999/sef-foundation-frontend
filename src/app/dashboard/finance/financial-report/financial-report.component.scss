@@ -1,0 +1,43 @@
+@use '../../../../scss/colors.scss' as colors;
+@use '../../../../scss/global' as font;
+
+.financial-report__container {
+  background: white;
+  margin: 20px;
+
+  .financial-report__title {
+    font-size: 22px;
+    color: map-get(colors.$primary-palette, 500);
+    margin-left: 15px;
+  }
+
+  .financial-report__description {
+    font-size: font.$font-size-sm;
+    margin-left: 15px;
+    margin-top: 10px;
+  }
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  gap: 25px;
+  margin: 20px 0;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  column-gap: 2rem;
+  margin-bottom: 2rem;
+
+  .submit__btn {
+    border-radius: 6.25rem;
+    padding: 10px 24px;
+    height: 40px;
+  }
+}

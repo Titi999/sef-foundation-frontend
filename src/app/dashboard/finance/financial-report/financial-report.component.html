@@ -1,0 +1,72 @@
+<div class="financial-report__container">
+  <h1 class="financial-report__title">Financial Report</h1>
+  <p class="financial-report__description">report on all activities</p>
+
+  <div class="">
+    <app-info-card title="Report Generation">
+      <div viewMode></div>
+      <div editMode [formGroup]="financialReportForm">
+        <div class="container">
+          <mat-form-field appearance="outline">
+            <mat-label>Enter a date range</mat-label>
+            <mat-date-range-input [min]="startMinDate" [rangePicker]="picker">
+              <input
+                matStartDate
+                formControlName="startDate"
+                placeholder="Start date" />
+              <input
+                matEndDate
+                formControlName="endDate"
+                placeholder="End date" />
+            </mat-date-range-input>
+            <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+            <mat-error></mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Term</mat-label>
+            <mat-select [(ngModel)]="selectedTerm" name="term">
+              @for (term of terms; track term) {
+                <mat-option [value]="term.label">{{ term.value }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Category</mat-label>
+            <mat-select [(ngModel)]="selectedValue" name="category">
+              @for (category of categories; track category) {
+                <mat-option [value]="category.value">{{
+                  category.viewValue
+                }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="actions">
+          <button
+            class="submit__btn"
+            mat-stroked-button
+            color="primary"
+            type="button">
+            <span>Cancel</span>
+          </button>
+          <button
+            class="submit__btn"
+            mat-flat-button
+            color="primary"
+            type="submit">
+            <span>Generate report</span>
+          </button>
+        </div>
+      </div>
+    </app-info-card>
+  </div>
+
+  <div class="">
+    <canvas id="canvas">{{ chart }}</canvas>
+  </div>
+</div>

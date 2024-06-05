@@ -1,8 +1,4 @@
-@if (isLoadingStudents) {
-  <div class="empty-table loading-results">
-    <mat-spinner></mat-spinner>
-  </div>
-}
+<app-spinner [isLoading]="isLoadingStudents" />
 <div class="upload-wrapper">
   <button
     (click)="fileUpload.click()"

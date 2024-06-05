@@ -1,4 +1,18 @@
+import { School } from '../schools/school.service';
+
 export interface Student {
+  id: string;
+  name: string;
+  parent: string;
+  school: School;
+  level: string;
+  description: string;
+  phone: string;
+  parentPhone: string;
+  status: 'active' | 'inactive';
+}
+
+export interface CreateStudent {
   id: string;
   name: string;
   parent: string;
@@ -6,7 +20,7 @@ export interface Student {
   level: string;
   description: string;
   phone: string;
-  status: string;
+  parentPhone: string;
 }
 
 export type studentFormControls =

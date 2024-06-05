@@ -224,6 +224,14 @@
                     mat-menu-item>
                     Disbursements
                   </button>
+                  <button
+                    (click)="routeFinance('Financial Report')"
+                    [class.tree--entry__active]="
+                      getOtherFinanceActiveCSS('Financial Report')
+                    "
+                    mat-menu-item>
+                    Financial Report
+                  </button>
                 </mat-menu>
               }
             }

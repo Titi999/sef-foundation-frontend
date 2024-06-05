@@ -19,7 +19,7 @@ import { MatGridList, MatGridTile } from '@angular/material/grid-list';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { map } from 'rxjs/operators';
+import { catchError, finalize, first, map } from 'rxjs/operators';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { MatOption, MatSelect } from '@angular/material/select';
@@ -31,14 +31,16 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatChip } from '@angular/material/chips';
 import { MatMenu, MatMenuItem } from '@angular/material/menu';
 import { FinanceService } from '@app/dashboard/finance/finance.service';
-import { tap } from 'rxjs';
-import { monthNames } from '@app/libs/constants';
+import { of, tap } from 'rxjs';
+import { monthNames, serverError } from '@app/libs/constants';
 import { MatInput } from '@angular/material/input';
 import {
   MatDatepicker,
   MatDatepickerInput,
   MatDatepickerToggle,
 } from '@angular/material/datepicker';
+import { ToastrService } from 'ngx-toastr';
+import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
 
 @Component({
   selector: 'app-home',
@@ -71,6 +73,7 @@ import {
     MatDatepickerInput,
     MatDatepickerToggle,
     MatDatepicker,
+    SpinnerComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -79,6 +82,7 @@ export class HomeComponent implements OnInit {
   private data: WritableSignal<number[]> = signal([]);
   private doughnutLabel: WritableSignal<string[]> = signal([]);
   private doughnutData: WritableSignal<number[]> = signal([]);
+  public isLoading = false;
   public totalFundingDisbursed: Signal<ChartConfiguration['data']> = computed(
     () => {
       return {
@@ -223,12 +227,21 @@ export class HomeComponent implements OnInit {
     })
   );
 
-  constructor(private readonly financeService: FinanceService) {}
+  constructor(
+    private readonly financeService: FinanceService,
+    private toastrService: ToastrService
+  ) {}
 
   ngOnInit() {
+    this.getStatistics();
+  }
+
+  private getStatistics() {
+    this.isLoading = true;
     this.financeService
       .getStatistics()
       .pipe(
+        first(),
         tap(({ data }) => {
           const fundingData = monthNames.map(month => {
             let amount = 0;
@@ -248,6 +261,16 @@ export class HomeComponent implements OnInit {
           this.doughnutLabel.set(doughnutLabel);
           this.doughnutData.set(doughnutData);
           this.data.set(fundingData);
+        }),
+        catchError(error => {
+          this.toastrService.error(
+            error.error.message,
+            error.error.error || serverError
+          );
+          return of(null);
+        }),
+        finalize(() => {
+          this.isLoading = false;
         })
       )
       .subscribe();

@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AsyncPipe, Location } from '@angular/common';
 import {
   MatCard,
@@ -12,7 +12,7 @@ import { MatIcon } from '@angular/material/icon';
 import { BaseChartDirective } from 'ng2-charts';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { map } from 'rxjs/operators';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-budget-statistics',
@@ -32,7 +32,8 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './budget-statistics.component.html',
   styleUrl: './budget-statistics.component.scss',
 })
-export class BudgetStatisticsComponent {
+export class BudgetStatisticsComponent implements OnInit {
+  showGridContainer = true;
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
@@ -70,8 +71,15 @@ export class BudgetStatisticsComponent {
 
   constructor(
     private readonly breakpointObserver: BreakpointObserver,
-    private readonly location: Location
+    private readonly location: Location,
+    private readonly router: Router
   ) {}
+
+  ngOnInit(): void {
+    if (this.router.url === '/dashboard/finance/financial-report') {
+      this.showGridContainer = false;
+    }
+  }
 
   goBack() {
     this.location.back();

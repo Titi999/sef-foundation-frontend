@@ -1,62 +1,73 @@
-<div class="grid-container">
-  <div class="back__btn--wrapper">
-    <button (click)="goBack()" class="back__btn">
-      <mat-icon>arrow_back</mat-icon>
-      <span>Back</span>
-    </button>
-  </div>
-  <h1 class="overview__title">Budget Allocation</h1>
-  <p class="overview__description">
-    an overview of the total funds disbursed and allocated etc .
-  </p>
-  <mat-grid-list cols="3" rowHeight="200px">
-    @for (card of cards | async; track card) {
-      <mat-grid-tile [colspan]="card.cols" [rowspan]="card.rows">
-        <mat-card class="dashboard-card">
-          <mat-card-header>
-            <mat-card-title>
-              <div>{{ card.title }}</div>
+@if (showGridContainer) {
+  <div class="grid-container">
+    <div class="back__btn--wrapper">
+      <button (click)="goBack()" class="back__btn">
+        <mat-icon>arrow_back</mat-icon>
+        <span>Back</span>
+      </button>
+    </div>
+    <h1 class="overview__title">Budget Allocation</h1>
+    <p class="overview__description">
+      an overview of the total funds disbursed and allocated etc .
+    </p>
+    <mat-grid-list cols="3" rowHeight="200px">
+      @for (card of cards | async; track card) {
+        <mat-grid-tile [colspan]="card.cols" [rowspan]="card.rows">
+          <mat-card class="dashboard-card">
+            <mat-card-header>
+              <mat-card-title>
+                <div>{{ card.title }}</div>
+                @switch (card.id) {
+                  @case (1) {
+                    <button
+                      mat-icon-button
+                      class="more-button"
+                      aria-label="Icon">
+                      <mat-icon>attach_money</mat-icon>
+                    </button>
+                  }
+                  @case (2) {
+                    <button
+                      mat-icon-button
+                      class="more-button"
+                      aria-label="Icon">
+                      <mat-icon>attach_money</mat-icon>
+                    </button>
+                  }
+                  @case (3) {
+                    <button
+                      mat-icon-button
+                      class="more-button"
+                      aria-label="Icon">
+                      <mat-icon>attach_money</mat-icon>
+                    </button>
+                  }
+                }
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="dashboard-card-content">
               @switch (card.id) {
                 @case (1) {
-                  <button mat-icon-button class="more-button" aria-label="Icon">
-                    <mat-icon>attach_money</mat-icon>
-                  </button>
+                  <div class="figure">
+                    <span>10.89k</span>
+                  </div>
                 }
                 @case (2) {
-                  <button mat-icon-button class="more-button" aria-label="Icon">
-                    <mat-icon>attach_money</mat-icon>
-                  </button>
+                  <div class="figure">
+                    <span>26.67k</span>
+                  </div>
                 }
                 @case (3) {
-                  <button mat-icon-button class="more-button" aria-label="Icon">
-                    <mat-icon>attach_money</mat-icon>
-                  </button>
+                  <div class="figure">
+                    <span>1.34k</span>
+                  </div>
                 }
               }
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content class="dashboard-card-content">
-            @switch (card.id) {
-              @case (1) {
-                <div class="figure">
-                  <span>10.89k</span>
-                </div>
-              }
-              @case (2) {
-                <div class="figure">
-                  <span>26.67k</span>
-                </div>
-              }
-              @case (3) {
-                <div class="figure">
-                  <span>1.34k</span>
-                </div>
-              }
-            }
-          </mat-card-content>
-        </mat-card>
-      </mat-grid-tile>
-    }
-  </mat-grid-list>
-</div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+      }
+    </mat-grid-list>
+  </div>
+}
 <router-outlet></router-outlet>
