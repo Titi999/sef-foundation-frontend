@@ -1,0 +1,98 @@
+<div class="upload-wrapper"></div>
+<app-info-card title="Disbursement Details">
+  <div viewMode></div>
+  <div editMode [formGroup]="requestForm" class="container">
+    <mat-form-field appearance="outline">
+      <mat-label>Amount</mat-label>
+      <input
+        formControlName="amount"
+        matInput
+        type="number"
+        class="currency-right-align"
+        placeholder="0" />
+      <span matTextPrefix>GH&#8373;&nbsp;</span>
+      <span matTextSuffix>.00</span>
+    </mat-form-field>
+  </div>
+</app-info-card>
+<app-info-card title="Disbursement Distribution">
+  <div viewMode></div>
+  <div editMode>
+    @if (showBanner) {
+      <app-banner
+        [text]="bannerText"
+        [backgroundColor]="'blue'"
+        (closeBtn)="closeBanner()" />
+    }
+    <div class="container">
+      <mat-form-field appearance="outline">
+        <mat-label>Title</mat-label>
+        <input
+          [formControl]="distributionForm.controls.title"
+          matInput
+          type="text" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Amount</mat-label>
+        <input
+          [formControl]="distributionForm.controls.amount"
+          matInput
+          type="number"
+          class="currency-right-align"
+          placeholder="0" />
+        <span matTextPrefix>GH&#8373;&nbsp;</span>
+        <span matTextSuffix>.00</span>
+      </mat-form-field>
+    </div>
+    <div class="add__distribution">
+      <button
+        [disabled]="distributionForm.invalid"
+        class="submit__btn"
+        mat-flat-button
+        color="primary"
+        (click)="addDistribution()"
+        type="submit">
+        <span>Add</span>
+      </button>
+    </div>
+    <div class="distribution-lists">
+      @for (
+        distribution of disbursementDistributions.value;
+        track distribution;
+        let index = $index
+      ) {
+        <div class="distribution-list">
+          <span>{{ distribution.title }}</span>
+          <span>GH&#8373;&nbsp;{{ distribution.amount }}</span>
+          <button (click)="deleteDistribution(index)" mat-icon-button>
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</app-info-card>
+<div class="actions">
+  <button
+    (click)="cancel()"
+    [disabled]="isLoading"
+    class="submit__btn cancel"
+    mat-flat-button
+    mat-dialog-close
+    type="button">
+    <span>Cancel</span>
+  </button>
+  <button
+    [disabled]="isLoading || requestForm.invalid"
+    class="submit__btn"
+    mat-flat-button
+    color="primary"
+    (click)="submit()"
+    type="submit">
+    @if (isLoading) {
+      <span class="loading">Loading...</span>
+    } @else {
+      <span>Save</span>
+    }
+  </button>
+</div>
