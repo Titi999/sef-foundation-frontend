@@ -16,13 +16,17 @@ import {
   CreateDisbursement,
   Disbursement,
 } from '@app/dashboard/finance/disbursement/disbursement.interface';
+import { AuthService } from '@app/auth/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FinanceService {
   private url = `${environment.apiUrl}/finance`;
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly authService: AuthService
+  ) {}
 
   public getBudgets(
     page: number
@@ -47,6 +51,16 @@ export class FinanceService {
     );
   }
 
+  public getBeneficiaryDisbursements(
+    page: number,
+    status: string
+  ): Observable<Response<Pagination<Disbursement[]>>> {
+    const id = this.authService.loggedInUser()?.user.id;
+    return this.http.get<Response<Pagination<Disbursement[]>>>(
+      `${this.url}/disbursements/${id}?page=${page}&status=${status}`
+    );
+  }
+
   public approveDisbursement(id: string): Observable<Response<Disbursement>> {
     return this.http.get<Response<Disbursement>>(
       `${this.url}/disbursements/approve/${id}`
@@ -62,6 +76,16 @@ export class FinanceService {
   public createDisbursement(disbursementData: CreateDisbursement) {
     return this.http.post<Response<Disbursement>>(
       `${this.url}/disbursement`,
+      disbursementData
+    );
+  }
+
+  public createBeneficiaryDisbursement(
+    disbursementData: Omit<CreateDisbursement, 'studentId'>
+  ) {
+    const id = this.authService.loggedInUser()?.user.id;
+    return this.http.post<Response<Disbursement>>(
+      `${this.url}/disbursement/${id}`,
       disbursementData
     );
   }

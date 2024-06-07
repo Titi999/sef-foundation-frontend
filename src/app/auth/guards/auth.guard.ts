@@ -48,3 +48,14 @@ export const CanActiveSuperAdmin: CanActivateFn = () => {
     return false;
   }
 };
+
+export const CanActiveBeneficiary: CanActivateFn = () => {
+  const role = inject(AuthService).role;
+  const router = inject(Router);
+  if (role() === UserRoles.BENEFICIARY) {
+    return true;
+  } else {
+    void router.navigate(['/dashboard/overview']);
+    return false;
+  }
+};

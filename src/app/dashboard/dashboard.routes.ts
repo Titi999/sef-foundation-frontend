@@ -3,6 +3,7 @@ import { DashboardComponent } from './dashboard.component';
 import {
   authGuard,
   CanActiveAdmin,
+  CanActiveBeneficiary,
   CanActiveSuperAdmin,
 } from '@app/auth/guards/auth.guard';
 import { HomeComponent } from './home/home.component';
@@ -17,6 +18,8 @@ import { DisbursementComponent } from '@app/dashboard/finance/disbursement/disbu
 import { CreateDisbursementComponent } from '@app/dashboard/finance/create-disbursement/create-disbursement.component';
 import { SchoolsComponent } from './schools/schools.component';
 import { FinancialReportComponent } from './finance/financial-report/financial-report.component';
+import { RequestsComponent } from '@app/dashboard/requests/requests.component';
+import { CreateRequestComponent } from '@app/dashboard/requests/create-request/create-request.component';
 
 export const dashboardRoutes: Routes = [
   {
@@ -76,6 +79,17 @@ export const dashboardRoutes: Routes = [
       {
         path: 'schools',
         component: SchoolsComponent,
+        canActivate: [CanActiveAdmin],
+      },
+      {
+        path: 'requests',
+        component: RequestsComponent,
+        canActivate: [CanActiveBeneficiary],
+      },
+      {
+        path: 'create-request',
+        component: CreateRequestComponent,
+        canActivate: [CanActiveBeneficiary],
       },
     ],
   },
