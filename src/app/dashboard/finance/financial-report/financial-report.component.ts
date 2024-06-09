@@ -11,8 +11,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import {
   MatError,
   MatFormField,
-  MatLabel,
   MatFormFieldModule,
+  MatLabel,
 } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -22,6 +22,7 @@ import { MatSelect } from '@angular/material/select';
 import { InfoCardComponent } from '@app/shared/info-card/info-card.component';
 import { ChartType } from 'chart.js';
 import Chart from 'chart.js/auto';
+import { ngxCsv } from 'ngx-csv';
 
 interface Category {
   value: string;
@@ -64,6 +65,7 @@ export class FinancialReportComponent implements OnInit {
   public startMinDate = new Date();
   public barChartType: ChartType = 'bar';
   chart: unknown = [];
+  data!: [];
 
   financialReportForm = this.fb.group({
     startDate: ['', Validators.required],
@@ -87,26 +89,57 @@ export class FinancialReportComponent implements OnInit {
   constructor(private readonly fb: FormBuilder) {}
 
   ngOnInit(): void {
-    this.chart = new Chart('canvas', {
-      type: 'bar',
+    this.budgetAndDisbursementBarChart();
+  }
+
+  private budgetAndDisbursementBarChart() {
+    this.chart = new Chart('MyChart', {
+      type: 'bar', //this denotes tha type of chart
+
       data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        // values on X-Axis
+        labels: [
+          'PRI.',
+          'JHS.',
+          'SHS.',
+          'VOC.',
+          'HND.',
+          '1st DEG.',
+          '2nd DEG.',
+          'PROF.',
+        ],
         datasets: [
           {
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
-            borderWidth: 1,
+            label: 'Budget',
+            data: ['667', '576', '572', '79', '92', '574', '573', '576'],
+            backgroundColor: '#1F6587',
+            borderRadius: 5,
+          },
+          {
+            label: 'Disbursement',
+            data: ['542', '542', '536', '327', '17', '10.00', '538', '541'],
+            backgroundColor: '#C5E7FF',
+            borderRadius: 5,
           },
         ],
       },
       options: {
-        scales: {
-          y: {
-            beginAtZero: true,
+        aspectRatio: 2.5,
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
           },
         },
-        aspectRatio: 3,
       },
+    });
+  }
+
+  downloadCSV() {
+    new ngxCsv(this.data, 'Budgets', {
+      // Appropriate headers needs to be provided for CSV
+      headers: [],
     });
   }
 }

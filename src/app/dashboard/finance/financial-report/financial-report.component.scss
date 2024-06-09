@@ -41,3 +41,22 @@
     height: 40px;
   }
 }
+
+.bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.bar-chart {
+  border: 1px solid colors.$schemes-surface-variant;
+  padding: 20px;
+  margin: 30px;
+  border-radius: 10px;
+}
+
+.download__btn {
+  border: 1px solid colors.$sys-light-outline;
+  border-radius: 6.25rem;
+}
