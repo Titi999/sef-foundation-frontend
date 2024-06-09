@@ -3,35 +3,37 @@
     <mat-card-header class="card__header">
       <mat-card-title-group>
         <mat-card-title>{{ title }}</mat-card-title>
-        <div class="edit__mode__btn">
-          @if (!viewMode) {
-            <button
-              style="border-radius: 6rem"
-              mat-flat-button
-              color="primary"
-              type="button"
-              (click)="toggleMode()">
-              <mat-icon>edit</mat-icon>
-              Edit
-            </button>
-          } @else {
-            <button
-              style="border-radius: 6rem"
-              mat-stroked-button
-              color="primary"
-              type="button"
-              (click)="toggleMode()">
-              Cancel
-            </button>
-            <button
-              style="border-radius: 6rem"
-              mat-flat-button
-              color="primary"
-              type="button">
-              Save Changes
-            </button>
-          }
-        </div>
+        @if (showActions) {
+          <div class="edit__mode__btn">
+            @if (!viewMode) {
+              <button
+                style="border-radius: 6rem"
+                mat-flat-button
+                color="primary"
+                type="button"
+                (click)="toggleMode()">
+                <mat-icon>edit</mat-icon>
+                Edit
+              </button>
+            } @else {
+              <button
+                style="border-radius: 6rem"
+                mat-stroked-button
+                color="primary"
+                type="button"
+                (click)="toggleMode()">
+                Cancel
+              </button>
+              <button
+                style="border-radius: 6rem"
+                mat-flat-button
+                color="primary"
+                type="button">
+                Save Changes
+              </button>
+            }
+          </div>
+        }
       </mat-card-title-group>
     </mat-card-header>
 
