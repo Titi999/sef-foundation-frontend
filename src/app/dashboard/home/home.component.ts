@@ -221,12 +221,13 @@ export class HomeComponent implements OnInit {
           rows: 3,
           id: 5,
         },
-        {
-          title: 'Users',
-          cols: 3,
-          rows: 3,
-          id: 6,
-        },
+        //TODO: Will not be implemented now due to lack of time
+        // {
+        //   title: 'Users',
+        //   cols: 3,
+        //   rows: 3,
+        //   id: 6,
+        // },
       ];
     })
   );

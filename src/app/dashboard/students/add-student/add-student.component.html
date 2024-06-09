@@ -18,9 +18,29 @@
       <mat-error>{{ getFormErrors('parent') }}</mat-error>
     </mat-form-field>
     <mat-form-field appearance="outline">
-      <mat-label>School</mat-label>
-      <input formControlName="school" id="school" matInput type="text" />
-      <mat-error>{{ getFormErrors('school') }}</mat-error>
+      <mat-label>Parent's Phone</mat-label>
+      <input
+        formControlName="parentPhone"
+        id="parentPhone"
+        matInput
+        type="tel" />
+      <mat-error>{{ getFormErrors('parentPhone') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-select formControlName="school" placeholder="School" #singleSelect>
+        <mat-option>
+          <ngx-mat-select-search
+            ngxMatSelectSearchClear="fsdfsd"
+            placeholderLabel="Search school"
+            noEntriesFoundLabel="No school found"
+            [formControl]="schoolFilterCtrl"></ngx-mat-select-search>
+        </mat-option>
+        <mat-option
+          *ngFor="let school of filteredSchools | async"
+          [value]="school.id">
+          {{ school.name }}
+        </mat-option>
+      </mat-select>
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Class</mat-label>
@@ -35,6 +55,8 @@
     <mat-form-field appearance="outline">
       <mat-label>Extra Info</mat-label>
       <textarea
+        formControlName="description"
+        id="description"
         matInput
         placeholder="Add any description or comment"></textarea>
       <mat-error>{{ getFormErrors('description') }}</mat-error>

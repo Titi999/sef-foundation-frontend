@@ -77,79 +77,80 @@
                   </div>
                 </div>
               }
-              @case (6) {
-                <table
-                  mat-table
-                  [dataSource]="tableData"
-                  class="example-table"
-                  matSort
-                  matSortActive="created"
-                  matSortDisableClear
-                  matSortDirection="desc">
-                  <!-- Recipient Column -->
-                  <ng-container matColumnDef="recipient">
-                    <th mat-header-cell *matHeaderCellDef>Recipient</th>
-                    <td mat-cell *matCellDef="let row">{{ row.recipient }}</td>
-                  </ng-container>
+              <!--              TODO: Will not be implemented now due to lack of time-->
+              <!--              @case (6) {-->
+              <!--                <table-->
+              <!--                  mat-table-->
+              <!--                  [dataSource]="tableData"-->
+              <!--                  class="example-table"-->
+              <!--                  matSort-->
+              <!--                  matSortActive="created"-->
+              <!--                  matSortDisableClear-->
+              <!--                  matSortDirection="desc">-->
+              <!--                  &lt;!&ndash; Recipient Column &ndash;&gt;-->
+              <!--                  <ng-container matColumnDef="recipient">-->
+              <!--                    <th mat-header-cell *matHeaderCellDef>Recipient</th>-->
+              <!--                    <td mat-cell *matCellDef="let row">{{ row.recipient }}</td>-->
+              <!--                  </ng-container>-->
 
-                  <!-- Category Column -->
-                  <ng-container matColumnDef="category">
-                    <th mat-header-cell *matHeaderCellDef>Category</th>
-                    <td mat-cell *matCellDef="let row">
-                      {{ row.category }}
-                    </td>
-                  </ng-container>
+              <!--                  &lt;!&ndash; Category Column &ndash;&gt;-->
+              <!--                  <ng-container matColumnDef="category">-->
+              <!--                    <th mat-header-cell *matHeaderCellDef>Category</th>-->
+              <!--                    <td mat-cell *matCellDef="let row">-->
+              <!--                      {{ row.category }}-->
+              <!--                    </td>-->
+              <!--                  </ng-container>-->
 
-                  <!-- Amount allocated Column -->
-                  <ng-container matColumnDef="amountAllocated">
-                    <th mat-header-cell *matHeaderCellDef>
-                      Amount Allocated ($)
-                    </th>
-                    <td mat-cell *matCellDef="let row">
-                      {{ row.amountAllocated }}
-                    </td>
-                  </ng-container>
+              <!--                  &lt;!&ndash; Amount allocated Column &ndash;&gt;-->
+              <!--                  <ng-container matColumnDef="amountAllocated">-->
+              <!--                    <th mat-header-cell *matHeaderCellDef>-->
+              <!--                      Amount Allocated ($)-->
+              <!--                    </th>-->
+              <!--                    <td mat-cell *matCellDef="let row">-->
+              <!--                      {{ row.amountAllocated }}-->
+              <!--                    </td>-->
+              <!--                  </ng-container>-->
 
-                  <!-- Date allocated Column -->
-                  <ng-container matColumnDef="dateAllocated">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                      Date allocated
-                    </th>
-                    <td mat-cell *matCellDef="let row">
-                      {{ row.dateAllocated | date }}
-                    </td>
-                  </ng-container>
+              <!--                  &lt;!&ndash; Date allocated Column &ndash;&gt;-->
+              <!--                  <ng-container matColumnDef="dateAllocated">-->
+              <!--                    <th mat-header-cell *matHeaderCellDef mat-sort-header>-->
+              <!--                      Date allocated-->
+              <!--                    </th>-->
+              <!--                    <td mat-cell *matCellDef="let row">-->
+              <!--                      {{ row.dateAllocated | date }}-->
+              <!--                    </td>-->
+              <!--                  </ng-container>-->
 
-                  <!-- Date disbursed Column -->
-                  <ng-container matColumnDef="dateDisbursed">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                      Date disbursed
-                    </th>
-                    <td mat-cell *matCellDef="let row">
-                      {{ row.dateDisbursed | date }}
-                    </td>
-                  </ng-container>
+              <!--                  &lt;!&ndash; Date disbursed Column &ndash;&gt;-->
+              <!--                  <ng-container matColumnDef="dateDisbursed">-->
+              <!--                    <th mat-header-cell *matHeaderCellDef mat-sort-header>-->
+              <!--                      Date disbursed-->
+              <!--                    </th>-->
+              <!--                    <td mat-cell *matCellDef="let row">-->
+              <!--                      {{ row.dateDisbursed | date }}-->
+              <!--                    </td>-->
+              <!--                  </ng-container>-->
 
-                  <!-- Status Column -->
-                  <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef>Status</th>
-                    <td mat-cell *matCellDef="let row">
-                      <mat-chip
-                        [class.status__chip__active]="row.status === 'active'"
-                        [class.status__chip__inactive]="
-                          row.status === 'inactive'
-                        ">
-                        <span>{{ row.status | titlecase }}</span>
-                      </mat-chip>
-                    </td>
-                  </ng-container>
+              <!--                  &lt;!&ndash; Status Column &ndash;&gt;-->
+              <!--                  <ng-container matColumnDef="status">-->
+              <!--                    <th mat-header-cell *matHeaderCellDef>Status</th>-->
+              <!--                    <td mat-cell *matCellDef="let row">-->
+              <!--                      <mat-chip-->
+              <!--                        [class.status__chip__active]="row.status === 'active'"-->
+              <!--                        [class.status__chip__inactive]="-->
+              <!--                          row.status === 'inactive'-->
+              <!--                        ">-->
+              <!--                        <span>{{ row.status | titlecase }}</span>-->
+              <!--                      </mat-chip>-->
+              <!--                    </td>-->
+              <!--                  </ng-container>-->
 
-                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                  <tr
-                    mat-row
-                    *matRowDef="let row; columns: displayedColumns"></tr>
-                </table>
-              }
+              <!--                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>-->
+              <!--                  <tr-->
+              <!--                    mat-row-->
+              <!--                    *matRowDef="let row; columns: displayedColumns"></tr>-->
+              <!--                </table>-->
+              <!--              }-->
             }
           </mat-card-content>
         </mat-card>

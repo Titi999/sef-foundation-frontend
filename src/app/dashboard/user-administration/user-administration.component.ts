@@ -278,7 +278,7 @@ export class UserAdministrationComponent implements AfterViewInit, OnDestroy {
       actionColor: isActivate ? 'warn' : 'primary',
       subtext: isActivate
         ? 'are you sure you want to deactivate this user?'
-        : 'are you sure you want activate this for the role?',
+        : 'are you sure you want to activate this for the role?',
       actionType: 'decision',
       decisionText: isActivate ? 'Deactivate' : 'Activate',
     };
@@ -338,20 +338,19 @@ export class UserAdministrationComponent implements AfterViewInit, OnDestroy {
   }
 
   downloadCSV() {
-    new ngxCsv(this.data, 'users', {
-      headers: [
-        'ID',
-        'EMAIL',
-        'NAME',
-        'ROLE',
-        'STATUS',
-        'PERMISSIONS',
-        'REMEMBER TOKEN',
-        'DATE EMAIL VERIFIED',
-        'FIRST LOGIN',
-        'DATE CREATED',
-        'DATE UPDATED',
-      ],
+    const data = this.data.map(user => {
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        status: user.status,
+        dateCreated: user.created_at,
+      };
+    });
+
+    new ngxCsv(data, 'users', {
+      headers: ['ID', 'EMAIL', 'NAME', 'ROLE', 'STATUS', 'DATE CREATED'],
     });
   }
 }

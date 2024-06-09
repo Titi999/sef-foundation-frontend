@@ -36,6 +36,16 @@ import { MatOption, MatSelect } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
+import {
+  eachWordShouldBeginWithCapital,
+  onlyAlphabeticalCharactersAndSpaceAllowed,
+} from '@app/libs/validators';
+import {
+  ActionModalData,
+  ActionModalIllustration,
+} from '@app/shared/action-modal/action-modal.type';
+import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-student-profile',
@@ -61,11 +71,24 @@ import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
 })
 export class StudentProfileComponent implements OnInit, OnDestroy {
   public showBanner: boolean = false;
-
+  public beneficiaryExists = false;
   public userProfileForm = this.fb.group({
-    id: ['', Validators.required],
-    parent: ['', Validators.required],
-    name: ['', Validators.required],
+    parent: [
+      '',
+      [
+        Validators.required,
+        eachWordShouldBeginWithCapital(),
+        onlyAlphabeticalCharactersAndSpaceAllowed(),
+      ],
+    ],
+    name: [
+      '',
+      [
+        Validators.required,
+        eachWordShouldBeginWithCapital(),
+        onlyAlphabeticalCharactersAndSpaceAllowed(),
+      ],
+    ],
     phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
     parentPhone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
     school: ['', [Validators.required]],
@@ -92,7 +115,8 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private readonly toastrService: ToastrService,
     private route: ActivatedRoute,
-    private schoolService: SchoolService
+    private schoolService: SchoolService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -120,15 +144,17 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
       this.studentService
         .getBeneficiary(id)
         .pipe(
+          finalize(() => (this.loading = false)),
           catchError(() => of(null)),
           filter((data): data is Response<Student> => !!data),
           map(({ data }) => {
             if (data) {
+              this.beneficiaryExists = true;
               const { school, ...rest } = data;
               this.userProfileForm.controls.school.setValue(school.id);
-              this.loading = false;
               return this.userProfileForm.patchValue(rest);
             }
+            this.beneficiaryExists = false;
             this.showBanner = true;
             return;
           })
@@ -175,6 +201,24 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
           })
         )
         .subscribe(response => {
+          if (response) {
+            this.beneficiaryExists = true;
+            const data: ActionModalData = {
+              actionIllustration: ActionModalIllustration.success,
+              title: 'Awesome!',
+              actionColor: 'primary',
+              subtext:
+                'Great, Beneficiary Information has been successfully added',
+              actionType: 'close',
+            };
+            this.dialog.open(ActionModalComponent, {
+              maxWidth: '400px',
+              maxHeight: '400px',
+              width: '100%',
+              height: '100%',
+              data,
+            });
+          }
           this.toastrService.success(response?.message);
         });
     }
@@ -209,7 +253,23 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
           })
         )
         .subscribe(response => {
-          this.toastrService.success(response?.message);
+          if (response) {
+            const data: ActionModalData = {
+              actionIllustration: ActionModalIllustration.success,
+              title: 'Awesome!',
+              actionColor: 'primary',
+              subtext:
+                'Great, beneficiary information has been successfully edited',
+              actionType: 'close',
+            };
+            this.dialog.open(ActionModalComponent, {
+              maxWidth: '400px',
+              maxHeight: '400px',
+              width: '100%',
+              height: '100%',
+              data,
+            });
+          }
         });
     }
   }
@@ -252,5 +312,37 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
         school => school.name.toLowerCase().indexOf(search) > -1
       )
     );
+  }
+
+  getFormErrors(controlName: string) {
+    const control = this.userProfileForm.get(controlName);
+    if (control?.errors?.['required']) {
+      return 'This field is required';
+    }
+    switch (controlName) {
+      case 'parent':
+        if (control?.errors?.['eachWordShouldBeginWithCapital']) {
+          return 'Each name should begin with a capital letter';
+        }
+        if (control?.errors?.['onlyAlphabeticalCharactersAndSpaceAllowed']) {
+          return 'Only Alphabets and spaces allowed';
+        }
+        break;
+      case 'name':
+        if (control?.errors?.['eachWordShouldBeginWithCapital']) {
+          return 'Each name should begin with a capital letter';
+        }
+        if (control?.errors?.['onlyAlphabeticalCharactersAndSpaceAllowed']) {
+          return 'Only Alphabets and spaces allowed';
+        }
+        break;
+      case 'phone':
+        return 'Please provide a valid phone number';
+      case 'parentPhone':
+        return 'Please provide a valid phone number';
+      default:
+        return '';
+    }
+    return '';
   }
 }

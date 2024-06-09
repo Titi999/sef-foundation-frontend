@@ -71,6 +71,7 @@ export class AddUserComponent {
     if (data) {
       this.title = 'Edit user details';
       this.subtext = 'kindly fill in the details to update the user';
+      this.userForm.controls.email.disable();
       this.buttonText = 'Update';
       this.userForm.patchValue(data);
     } else {

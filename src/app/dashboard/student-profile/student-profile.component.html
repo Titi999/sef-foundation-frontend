@@ -10,10 +10,8 @@
   <!-- <app-user-profile /> -->
   <div class="user-profile__container">
     <div class="user-profile__wrapper">
-      <h1 class="user-profile__title">Account information</h1>
-      <p class="user-profile__description">
-        Account details of the beneficiary
-      </p>
+      <h1 class="user-profile__title">Beneficiary information</h1>
+      <p class="user-profile__description">Details of the beneficiary</p>
       <ngx-avatars
         [name]="userName"
         class="avatar"
@@ -30,15 +28,22 @@
               <!-- Left -->
               <div class="card-content__left">
                 <mat-form-field appearance="outline">
+                  <mat-label>Name</mat-label>
+                  <input
+                    matInput
+                    formControlName="name"
+                    id="name"
+                    type="text" />
+                  <mat-error>{{ getFormErrors('name') }}</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
                   <mat-label>Parent's Name</mat-label>
                   <input
                     matInput
                     formControlName="parent"
                     id="parent"
                     type="text" />
-                  @if (userProfileForm.get('parent')?.hasError('required')) {
-                    <mat-error> Parent's name is required </mat-error>
-                  }
+                  <mat-error>{{ getFormErrors('parent') }}</mat-error>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
                   <mat-label>Student's bio</mat-label>
@@ -52,22 +57,7 @@
                     id="description"
                     type="">
                   </textarea>
-                  @if (
-                    userProfileForm.get('description')?.hasError('required')
-                  ) {
-                    <mat-error> Student's name is required </mat-error>
-                  }
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>Name</mat-label>
-                  <input
-                    matInput
-                    formControlName="name"
-                    id="name"
-                    type="text" />
-                  @if (userProfileForm.get('name')?.hasError('required')) {
-                    <mat-error> Name is required </mat-error>
-                  }
+                  <mat-error>{{ getFormErrors('description') }}</mat-error>
                 </mat-form-field>
               </div>
 
@@ -80,12 +70,7 @@
                     formControlName="phone"
                     id="phone"
                     type="tel" />
-                  @if (userProfileForm.get('phone')?.hasError('required')) {
-                    <mat-error> Phone number is required </mat-error>
-                  }
-                  @if (userProfileForm.get('phone')?.hasError('pattern')) {
-                    <mat-error> Invalid phone number </mat-error>
-                  }
+                  <mat-error>{{ getFormErrors('phone') }}</mat-error>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
                   <mat-label>Parent's Phone</mat-label>
@@ -94,16 +79,7 @@
                     formControlName="parentPhone"
                     id="parentPhone"
                     type="text" />
-                  @if (
-                    userProfileForm.get('parentPhone')?.hasError('required')
-                  ) {
-                    <mat-error> Parent's phone number is required </mat-error>
-                  }
-                  @if (
-                    userProfileForm.get('parentPhone')?.hasError('pattern')
-                  ) {
-                    <mat-error> Invalid phone number </mat-error>
-                  }
+                  <mat-error>{{ getFormErrors('parentPhone') }}</mat-error>
                 </mat-form-field>
               </div>
             </div>
@@ -136,7 +112,7 @@
                     </mat-option>
                     <mat-option
                       *ngFor="let school of filteredSchools | async"
-                      [value]="'94dfe8bb-fdac-49ee-883f-a5f3db04cb3a'">
+                      [value]="school.id">
                       {{ school.name }}
                     </mat-option>
                   </mat-select>
@@ -152,15 +128,13 @@
                     formControlName="level"
                     id="level"
                     type="text" />
-                  @if (userProfileForm.get('level')?.hasError('required')) {
-                    <mat-error> Level is required </mat-error>
-                  }
+                  <mat-error>{{ getFormErrors('level') }}</mat-error>
                 </mat-form-field>
               </div>
             </div>
 
             <div class="btn__wrapper">
-              @if (showBanner) {
+              @if (!beneficiaryExists) {
                 <button
                   [disabled]="userProfileForm.invalid || isLoading"
                   class="submit__btn"

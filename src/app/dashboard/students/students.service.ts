@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Student } from '@app/dashboard/students/students.interface';
+import {
+  CreateStudent,
+  Student,
+} from '@app/dashboard/students/students.interface';
 import { environment } from '@environments/environment';
 import { Pagination, Response } from '@app/shared/shared.type';
 import { UserRoles } from '@app/auth/auth.type';
@@ -17,7 +20,7 @@ export class StudentsService {
     private authService: AuthService
   ) {}
 
-  public addStudent(student: Student) {
+  public addStudent(student: Omit<CreateStudent, 'id'>) {
     return this.http.post<Response<Student>>(
       `${this.url}/add-student`,
       student
@@ -107,5 +110,24 @@ export class StudentsService {
 
   public getAllStudents(): Observable<Response<Student[]>> {
     return this.http.get<Response<Student[]>>(`${this.url}/all`);
+  }
+
+  public deleteStudent(id: string): Observable<Response<Student>> {
+    return this.http.delete<Response<Student>>(`${this.url}/${id}`);
+  }
+
+  public activateStudent(id: string) {
+    return this.http.get<Response<Student>>(`${this.url}/activate/${id}`);
+  }
+
+  public deactivateStudent(id: string) {
+    return this.http.get<Response<Student>>(`${this.url}/deactivate/${id}`);
+  }
+
+  public beneficiaryInfoExists() {
+    const id = this.authService.loggedInUser()?.user.id;
+    return this.http.get<Response<boolean>>(
+      `${this.url}/beneficiary-exists/${id}`
+    );
   }
 }
