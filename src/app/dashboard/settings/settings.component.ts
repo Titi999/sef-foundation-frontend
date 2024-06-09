@@ -85,10 +85,13 @@ export class SettingsComponent implements OnInit {
         '',
         [Validators.required, Validators.minLength(8), passwordValidator()],
       ],
-      twoFactorAuthentication: [''],
+      twoFactorAuthentication: [{ value: '', disabled: true }],
     });
-
-    this.passwordInfo();
+    if (this.isPasswordEditMode) {
+      this.passwordForm.reset();
+    } else {
+      this.passwordInfo();
+    }
   }
 
   private generalInfo() {
@@ -110,6 +113,11 @@ export class SettingsComponent implements OnInit {
 
   public togglePasswordEditMode(): void {
     this.isPasswordEditMode = !this.isPasswordEditMode;
+    if (this.isPasswordEditMode) {
+      this.passwordForm.reset();
+    } else {
+      this.passwordInfo();
+    }
   }
 
   public cancelGeneralInfoEdit() {

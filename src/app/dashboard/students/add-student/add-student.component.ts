@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
@@ -13,15 +13,27 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { fullNameValidator } from '@app/libs/validators';
+import {
+  eachWordShouldBeginWithCapital,
+  onlyAlphabeticalCharactersAndSpaceAllowed,
+} from '@app/libs/validators';
 import { MatInput } from '@angular/material/input';
 import { MatOption, MatSelect } from '@angular/material/select';
 import {
+  CreateStudent,
   Student,
   studentFormControls,
 } from '@app/dashboard/students/students.interface';
 import { StudentsService } from '@app/dashboard/students/students.service';
-import { catchError, finalize, first, of } from 'rxjs';
+import {
+  catchError,
+  finalize,
+  first,
+  of,
+  ReplaySubject,
+  Subject,
+  takeUntil,
+} from 'rxjs';
 import { serverError } from '@app/libs/constants';
 import { ToastrService } from 'ngx-toastr';
 import {
@@ -29,6 +41,9 @@ import {
   ActionModalIllustration,
 } from '@app/shared/action-modal/action-modal.type';
 import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
+import { AsyncPipe, NgForOf } from '@angular/common';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { School, SchoolService } from '@app/dashboard/schools/school.service';
 
 @Component({
   selector: 'app-add-student',
@@ -42,30 +57,52 @@ import { ActionModalComponent } from '@app/shared/action-modal/action-modal.comp
     MatInput,
     MatSelect,
     MatOption,
+    AsyncPipe,
+    NgxMatSelectSearchModule,
+    NgForOf,
   ],
   templateUrl: './add-student.component.html',
   styleUrl: './add-student.component.scss',
 })
-export class AddStudentComponent {
+export class AddStudentComponent implements OnInit {
   public title!: string;
   public subtext!: string;
   public isLoading: boolean = false;
   public buttonText!: string;
   public studentForm = new FormGroup({
-    name: new FormControl('', [Validators.required, fullNameValidator()]),
-    parent: new FormControl('', [Validators.required, fullNameValidator()]),
+    name: new FormControl('', [
+      Validators.required,
+      eachWordShouldBeginWithCapital(),
+      onlyAlphabeticalCharactersAndSpaceAllowed(),
+    ]),
+    parent: new FormControl('', [
+      Validators.required,
+      eachWordShouldBeginWithCapital(),
+      onlyAlphabeticalCharactersAndSpaceAllowed(),
+    ]),
     school: new FormControl('', [Validators.required]),
     level: new FormControl('', [Validators.required]),
-    phone: new FormControl('', [Validators.required]),
+    phone: new FormControl('', [
+      Validators.required,
+      Validators.pattern('[- +()0-9]{10,}'),
+    ]),
+    parentPhone: new FormControl('', [Validators.pattern('[- +()0-9]{6,}')]),
     description: new FormControl(''),
   });
+  public schoolFilterCtrl = new FormControl<string>('');
+  public filteredSchools: ReplaySubject<School[]> = new ReplaySubject<School[]>(
+    1
+  );
+  protected _onDestroy = new Subject<void>();
+  protected schools: School[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<AddStudentComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Student,
     private readonly studentService: StudentsService,
     private readonly toastrService: ToastrService,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private readonly schoolService: SchoolService
   ) {
     if (data) {
       this.title = 'Edit student details';
@@ -73,7 +110,7 @@ export class AddStudentComponent {
       this.buttonText = 'Update';
       this.studentForm.patchValue({
         ...data,
-        school: data.school.name,
+        school: data.school.id,
       });
     } else {
       this.title = 'Add a new student';
@@ -82,11 +119,42 @@ export class AddStudentComponent {
     }
   }
 
+  ngOnInit() {
+    this.getAllSchools();
+    this.schoolFilterCtrl.valueChanges
+      .pipe(takeUntil(this._onDestroy))
+      .subscribe(() => {
+        this.filterSchool();
+      });
+  }
+
+  public getAllSchools() {
+    return this.schoolService
+      .getAllSchools()
+      .pipe(
+        first(),
+        catchError(error => {
+          this.toastrService.error(
+            error.error.message,
+            error.error.error || serverError
+          );
+          return of(null);
+        }),
+        finalize(() => {})
+      )
+      .subscribe(response => {
+        if (response) {
+          this.schools = response.data;
+          this.filteredSchools.next(response.data.slice());
+        }
+      });
+  }
+
   submit() {
     if (this.studentForm.valid) {
       this.isLoading = true;
       this.dialogRef.disableClose = true;
-      const studentData = this.studentForm.value as unknown as Student;
+      const studentData = this.studentForm.value as Omit<CreateStudent, 'id'>;
       if (!this.data) {
         this.studentService
           .addStudent(studentData)
@@ -111,7 +179,7 @@ export class AddStudentComponent {
                 actionIllustration: ActionModalIllustration.success,
                 title: 'Awesome!',
                 actionColor: 'primary',
-                subtext: 'Great, student has been successfully edited',
+                subtext: 'Great, student has been successfully added',
                 actionType: 'close',
               };
               this.dialog.open(ActionModalComponent, {
@@ -178,18 +246,46 @@ export class AddStudentComponent {
     }
     switch (controlName) {
       case 'parent':
-        if (control?.errors?.['invalidFullName']) {
-          return 'Please provide a valid full name';
+        if (control?.errors?.['eachWordShouldBeginWithCapital']) {
+          return 'Each name should begin with a capital letter';
+        }
+        if (control?.errors?.['onlyAlphabeticalCharactersAndSpaceAllowed']) {
+          return 'Only Alphabets and spaces allowed';
         }
         break;
       case 'name':
-        if (control?.errors?.['invalidFullName']) {
-          return 'Please provide a valid full name';
+        if (control?.errors?.['eachWordShouldBeginWithCapital']) {
+          return 'Each name should begin with a capital letter';
+        }
+        if (control?.errors?.['onlyAlphabeticalCharactersAndSpaceAllowed']) {
+          return 'Only Alphabets and spaces allowed';
         }
         break;
+      case 'phone':
+        return 'Please provide a valid phone number';
+      case 'parentPhone':
+        return 'Please provide a valid phone number';
       default:
         return '';
     }
     return '';
+  }
+
+  protected filterSchool() {
+    if (!this.schools) {
+      return;
+    }
+    let search = this.schoolFilterCtrl.value as string;
+    if (!search) {
+      this.filteredSchools.next(this.schools.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    this.filteredSchools.next(
+      this.schools.filter(
+        school => school.name.toLowerCase().indexOf(search) > -1
+      )
+    );
   }
 }

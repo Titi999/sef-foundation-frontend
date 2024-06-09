@@ -22,3 +22,22 @@ export function fullNameValidator(): ValidatorFn {
     return validFullName ? null : { invalidFullName: true };
   };
 }
+
+export function eachWordShouldBeginWithCapital(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const fullName = control.value as string;
+    for (const word of fullName.split(' '))
+      if (word[0] == undefined || word[0] == word[0].toLowerCase())
+        return { eachWordShouldBeginWithCapital: true };
+    return null;
+  };
+}
+
+export function onlyAlphabeticalCharactersAndSpaceAllowed(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const regex = /^[a-zA-Z\s]*$/;
+    if (!(control.value as string).match(regex))
+      return { onlyAlphabeticalCharactersAndSpaceAllowed: true };
+    return null;
+  };
+}

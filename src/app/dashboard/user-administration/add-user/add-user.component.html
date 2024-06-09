@@ -14,7 +14,12 @@
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Email</mat-label>
-      <input formControlName="email" id="email" matInput type="email" />
+      <input
+        [disabled]="true"
+        formControlName="email"
+        id="email"
+        matInput
+        type="email" />
       <mat-error>{{ getFormErrors('email') }}</mat-error>
     </mat-form-field>
     <mat-form-field appearance="outline">

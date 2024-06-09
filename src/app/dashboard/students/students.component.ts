@@ -27,7 +27,9 @@ import {
   combineLatest,
   debounceTime,
   filter,
+  finalize,
   first,
+  of,
   of as observableOf,
   Subject,
   takeUntil,
@@ -39,8 +41,14 @@ import { User } from '@app/auth/auth.type';
 import { AddStudentComponent } from '@app/dashboard/students/add-student/add-student.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
-import { statusFilters } from '@app/libs/constants';
+import { serverError, statusFilters } from '@app/libs/constants';
 import { Router } from '@angular/router';
+import {
+  ActionModalData,
+  ActionModalIllustration,
+} from '@app/shared/action-modal/action-modal.type';
+import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-students',
@@ -99,7 +107,8 @@ export class StudentsComponent implements AfterViewInit, OnDestroy {
   constructor(
     private readonly studentsService: StudentsService,
     private readonly dialog: MatDialog,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly toastrService: ToastrService
   ) {}
 
   ngAfterViewInit() {
@@ -140,14 +149,26 @@ export class StudentsComponent implements AfterViewInit, OnDestroy {
   }
 
   downloadCSV() {
-    new ngxCsv(this.data, 'students', {
+    const data = this.data.map(student => {
+      return {
+        id: student.id,
+        name: student.name,
+        parent: student.parent,
+        school: student.school.name,
+        class: student.level,
+        phone: student.phone,
+        status: student.status,
+        dateCreated: student.created_at,
+        updatedAt: student.updated_at,
+      };
+    });
+    new ngxCsv(data, 'students', {
       headers: [
         'ID',
         'NAME',
         'PARENT',
         'SCHOOL',
         'CLASS',
-        'PERMISSIONS',
         'PHONE NUMBER',
         'STATUS',
         'DATE CREATED',
@@ -198,15 +219,142 @@ export class StudentsComponent implements AfterViewInit, OnDestroy {
       .subscribe();
   }
 
-  deleteStudent(id: string) {
-    console.log(id);
-  }
-
   onPaginationChange(event: PageEvent) {
     this.page.setValue(event.pageIndex + 1);
   }
 
   selectStudent(student: Student) {
-    this.router.navigateByUrl(`dashboard/student-profile/${student.id}`);
+    void this.router.navigateByUrl(`dashboard/student-profile/${student.id}`);
+  }
+
+  deleteStudent(id: string) {
+    const data: ActionModalData = {
+      actionIllustration: ActionModalIllustration.delete,
+      title: 'Delete student',
+      actionColor: 'warn',
+      subtext: 'are you sure you want to delete this student from the system?',
+      actionType: 'decision',
+      decisionText: 'Delete',
+    };
+    const dialogRef = this.dialog.open(ActionModalComponent, {
+      maxWidth: '400px',
+      maxHeight: '400px',
+      width: '100%',
+      height: '100%',
+      data,
+    });
+    dialogRef.componentInstance.decisionEmitter
+      .pipe(
+        takeUntil(this.destroy),
+        catchError(error => {
+          this.toastrService.error(
+            error.error.message,
+            error.error.error || serverError
+          );
+          return of(null);
+        }),
+        finalize(() => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.disableClose = false;
+        }),
+        tap(() => {
+          dialogRef.disableClose = true;
+          dialogRef.componentInstance.isLoading = true;
+        }),
+        switchMap(() => this.studentsService.deleteStudent(id)),
+        tap(() => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.close();
+          this.page.setValue(1);
+          const data: ActionModalData = {
+            actionIllustration: ActionModalIllustration.delete,
+            title: 'completed',
+            actionColor: 'warn',
+            subtext:
+              'The student has successfully been deleted from the system',
+            actionType: 'close',
+          };
+          this.dialog.open(ActionModalComponent, {
+            maxWidth: '400px',
+            maxHeight: '400px',
+            width: '100%',
+            height: '100%',
+            data,
+          });
+        })
+      )
+      .subscribe();
+  }
+
+  changeStatus(status: string, id: string) {
+    const isActive = status === 'active';
+    const data: ActionModalData = {
+      actionIllustration: isActive
+        ? ActionModalIllustration.deactivate
+        : ActionModalIllustration.activate,
+      title: isActive ? 'Deactivate student' : 'Activate student',
+      actionColor: isActive ? 'warn' : 'primary',
+      subtext: isActive
+        ? 'are you sure you want to deactivate this student?'
+        : 'are you sure you want to activate this student?',
+      actionType: 'decision',
+      decisionText: isActive ? 'Deactivate' : 'Activate',
+    };
+    const dialogRef = this.dialog.open(ActionModalComponent, {
+      maxWidth: '400px',
+      maxHeight: '400px',
+      width: '100%',
+      height: '100%',
+      data,
+    });
+    const request = isActive
+      ? this.studentsService.deactivateStudent(id)
+      : this.studentsService.activateStudent(id);
+
+    dialogRef.componentInstance.decisionEmitter
+      .pipe(
+        takeUntil(this.destroy),
+        catchError(error => {
+          this.toastrService.error(
+            error.error.message,
+            error.error.error || serverError
+          );
+          return of(null);
+        }),
+        finalize(() => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.disableClose = false;
+        }),
+        tap(() => {
+          dialogRef.componentInstance.isLoading = true;
+          dialogRef.disableClose = true;
+        }),
+        switchMap(() => request),
+        tap(response => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.close();
+          const isActive = response.data.status === 'active';
+          this.page.setValue(1);
+          const data: ActionModalData = {
+            actionIllustration: isActive
+              ? ActionModalIllustration.success
+              : ActionModalIllustration.deactivate,
+            title: isActive ? 'Success!' : 'Completed',
+            actionColor: isActive ? 'primary' : 'warn',
+            subtext: isActive
+              ? 'you have successfully activated student'
+              : 'The student has been successfully deactivated',
+            actionType: 'close',
+          };
+          this.dialog.open(ActionModalComponent, {
+            maxWidth: '400px',
+            maxHeight: '400px',
+            width: '100%',
+            height: '100%',
+            data,
+          });
+        })
+      )
+      .subscribe();
   }
 }

@@ -63,7 +63,12 @@ export class RequestsComponent implements AfterViewInit {
   public totalItems = 0;
   public page = new FormControl(1);
   private readonly destroy = new Subject<void>();
-  public statusFilters = [{ value: 'pending', label: 'Pending' }];
+  public statusFilters = [
+    { value: '', label: 'All' },
+    { value: 'pending', label: 'Pending' },
+    { value: 'approved', label: 'Approved' },
+    { value: 'declined', label: 'Declined' },
+  ];
   public statusControl = new FormControl('');
   public data: Disbursement[] = [];
 

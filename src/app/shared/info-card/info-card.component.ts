@@ -21,4 +21,7 @@ export class InfoCardComponent {
   toggleMode() {
     this.viewMode = !this.viewMode;
   }
+
+  @Input()
+  showActions = false;
 }

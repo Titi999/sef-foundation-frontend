@@ -10,6 +10,8 @@ export interface Student {
   phone: string;
   parentPhone: string;
   status: 'active' | 'inactive';
+  created_at: Date;
+  updated_at: Date;
 }
 
 export interface CreateStudent {
@@ -29,4 +31,5 @@ export type studentFormControls =
   | 'school'
   | 'level'
   | 'phone'
+  | 'parentPhone'
   | 'description';

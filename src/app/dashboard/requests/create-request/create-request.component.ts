@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButton, MatIconButton } from '@angular/material/button';
@@ -19,8 +19,8 @@ import {
 import { MatSelect } from '@angular/material/select';
 import { MatInput, MatLabel } from '@angular/material/input';
 import { BannerComponent } from '@app/shared/banner/banner.component';
-import { catchError, finalize, first, of, Subject } from 'rxjs';
-import { Location } from '@angular/common';
+import { catchError, finalize, first, of, Subject, tap } from 'rxjs';
+import { AsyncPipe, Location } from '@angular/common';
 import { MatDialog, MatDialogClose } from '@angular/material/dialog';
 import {
   CreateDisbursement,
@@ -35,6 +35,8 @@ import { ActionModalComponent } from '@app/shared/action-modal/action-modal.comp
 import { FinanceService } from '@app/dashboard/finance/finance.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { StudentsService } from '@app/dashboard/students/students.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-request',
@@ -54,12 +56,15 @@ import { Router } from '@angular/router';
     MatDialogClose,
     MatIconButton,
     MatLabel,
+    AsyncPipe,
   ],
   templateUrl: './create-request.component.html',
   styleUrl: './create-request.component.scss',
 })
-export class CreateRequestComponent implements OnDestroy {
+export class CreateRequestComponent implements OnDestroy, OnInit {
   isLoading = false;
+  isChecking = false;
+  beneficiaryExists = false;
   showBanner = false;
   bannerText = '';
   requestForm = this.fb.group({
@@ -79,8 +84,25 @@ export class CreateRequestComponent implements OnDestroy {
     private readonly financeService: FinanceService,
     private readonly toastrService: ToastrService,
     private readonly dialog: MatDialog,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly studentsService: StudentsService
   ) {}
+
+  ngOnInit() {
+    this.beneficiaryInfoExists();
+  }
+
+  beneficiaryInfoExists() {
+    this.isChecking = true;
+    return this.studentsService
+      .beneficiaryInfoExists()
+      .pipe(
+        first(),
+        finalize(() => (this.isChecking = false)),
+        tap(response => (this.beneficiaryExists = response.data))
+      )
+      .subscribe();
+  }
 
   ngOnDestroy() {
     this._onDestroy.next();

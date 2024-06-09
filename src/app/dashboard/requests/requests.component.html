@@ -10,11 +10,12 @@
     <div class="actions__wrapper">
       <div class="actions__left">
         <span>Requests</span>
-        <div class="search__input__wrapper">
-          <app-rounded-input
-            [control]="searchValue"
-            placeholder="Search receipients" />
-        </div>
+        <!--        TODO: I'm not sure if there is anything to search here-->
+        <!--        <div class="search__input__wrapper">-->
+        <!--          <app-rounded-input-->
+        <!--            [control]="searchValue"-->
+        <!--            placeholder="Search receipients" />-->
+        <!--        </div>-->
       </div>
       <div class="actions__right">
         <button
@@ -25,7 +26,8 @@
           Filter by
         </button>
         <mat-menu #filter="matMenu">
-          <button mat-menu-item [matMenuTriggerFor]="role">Role</button>
+          <!--          TODO: This filter is not necessary at this point-->
+          <!--          <button mat-menu-item [matMenuTriggerFor]="role">Role</button>-->
           <button mat-menu-item [matMenuTriggerFor]="status">Status</button>
         </mat-menu>
         <mat-menu #role="matMenu">
