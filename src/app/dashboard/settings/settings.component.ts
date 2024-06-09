@@ -20,6 +20,10 @@ import {
   ActionModalIllustration,
 } from '@app/shared/action-modal/action-modal.type';
 import { AvatarModule } from 'ngx-avatars';
+import { SettingsService } from './settings.service';
+import { catchError, finalize, of } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
+import { serverError } from '@app/libs/constants';
 
 @Component({
   selector: 'app-settings',
@@ -44,15 +48,20 @@ export class SettingsComponent implements OnInit {
 
   public isGeneralInfoEditMode = false;
   public isPasswordEditMode = false;
+  public generalInfoloading = false;
+  public passwordLoading = false;
 
   constructor(
     private authService: AuthService,
     private fb: FormBuilder,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private readonly settingsService: SettingsService,
+    private readonly toastrService: ToastrService
   ) {}
 
   ngOnInit(): void {
     this.generalInfoForm = this.fb.group({
+      id: [{ value: '', disabled: true }, Validators.required],
       name: ['', Validators.required],
       role: [{ value: '', disabled: true }, Validators.required],
       email: [
@@ -84,6 +93,7 @@ export class SettingsComponent implements OnInit {
 
   private generalInfo() {
     this.generalInfoForm.patchValue({
+      id: this.authService.loggedInUser()?.user.id,
       name: this.authService.loggedInUser()?.user.name,
       role: this.authService.role(),
       email: this.authService.loggedInUser()?.user.email,
@@ -104,12 +114,10 @@ export class SettingsComponent implements OnInit {
 
   public cancelGeneralInfoEdit() {
     this.toggleGeneralInfoEditMode();
-    this.generalInfo();
   }
 
   public cancelPasswordEdit() {
     this.togglePasswordEditMode();
-    this.passwordInfo();
   }
 
   private passwordInfo() {
@@ -137,5 +145,54 @@ export class SettingsComponent implements OnInit {
       height: '100%',
       data,
     });
+  }
+
+  public submitChangeName() {
+    const id = this.authService.loggedInUser()?.user.id;
+    const { name } = this.generalInfoForm.value;
+
+    if (id && this.generalInfoForm.valid) {
+      this.generalInfoloading = true;
+      this.settingsService
+        .changeName(id, name)
+        .pipe(
+          catchError(error => {
+            this.toastrService.error(
+              error.error.message,
+              error.error.error || serverError
+            );
+            return of(null);
+          }),
+          finalize(() => (this.generalInfoloading = false))
+        )
+        .subscribe(response => {
+          this.toastrService.success(response?.message);
+        });
+    }
+  }
+
+  public submitChangePassword() {
+    const id = this.authService.loggedInUser()?.user.id;
+    const { currentPassword, newPassword, confirmNewPassword } =
+      this.passwordForm.value;
+
+    if (id && this.generalInfoForm.valid) {
+      this.passwordLoading = true;
+      this.settingsService
+        .changePassword(id, currentPassword, newPassword, confirmNewPassword)
+        .pipe(
+          catchError(error => {
+            this.toastrService.error(
+              error.error.message,
+              error.error.error || serverError
+            );
+            return of(null);
+          }),
+          finalize(() => (this.passwordLoading = false))
+        )
+        .subscribe(response => {
+          this.toastrService.success(response?.message);
+        });
+    }
   }
 }

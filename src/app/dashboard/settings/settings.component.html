@@ -61,10 +61,12 @@
                   Cancel
                 </button>
                 <button
+                  [disabled]="generalInfoloading"
                   style="border-radius: 6rem"
                   mat-flat-button
                   color="primary"
-                  type="button">
+                  (click)="submitChangeName()"
+                  type="submit">
                   Save Changes
                 </button>
               }
@@ -73,17 +75,17 @@
         </mat-card-header>
 
         <mat-card-content>
-          <form [formGroup]="generalInfoForm">
+          <form [formGroup]="generalInfoForm" (ngSubmit)="submitChangeName()">
             @if (!isGeneralInfoEditMode) {
               <div class="not__edit__mode">
                 <div class="edit__left">
                   <div>
-                    <h4>Full Name</h4>
-                    <p>{{ generalInfoForm.get('name')?.value }}</p>
+                    <h4>ID</h4>
+                    <p>{{ generalInfoForm.get('id')?.value }}</p>
                   </div>
                   <div>
-                    <h4>Role</h4>
-                    <p>{{ generalInfoForm.get('role')?.value | titlecase }}</p>
+                    <h4>Full Name</h4>
+                    <p>{{ generalInfoForm.get('name')?.value }}</p>
                   </div>
                 </div>
 
@@ -92,24 +94,28 @@
                     <h4>Email</h4>
                     <p>{{ generalInfoForm.get('email')?.value }}</p>
                   </div>
+                  <div>
+                    <h4>Role</h4>
+                    <p>{{ generalInfoForm.get('role')?.value | titlecase }}</p>
+                  </div>
                 </div>
               </div>
             } @else {
               <div class="edit__mode">
                 <div class="edit__left">
                   <mat-form-field appearance="outline">
-                    <mat-label>Full Name</mat-label>
-                    <input matInput formControlName="name" />
-                    @if (generalInfoForm.get('name')?.invalid) {
-                      <mat-error>Name is required</mat-error>
+                    <mat-label>ID</mat-label>
+                    <input matInput formControlName="id" [disabled]="true" />
+                    @if (generalInfoForm.get('id')?.invalid) {
+                      <mat-error>ID is required</mat-error>
                     }
                   </mat-form-field>
 
                   <mat-form-field appearance="outline">
-                    <mat-label>Role</mat-label>
-                    <input matInput formControlName="role" [disabled]="true" />
-                    @if (generalInfoForm.get('role')?.invalid) {
-                      <mat-error>Role is required</mat-error>
+                    <mat-label>Full Name</mat-label>
+                    <input matInput formControlName="name" />
+                    @if (generalInfoForm.get('name')?.invalid) {
+                      <mat-error>Name is required</mat-error>
                     }
                   </mat-form-field>
                 </div>
@@ -124,6 +130,14 @@
                       [disabled]="true" />
                     @if (generalInfoForm.get('email')?.invalid) {
                       <mat-error>Enter a valid email</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Role</mat-label>
+                    <input matInput formControlName="role" [disabled]="true" />
+                    @if (generalInfoForm.get('role')?.invalid) {
+                      <mat-error>Role is required</mat-error>
                     }
                   </mat-form-field>
                 </div>
@@ -161,10 +175,12 @@
                   Cancel
                 </button>
                 <button
+                  [disabled]="passwordLoading"
                   style="border-radius: 6rem"
                   mat-flat-button
                   color="primary"
-                  type="button">
+                  type="button"
+                  (click)="submitChangePassword()">
                   Save Changes
                 </button>
               }
@@ -210,7 +226,7 @@
                       formControlName="currentPassword"
                       type="password" />
                     @if (passwordForm.get('currentPassword')?.invalid) {
-                      <mat-error>Current Password is required</mat-error>
+                      <mat-error>Current Password is invalid</mat-error>
                     }
                   </mat-form-field>
 
@@ -221,7 +237,7 @@
                       formControlName="confirmNewPassword"
                       type="password" />
                     @if (passwordForm.get('confirmNewPassword')?.invalid) {
-                      <mat-error>Confirm New Password is required</mat-error>
+                      <mat-error>Confirm New Password is invalid</mat-error>
                     }
                   </mat-form-field>
                 </div>
@@ -233,6 +249,9 @@
                       matInput
                       formControlName="newPassword"
                       type="password" />
+                    @if (passwordForm.get('newPassword')?.invalid) {
+                      <mat-error>New Password is invalid</mat-error>
+                    }
                   </mat-form-field>
 
                   <mat-form-field appearance="outline">
