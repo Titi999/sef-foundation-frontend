@@ -63,6 +63,10 @@ export const dashboardRoutes: Routes = [
             component: CreateBudgetComponent,
           },
           {
+            path: 'edit-budget/:id',
+            component: CreateBudgetComponent,
+          },
+          {
             path: 'disbursements',
             component: DisbursementComponent,
           },

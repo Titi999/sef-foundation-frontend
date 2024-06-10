@@ -29,16 +29,30 @@ export class FinanceService {
   ) {}
 
   public getBudgets(
-    page: number
+    page: number,
+    status: string
   ): Observable<Response<Pagination<BudgetAllocation[]>>> {
     return this.http.get<Response<Pagination<BudgetAllocation[]>>>(
-      `${this.url}/budgets?page=${page}`
+      `${this.url}/budgets?page=${page}&status=${status}`
+    );
+  }
+
+  public getBudget(id: string): Observable<Response<BudgetAllocation>> {
+    return this.http.get<Response<BudgetAllocation>>(
+      `${this.url}/budgets/${id}`
     );
   }
 
   public createBudget(budgetData: CreateBudget) {
     return this.http.post<Response<BudgetDistribution>>(
       `${this.url}/budget`,
+      budgetData
+    );
+  }
+
+  public editBudget(id: string, budgetData: CreateBudget) {
+    return this.http.patch<Response<BudgetDistribution>>(
+      `${this.url}/budget/${id}`,
       budgetData
     );
   }
