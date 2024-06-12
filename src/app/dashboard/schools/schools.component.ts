@@ -1,15 +1,16 @@
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatIconButton, MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatButtonToggle } from '@angular/material/button-toggle';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatChip } from '@angular/material/chips';
+import { MatDialog } from '@angular/material/dialog';
 import {
-  MatSuffix,
   MatFormField,
   MatLabel,
   MatPrefix,
+  MatSuffix,
 } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
@@ -19,20 +20,30 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { schools } from '@app/libs/constants';
+import { serverError } from '@app/libs/constants';
 import { RoundedInputComponent } from '@app/shared/rounded-input/rounded-input.component';
-import { Subject, first, tap } from 'rxjs';
 import { ngxCsv } from 'ngx-csv/ngx-csv';
+import { ToastrService } from 'ngx-toastr';
+import {
+  Subject,
+  catchError,
+  finalize,
+  first,
+  map,
+  of,
+  takeUntil,
+  tap,
+} from 'rxjs';
 import { AddSchoolComponent } from './add-school/add-school.component';
-import { MatDialog } from '@angular/material/dialog';
+import { SchoolService } from './school.service';
 
 interface School {
-  id: string;
   name: string;
   email: string;
   phone: string;
   location: string;
-  created_at: string;
+  status: string;
+  id: string;
 }
 
 @Component({
@@ -70,25 +81,28 @@ interface School {
 })
 export class SchoolsComponent implements OnInit, OnDestroy {
   public searchValue = new FormControl('');
-  // TODO: update laoding state once we have real data set
   public isLoadingResults = false;
   public data: School[] = [];
   public readonly displayedColumns: string[] = [
-    'created_at',
     'name',
     'email',
     'phone',
     'location',
+    'status',
     'more',
   ];
   public totalItems = 0;
   private readonly destroy = new Subject<void>();
   public page = new FormControl(1);
 
-  constructor(private readonly dialog: MatDialog) {}
+  constructor(
+    private readonly dialog: MatDialog,
+    private readonly schoolService: SchoolService,
+    private readonly toastrService: ToastrService
+  ) {}
 
   ngOnInit(): void {
-    this.data = schools;
+    this.getAllSchools();
   }
 
   ngOnDestroy() {
@@ -101,8 +115,8 @@ export class SchoolsComponent implements OnInit, OnDestroy {
   }
 
   downloadCSV() {
-    new ngxCsv(this.data, 'schools', {
-      headers: ['ID', 'NAME', 'EMAIL', 'PHONE', 'LOCATION', 'DATE CREATED'],
+    new ngxCsv(this.data, 'Schools', {
+      headers: ['ID', 'NAME', 'EMAIL', 'PHONE', 'LOCATION', 'STATUS'],
     });
   }
 
@@ -124,5 +138,24 @@ export class SchoolsComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
+  }
+
+  public getAllSchools() {
+    this.isLoadingResults = true;
+    this.schoolService
+      .getAllSchools()
+      .pipe(
+        catchError(error => {
+          this.toastrService.error(
+            error.error.message,
+            error.error.error || serverError
+          );
+          return of(null);
+        }),
+        finalize(() => (this.isLoadingResults = false)),
+        takeUntil(this.destroy),
+        map(response => response?.data || [])
+      )
+      .subscribe(schools => (this.data = schools));
   }
 }

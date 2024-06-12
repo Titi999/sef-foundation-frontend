@@ -87,8 +87,9 @@
   }
 }
 
+// TODO: Make this better
 .doughnut-container {
-  height: 420px;
+  max-height: 400px;
   display: flex;
   justify-content: center;
   align-items: center;
