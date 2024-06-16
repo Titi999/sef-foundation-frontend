@@ -37,6 +37,7 @@ import {
   ReplaySubject,
   Subject,
   takeUntil,
+  tap,
 } from 'rxjs';
 import { Student } from '@app/dashboard/students/students.interface';
 import { StudentsService } from '@app/dashboard/students/students.service';
@@ -54,7 +55,7 @@ import {
   ActionModalIllustration,
 } from '@app/shared/action-modal/action-modal.type';
 import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Papa } from 'ngx-papaparse';
 import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
 
@@ -91,6 +92,7 @@ import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
   styleUrl: './create-disbursement.component.scss',
 })
 export class CreateDisbursementComponent implements OnInit, OnDestroy {
+  editId: string | undefined = undefined;
   disbursementForm = this.fb.group({
     studentId: ['', Validators.required],
     amount: ['', Validators.required],
@@ -112,6 +114,7 @@ export class CreateDisbursementComponent implements OnInit, OnDestroy {
   public totalDistribution = 0;
   public showBanner = false;
   public bannerText = '';
+  public isLoadingDisbursement = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -121,10 +124,12 @@ export class CreateDisbursementComponent implements OnInit, OnDestroy {
     private readonly financeService: FinanceService,
     private readonly dialog: MatDialog,
     private readonly router: Router,
-    private readonly papa: Papa
+    private readonly papa: Papa,
+    private readonly activatedRoute: ActivatedRoute
   ) {}
 
   ngOnInit() {
+    this.canEditBudget();
     this.studentsService
       .getAllStudents()
       .pipe(
@@ -157,6 +162,33 @@ export class CreateDisbursementComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this._onDestroy.next();
     this._onDestroy.complete();
+  }
+
+  canEditBudget() {
+    if (this.router.url.startsWith('/dashboard/finance/edit-disbursement/')) {
+      const disbursementId = this.activatedRoute.snapshot.params['id'];
+      this.isLoadingDisbursement = true;
+      this.financeService
+        .getDisbursement(disbursementId)
+        .pipe(
+          finalize(() => (this.isLoadingDisbursement = false)),
+          tap(({ data }) => {
+            this.editId = data.id;
+            this.disbursementForm.controls.amount.setValue(
+              data.amount.toString()
+            );
+            this.disbursementForm.controls.studentId.setValue(
+              data.__student__.id
+            );
+            data.disbursementDistribution.map(({ amount, title }) => {
+              this.distributionForm.controls.amount.setValue(amount.toString());
+              this.distributionForm.controls.title.setValue(title);
+              this.addDistribution();
+            });
+          })
+        )
+        .subscribe();
+    }
   }
 
   get disbursementDistributions(): FormArray {
@@ -215,41 +247,79 @@ export class CreateDisbursementComponent implements OnInit, OnDestroy {
           .disbursementDistribution.value as CreateDisbursementDistribution[],
       };
       this.isLoading = true;
-      this.financeService
-        .createDisbursement(disbursementDetails)
-        .pipe(
-          first(),
-          catchError(error => {
-            this.toastrService.error(
-              error.error.message,
-              error.error.error || serverError
-            );
-            return of(null);
-          }),
-          finalize(() => {
-            this.isLoading = false;
-          })
-        )
-        .subscribe(response => {
-          if (response) {
-            const data: ActionModalData = {
-              actionIllustration: ActionModalIllustration.success,
-              title: 'Congratulations!',
-              actionColor: 'primary',
-              subtext:
-                'Well done, You have successfully created a disbursement',
-              actionType: 'close',
-            };
-            this.dialog.open(ActionModalComponent, {
-              maxWidth: '400px',
-              maxHeight: '400px',
-              width: '100%',
-              height: '100%',
-              data,
-            });
-            void this.router.navigate(['dashboard/finance/disbursements']);
-          }
-        });
+      if (this.editId) {
+        this.financeService
+          .editDisbursement(this.editId, disbursementDetails)
+          .pipe(
+            first(),
+            catchError(error => {
+              this.toastrService.error(
+                error.error.message,
+                error.error.error || serverError
+              );
+              return of(null);
+            }),
+            finalize(() => {
+              this.isLoading = false;
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              const data: ActionModalData = {
+                actionIllustration: ActionModalIllustration.success,
+                title: 'Congratulations!',
+                actionColor: 'primary',
+                subtext:
+                  'Well done, You have successfully edited a disbursement',
+                actionType: 'close',
+              };
+              this.dialog.open(ActionModalComponent, {
+                maxWidth: '400px',
+                maxHeight: '400px',
+                width: '100%',
+                height: '100%',
+                data,
+              });
+              void this.router.navigate(['dashboard/finance/disbursements']);
+            }
+          });
+      } else {
+        this.financeService
+          .createDisbursement(disbursementDetails)
+          .pipe(
+            first(),
+            catchError(error => {
+              this.toastrService.error(
+                error.error.message,
+                error.error.error || serverError
+              );
+              return of(null);
+            }),
+            finalize(() => {
+              this.isLoading = false;
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              const data: ActionModalData = {
+                actionIllustration: ActionModalIllustration.success,
+                title: 'Congratulations!',
+                actionColor: 'primary',
+                subtext:
+                  'Well done, You have successfully created a disbursement',
+                actionType: 'close',
+              };
+              this.dialog.open(ActionModalComponent, {
+                maxWidth: '400px',
+                maxHeight: '400px',
+                width: '100%',
+                height: '100%',
+                data,
+              });
+              void this.router.navigate(['dashboard/finance/disbursements']);
+            }
+          });
+      }
     } else {
       this.bannerText =
         'Please make sure your distribution equals disbursement amount';

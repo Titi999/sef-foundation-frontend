@@ -1,4 +1,4 @@
-<app-spinner [isLoading]="isLoadingStudents" />
+<app-spinner [isLoading]="isLoadingStudents || isLoadingDisbursement" />
 <div class="upload-wrapper">
   <button
     (click)="fileUpload.click()"

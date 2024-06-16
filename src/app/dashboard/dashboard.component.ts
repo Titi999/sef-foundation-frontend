@@ -37,7 +37,7 @@ const TREE_DATA: FinanceNode[] = [
   },
 ];
 
-interface ExampleFlatNode {
+interface FlatNode {
   expandable: boolean;
   name: string;
   level: number;
@@ -75,7 +75,7 @@ export class DashboardComponent implements OnInit {
     };
   };
 
-  treeControl = new FlatTreeControl<ExampleFlatNode>(
+  treeControl = new FlatTreeControl<FlatNode>(
     node => node.level,
     node => node.expandable
   );
@@ -89,7 +89,7 @@ export class DashboardComponent implements OnInit {
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
-  hasChild = (_: number, node: ExampleFlatNode) => node.expandable;
+  hasChild = (_: number, node: FlatNode) => node.expandable;
   @ViewChild(MatSidenav)
   sidenav!: MatSidenav;
   isMobile = true;

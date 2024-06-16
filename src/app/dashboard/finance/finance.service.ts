@@ -17,6 +17,7 @@ import {
   Disbursement,
 } from '@app/dashboard/finance/disbursement/disbursement.interface';
 import { AuthService } from '@app/auth/auth.service';
+import { BudgetAllocationComponent } from '@app/dashboard/finance/budget-allocation/budget-allocation.component';
 
 @Injectable({
   providedIn: 'root',
@@ -43,6 +44,12 @@ export class FinanceService {
     );
   }
 
+  public getDisbursement(id: string): Observable<Response<Disbursement>> {
+    return this.http.get<Response<Disbursement>>(
+      `${this.url}/disbursement/${id}`
+    );
+  }
+
   public createBudget(budgetData: CreateBudget) {
     return this.http.post<Response<BudgetDistribution>>(
       `${this.url}/budget`,
@@ -57,11 +64,26 @@ export class FinanceService {
     );
   }
 
+  public editDisbursement(id: string, disbursementData: CreateDisbursement) {
+    return this.http.patch<Response<Disbursement>>(
+      `${this.url}/disbursement/${id}`,
+      disbursementData
+    );
+  }
+
+  public deleteBudget(id: string) {
+    return this.http.delete<Response<BudgetAllocationComponent>>(
+      `budget/${id}`
+    );
+  }
+
   public getDisbursements(
-    page: number
+    page: number,
+    status: string,
+    search: string
   ): Observable<Response<Pagination<Disbursement[]>>> {
     return this.http.get<Response<Pagination<Disbursement[]>>>(
-      `${this.url}/disbursements?page=${page}`
+      `${this.url}/disbursements?page=${page}&status=${status}&search=${search}`
     );
   }
 

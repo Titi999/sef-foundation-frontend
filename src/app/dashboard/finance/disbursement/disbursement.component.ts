@@ -77,7 +77,11 @@ export class DisbursementComponent implements AfterViewInit, OnDestroy {
   public categoryFilters = [
     { value: 'Professional Course', label: 'Professional Course' },
   ];
-  public statusFilters = [{ value: 'pending', label: 'Pending' }];
+  public statusFilters = [
+    { value: 'pending', label: 'Pending' },
+    { value: 'approved', label: 'Approved' },
+    { value: 'declined', label: 'Declined' },
+  ];
   public data: Disbursement[] = [];
   public isLoadingResults = false;
   public totalItems = 0;
@@ -91,14 +95,18 @@ export class DisbursementComponent implements AfterViewInit, OnDestroy {
   ) {}
 
   ngAfterViewInit() {
-    combineLatest([this.page.valueChanges.pipe(startWith(1))])
+    combineLatest([
+      this.page.valueChanges.pipe(startWith(1)),
+      this.statusControl.valueChanges.pipe(startWith('')),
+      this.searchValue.valueChanges.pipe(startWith('')),
+    ])
       .pipe(
         takeUntil(this.destroy),
         debounceTime(1000),
-        switchMap(([page]) => {
+        switchMap(([page, status, search]) => {
           this.isLoadingResults = true;
           return this.financeService
-            .getDisbursements(page || 1)
+            .getDisbursements(page || 1, status || '', search || '')
             .pipe(catchError(() => observableOf(null)));
         }),
         map(data => {
@@ -195,16 +203,18 @@ export class DisbursementComponent implements AfterViewInit, OnDestroy {
   }
 
   downloadCSV() {
-    new ngxCsv(this.data, 'disbursement', {
-      headers: [
-        'ID',
-        'AMOUNT',
-        'NAME',
-        'SCHOOL',
-        'STATUS',
-        'DATE CREATED',
-        'DATE UPDATED',
-      ],
+    const data = this.data.map(disbursement => {
+      return {
+        id: disbursement.id,
+        amount: disbursement.amount,
+        name: disbursement.__student__.name,
+        school: disbursement.__student__.school.name,
+        status: disbursement.status,
+        dateCreated: disbursement.created_at,
+      };
+    });
+    new ngxCsv(data, 'disbursement', {
+      headers: ['ID', 'AMOUNT', 'NAME', 'SCHOOL', 'STATUS', 'DATE CREATED'],
     });
   }
 }

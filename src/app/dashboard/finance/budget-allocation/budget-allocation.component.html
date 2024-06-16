@@ -124,19 +124,20 @@
               <button [routerLink]="'../edit-budget/' + row.id" mat-menu-item>
                 <mat-icon>edit</mat-icon>Edit
               </button>
-              <button class="delete__btn" mat-menu-item>
-                <mat-icon color="warn">delete</mat-icon>Delete
-              </button>
-              @if (row.status === 'active') {
-                <button mat-menu-item>
-                  <mat-icon>hide_source</mat-icon>Deactivate
-                </button>
-              }
-              @if (row.status === 'inactive') {
-                <button mat-menu-item>
-                  <mat-icon>check</mat-icon>Activate
-                </button>
-              }
+              <!--              <button class="delete__btn" mat-menu-item>-->
+              <!--                <mat-icon color="warn">delete</mat-icon>Delete-->
+              <!--              </button>-->
+              <!--              TODO: Still contemplating the implications of activating or deactivating a budget-->
+              <!--              @if (row.status === 'active') {-->
+              <!--                <button mat-menu-item>-->
+              <!--                  <mat-icon>hide_source</mat-icon>Deactivate-->
+              <!--                </button>-->
+              <!--              }-->
+              <!--              @if (row.status === 'inactive') {-->
+              <!--                <button mat-menu-item>-->
+              <!--                  <mat-icon>check</mat-icon>Activate-->
+              <!--                </button>-->
+              <!--              }-->
             </mat-menu>
           </td>
         </ng-container>
