@@ -33,7 +33,7 @@ import { Router, RouterOutlet } from '@angular/router';
   styleUrl: './budget-statistics.component.scss',
 })
 export class BudgetStatisticsComponent implements OnInit {
-  showGridContainer = true;
+  showGridContainer = false;
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(

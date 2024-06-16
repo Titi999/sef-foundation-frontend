@@ -43,9 +43,10 @@ import {
   ActionModalIllustration,
 } from '@app/shared/action-modal/action-modal.type';
 import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BannerComponent } from '@app/shared/banner/banner.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
 
 @Component({
   selector: 'app-create-budget',
@@ -75,12 +76,14 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     MatDialogClose,
     BannerComponent,
     MatProgressSpinner,
+    SpinnerComponent,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './create-budget.component.html',
   styleUrl: './create-budget.component.scss',
 })
 export class CreateBudgetComponent implements OnInit {
+  editId: string | undefined = undefined;
   budgetForm = this.fb.group({
     startDate: ['', Validators.required],
     endDate: ['', Validators.required],
@@ -97,6 +100,7 @@ export class CreateBudgetComponent implements OnInit {
   showBanner = false;
   bannerText = '';
   totalDistribution = 0;
+  isLoadingBudget = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -104,10 +108,12 @@ export class CreateBudgetComponent implements OnInit {
     private readonly financeService: FinanceService,
     private readonly toastrService: ToastrService,
     private readonly dialog: MatDialog,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly activatedRoute: ActivatedRoute
   ) {}
 
   ngOnInit() {
+    this.canEditBudget();
     this.budgetForm.valueChanges
       .pipe(
         tap(() => {
@@ -122,6 +128,32 @@ export class CreateBudgetComponent implements OnInit {
         })
       )
       .subscribe();
+  }
+
+  canEditBudget() {
+    if (this.router.url.startsWith('/dashboard/finance/edit-budget/')) {
+      const budgetId = this.activatedRoute.snapshot.params['id'];
+      this.isLoadingBudget = true;
+      this.financeService
+        .getBudget(budgetId)
+        .pipe(
+          finalize(() => (this.isLoadingBudget = false)),
+          tap(({ data }) => {
+            this.editId = data.id;
+            this.budgetForm.controls.total.setValue(data.total.toString());
+            this.budgetForm.controls.startDate.setValue(
+              data.startDate.toString()
+            );
+            this.budgetForm.controls.endDate.setValue(data.endDate.toString());
+            data.budgetDistribution.map(({ amount, title }) => {
+              this.distributionForm.controls.amount.setValue(amount.toString());
+              this.distributionForm.controls.title.setValue(title);
+              this.addDistribution();
+            });
+          })
+        )
+        .subscribe();
+    }
   }
 
   addDistribution() {
@@ -167,40 +199,81 @@ export class CreateBudgetComponent implements OnInit {
         total: parseInt(this.budgetForm.controls.total.value as string),
       };
       this.isLoading = true;
-      this.financeService
-        .createBudget(budgetDetails)
-        .pipe(
-          first(),
-          catchError(error => {
-            this.toastrService.error(
-              error.error.message,
-              error.error.error || serverError
-            );
-            return of(null);
-          }),
-          finalize(() => {
-            this.isLoading = false;
-          })
-        )
-        .subscribe(response => {
-          if (response) {
-            const data: ActionModalData = {
-              actionIllustration: ActionModalIllustration.success,
-              title: 'Congratulations!',
-              actionColor: 'primary',
-              subtext: 'Well done, You have successfully created a budget',
-              actionType: 'close',
-            };
-            this.dialog.open(ActionModalComponent, {
-              maxWidth: '400px',
-              maxHeight: '400px',
-              width: '100%',
-              height: '100%',
-              data,
-            });
-            void this.router.navigate(['dashboard/finance/budget-allocation']);
-          }
-        });
+      if (this.editId) {
+        this.financeService
+          .editBudget(this.editId, budgetDetails)
+          .pipe(
+            first(),
+            catchError(error => {
+              this.toastrService.error(
+                error.error.message,
+                error.error.error || serverError
+              );
+              return of(null);
+            }),
+            finalize(() => {
+              this.isLoading = false;
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              const data: ActionModalData = {
+                actionIllustration: ActionModalIllustration.success,
+                title: 'Congratulations!',
+                actionColor: 'primary',
+                subtext: 'Well done, You have successfully edited a budget',
+                actionType: 'close',
+              };
+              this.dialog.open(ActionModalComponent, {
+                maxWidth: '400px',
+                maxHeight: '400px',
+                width: '100%',
+                height: '100%',
+                data,
+              });
+              void this.router.navigate([
+                'dashboard/finance/budget-allocation',
+              ]);
+            }
+          });
+      } else {
+        this.financeService
+          .createBudget(budgetDetails)
+          .pipe(
+            first(),
+            catchError(error => {
+              this.toastrService.error(
+                error.error.message,
+                error.error.error || serverError
+              );
+              return of(null);
+            }),
+            finalize(() => {
+              this.isLoading = false;
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              const data: ActionModalData = {
+                actionIllustration: ActionModalIllustration.success,
+                title: 'Congratulations!',
+                actionColor: 'primary',
+                subtext: 'Well done, You have successfully created a budget',
+                actionType: 'close',
+              };
+              this.dialog.open(ActionModalComponent, {
+                maxWidth: '400px',
+                maxHeight: '400px',
+                width: '100%',
+                height: '100%',
+                data,
+              });
+              void this.router.navigate([
+                'dashboard/finance/budget-allocation',
+              ]);
+            }
+          });
+      }
     } else {
       this.budgetForm.markAllAsTouched();
     }

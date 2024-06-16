@@ -34,7 +34,6 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
   combineLatest,
   debounceTime,
-  filter,
   of as observableOf,
   Subject,
   takeUntil,
@@ -44,6 +43,7 @@ import { BudgetAllocation } from '@app/dashboard/finance/budget-allocation/budge
 import { RouterLink } from '@angular/router';
 import { FinanceService } from '@app/dashboard/finance/finance.service';
 import { getShortMonthAndYear, getShortMonthName } from '@app/libs/date';
+import { statusFilters } from '@app/libs/constants';
 
 @Component({
   selector: 'app-budget-allocation',
@@ -104,6 +104,7 @@ export class BudgetAllocationComponent implements AfterViewInit, OnDestroy {
   public searchValue = new FormControl('');
   private readonly destroy = new Subject<void>();
   public page = new FormControl(1);
+  public statusControl = new FormControl('');
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -112,21 +113,20 @@ export class BudgetAllocationComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     combineLatest([
-      this.searchValue.valueChanges.pipe(
-        startWith(''),
-        filter((searchValue): searchValue is string => searchValue !== null)
-      ),
+      // this.searchValue.valueChanges.pipe(
+      //   startWith(''),
+      //   filter((searchValue): searchValue is string => searchValue !== null)
+      // ),
       this.page.valueChanges.pipe(startWith(1)),
-      this.paginator.page.pipe(startWith(new PageEvent())),
+      this.statusControl.valueChanges.pipe(startWith('')),
     ])
       .pipe(
         takeUntil(this.destroy),
         debounceTime(1000),
-        switchMap(([search, page]) => {
-          console.log(search);
+        switchMap(([page, status]) => {
           this.isLoadingResults = true;
           return this.financeService
-            .getBudgets(page || 1)
+            .getBudgets(page || 1, status || '')
             .pipe(catchError(() => observableOf(null)));
         }),
         map(data => {
@@ -160,8 +160,8 @@ export class BudgetAllocationComponent implements AfterViewInit, OnDestroy {
         'SURPLUS / DEFICIT',
         'START DATE',
         'END DATE',
-        'REMEMBER TOKEN',
-        'DATE EMAIL VERIFIED',
+        'TOTAL DISTRIBUTION',
+        'STATUS',
         'DATE CREATED',
         'DATE UPDATED',
       ],
@@ -170,4 +170,5 @@ export class BudgetAllocationComponent implements AfterViewInit, OnDestroy {
 
   protected readonly getShortMonthName = getShortMonthName;
   protected readonly getShortMonthAndYear = getShortMonthAndYear;
+  protected readonly statusFilters = statusFilters;
 }

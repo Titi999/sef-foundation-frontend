@@ -1,19 +1,43 @@
 <div class="grid-container">
+  <div class="title-wrapper">
+    <div>
+      <h1 class="title">Budgets</h1>
+      <p class="description">List of budgets</p>
+    </div>
+  </div>
   <div class="table__container">
     <div class="actions__wrapper">
       <div class="actions__left">
         <span>Budget</span>
-        <div class="search__input__wrapper">
-          <app-rounded-input
-            [control]="searchValue"
-            placeholder="Search name, email" />
-        </div>
+        <!--        TODO: Nothing to search at this point-->
+        <!--        <div class="search__input__wrapper">-->
+        <!--          <app-rounded-input-->
+        <!--            [control]="searchValue"-->
+        <!--            placeholder="Search name, email" />-->
+        <!--        </div>-->
       </div>
       <div class="actions__right">
-        <button class="filter__btn btn" mat-flat-button>
+        <button
+          [matMenuTriggerFor]="filter"
+          class="filter__btn btn"
+          mat-flat-button>
           <mat-icon>filter_list</mat-icon>
           Filter by
         </button>
+        <mat-menu #filter="matMenu">
+          <button mat-menu-item [matMenuTriggerFor]="status">Status</button>
+        </mat-menu>
+        <mat-menu #status="matMenu">
+          <mat-radio-group [formControl]="statusControl">
+            @for (status of statusFilters; track status.value) {
+              <button mat-menu-item>
+                <mat-radio-button [value]="status.value" color="primary">
+                  {{ status.label }}
+                </mat-radio-button>
+              </button>
+            }
+          </mat-radio-group>
+        </mat-menu>
         <button
           [disabled]="!data.length"
           (click)="downloadCSV()"
@@ -97,20 +121,23 @@
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
-              <button mat-menu-item><mat-icon>edit</mat-icon>Edit</button>
-              <button class="delete__btn" mat-menu-item>
-                <mat-icon color="warn">delete</mat-icon>Delete
+              <button [routerLink]="'../edit-budget/' + row.id" mat-menu-item>
+                <mat-icon>edit</mat-icon>Edit
               </button>
-              @if (row.status === 'active') {
-                <button mat-menu-item>
-                  <mat-icon>hide_source</mat-icon>Deactivate
-                </button>
-              }
-              @if (row.status === 'inactive') {
-                <button mat-menu-item>
-                  <mat-icon>check</mat-icon>Activate
-                </button>
-              }
+              <!--              <button class="delete__btn" mat-menu-item>-->
+              <!--                <mat-icon color="warn">delete</mat-icon>Delete-->
+              <!--              </button>-->
+              <!--              TODO: Still contemplating the implications of activating or deactivating a budget-->
+              <!--              @if (row.status === 'active') {-->
+              <!--                <button mat-menu-item>-->
+              <!--                  <mat-icon>hide_source</mat-icon>Deactivate-->
+              <!--                </button>-->
+              <!--              }-->
+              <!--              @if (row.status === 'inactive') {-->
+              <!--                <button mat-menu-item>-->
+              <!--                  <mat-icon>check</mat-icon>Activate-->
+              <!--                </button>-->
+              <!--              }-->
             </mat-menu>
           </td>
         </ng-container>
