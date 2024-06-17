@@ -123,40 +123,8 @@ export class SchoolsComponent implements OnDestroy, AfterViewInit {
     private readonly toastrService: ToastrService
   ) {}
 
-  ngAfterViewInit() {
-    // public getAllSchools() {
-    combineLatest([
-      this.searchValue.valueChanges.pipe(
-        startWith(''),
-        filter((searchValue): searchValue is string => searchValue !== null)
-      ),
-      this.page.valueChanges.pipe(startWith(1)),
-      this.paginator.page.pipe(startWith(new PageEvent())),
-    ])
-      .pipe(
-        takeUntil(this.destroy),
-        debounceTime(1000),
-        switchMap(([search, page]) => {
-          this.isLoadingResults = true;
-          return this.schoolService
-            .getSchools(page || 1, search)
-            .pipe(catchError(() => of(null)));
-        }),
-        map(data => {
-          this.isLoadingResults = false;
-          if (data === null) {
-            return [];
-          }
-          this.totalItems = data.data.total;
-          return data.data.items;
-        })
-      )
-      .subscribe(data => {
-        if (data) {
-          this.data.set(data);
-        }
-      });
-    // }
+  ngAfterViewInit(): void {
+    this.getAllSchools();
   }
 
   ngOnDestroy() {
@@ -194,39 +162,39 @@ export class SchoolsComponent implements OnDestroy, AfterViewInit {
       .subscribe();
   }
 
-  // public getAllSchools() {
-  //   combineLatest([
-  //     this.searchValue.valueChanges.pipe(
-  //       startWith(''),
-  //       filter((searchValue): searchValue is string => searchValue !== null)
-  //     ),
-  //     this.page.valueChanges.pipe(startWith(1)),
-  //     this.paginator.page.pipe(startWith(new PageEvent())),
-  //   ])
-  //     .pipe(
-  //       takeUntil(this.destroy),
-  //       debounceTime(1000),
-  //       switchMap(([search, page]) => {
-  //         this.isLoadingResults = true;
-  //         return this.schoolService
-  //           .getSchools(page || 1, search)
-  //           .pipe(catchError(() => of(null)));
-  //       }),
-  //       map(data => {
-  //         this.isLoadingResults = false;
-  //         if (data === null) {
-  //           return [];
-  //         }
-  //         this.totalItems = data.data.total;
-  //         return data.data.items;
-  //       })
-  //     )
-  //     .subscribe(data => {
-  //       if (data) {
-  //         this.data.set(data);
-  //       }
-  //     });
-  // }
+  public getAllSchools() {
+    combineLatest([
+      this.searchValue.valueChanges.pipe(
+        startWith(''),
+        filter((searchValue): searchValue is string => searchValue !== null)
+      ),
+      this.page.valueChanges.pipe(startWith(1)),
+      this.paginator.page.pipe(startWith(new PageEvent())),
+    ])
+      .pipe(
+        takeUntil(this.destroy),
+        debounceTime(1000),
+        switchMap(([search, page]) => {
+          this.isLoadingResults = true;
+          return this.schoolService
+            .getSchools(page || 1, search)
+            .pipe(catchError(() => of(null)));
+        }),
+        map(data => {
+          this.isLoadingResults = false;
+          if (data === null) {
+            return [];
+          }
+          this.totalItems = data.data.total;
+          return data.data.items;
+        })
+      )
+      .subscribe(data => {
+        if (data) {
+          this.data.set(data);
+        }
+      });
+  }
 
   public editSchool(school: School) {
     const data: School = school;
