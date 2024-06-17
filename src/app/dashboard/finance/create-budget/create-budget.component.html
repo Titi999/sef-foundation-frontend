@@ -1,9 +1,12 @@
+<app-spinner [isLoading]="isLoadingBudget" />
 <app-info-card title="Term Dates">
   <div viewMode></div>
   <div editMode [formGroup]="budgetForm" class="container">
     <mat-form-field appearance="outline">
       <mat-label>Enter a date range</mat-label>
-      <mat-date-range-input [min]="startMinDate" [rangePicker]="picker">
+      <mat-date-range-input
+        [min]="!editId ? startMinDate : ''"
+        [rangePicker]="picker">
         <input
           matStartDate
           formControlName="startDate"

@@ -3,6 +3,18 @@
 
 .grid-container {
   margin: 20px;
+
+  .title {
+    font-size: 22px;
+    color: map-get(colors.$primary-palette, 500);
+    margin-left: 15px;
+  }
+
+  .description {
+    font-size: font.$font-size-sm;
+    margin-left: 15px;
+    margin-top: 10px;
+  }
 }
 
 .status__chip__active {
@@ -124,4 +136,9 @@ table {
 
 .add__btn {
   color: white;
+}
+
+.title-wrapper {
+  display: flex;
+  justify-content: space-between;
 }
