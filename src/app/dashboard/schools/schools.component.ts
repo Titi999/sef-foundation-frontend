@@ -1,5 +1,12 @@
 import { DatePipe, TitleCasePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnDestroy,
+  ViewChild,
+  WritableSignal,
+  signal,
+} from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatButtonToggle } from '@angular/material/button-toggle';
@@ -15,27 +22,41 @@ import {
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import {
+  MatPaginator,
+  MatPaginatorModule,
+  PageEvent,
+} from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { serverError } from '@app/libs/constants';
 import { RoundedInputComponent } from '@app/shared/rounded-input/rounded-input.component';
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import { ToastrService } from 'ngx-toastr';
 import {
   Subject,
   catchError,
+  combineLatest,
+  debounceTime,
+  filter,
   finalize,
   first,
   map,
   of,
+  startWith,
+  switchMap,
   takeUntil,
   tap,
 } from 'rxjs';
 import { AddSchoolComponent } from './add-school/add-school.component';
 import { SchoolService } from './school.service';
+import {
+  ActionModalData,
+  ActionModalIllustration,
+} from '@app/shared/action-modal/action-modal.type';
+import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
+import { serverError } from '@app/libs/constants';
 
 interface School {
   name: string;
@@ -79,10 +100,10 @@ interface School {
   templateUrl: './schools.component.html',
   styleUrl: './schools.component.scss',
 })
-export class SchoolsComponent implements OnInit, OnDestroy {
+export class SchoolsComponent implements OnDestroy, AfterViewInit {
   public searchValue = new FormControl('');
   public isLoadingResults = false;
-  public data: School[] = [];
+  public data: WritableSignal<School[]> = signal([]);
   public readonly displayedColumns: string[] = [
     'name',
     'email',
@@ -94,6 +115,7 @@ export class SchoolsComponent implements OnInit, OnDestroy {
   public totalItems = 0;
   private readonly destroy = new Subject<void>();
   public page = new FormControl(1);
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private readonly dialog: MatDialog,
@@ -101,8 +123,40 @@ export class SchoolsComponent implements OnInit, OnDestroy {
     private readonly toastrService: ToastrService
   ) {}
 
-  ngOnInit(): void {
-    this.getAllSchools();
+  ngAfterViewInit() {
+    // public getAllSchools() {
+    combineLatest([
+      this.searchValue.valueChanges.pipe(
+        startWith(''),
+        filter((searchValue): searchValue is string => searchValue !== null)
+      ),
+      this.page.valueChanges.pipe(startWith(1)),
+      this.paginator.page.pipe(startWith(new PageEvent())),
+    ])
+      .pipe(
+        takeUntil(this.destroy),
+        debounceTime(1000),
+        switchMap(([search, page]) => {
+          this.isLoadingResults = true;
+          return this.schoolService
+            .getSchools(page || 1, search)
+            .pipe(catchError(() => of(null)));
+        }),
+        map(data => {
+          this.isLoadingResults = false;
+          if (data === null) {
+            return [];
+          }
+          this.totalItems = data.data.total;
+          return data.data.items;
+        })
+      )
+      .subscribe(data => {
+        if (data) {
+          this.data.set(data);
+        }
+      });
+    // }
   }
 
   ngOnDestroy() {
@@ -120,7 +174,7 @@ export class SchoolsComponent implements OnInit, OnDestroy {
     });
   }
 
-  addSchool() {
+  public addSchool() {
     const dialogRef = this.dialog.open(AddSchoolComponent, {
       maxWidth: '400px',
       maxHeight: '480px',
@@ -140,11 +194,81 @@ export class SchoolsComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  public getAllSchools() {
-    this.isLoadingResults = true;
-    this.schoolService
-      .getAllSchools()
+  // public getAllSchools() {
+  //   combineLatest([
+  //     this.searchValue.valueChanges.pipe(
+  //       startWith(''),
+  //       filter((searchValue): searchValue is string => searchValue !== null)
+  //     ),
+  //     this.page.valueChanges.pipe(startWith(1)),
+  //     this.paginator.page.pipe(startWith(new PageEvent())),
+  //   ])
+  //     .pipe(
+  //       takeUntil(this.destroy),
+  //       debounceTime(1000),
+  //       switchMap(([search, page]) => {
+  //         this.isLoadingResults = true;
+  //         return this.schoolService
+  //           .getSchools(page || 1, search)
+  //           .pipe(catchError(() => of(null)));
+  //       }),
+  //       map(data => {
+  //         this.isLoadingResults = false;
+  //         if (data === null) {
+  //           return [];
+  //         }
+  //         this.totalItems = data.data.total;
+  //         return data.data.items;
+  //       })
+  //     )
+  //     .subscribe(data => {
+  //       if (data) {
+  //         this.data.set(data);
+  //       }
+  //     });
+  // }
+
+  public editSchool(school: School) {
+    const data: School = school;
+    const dialogRef = this.dialog.open(AddSchoolComponent, {
+      maxWidth: '500px',
+      maxHeight: '700px',
+      width: '100%',
+      height: '100%',
+      data,
+    });
+    dialogRef
+      .afterClosed()
       .pipe(
+        first(),
+        tap((school: School) => {
+          if (school) {
+            this.page.setValue(1);
+          }
+        })
+      )
+      .subscribe();
+  }
+
+  public deleteStudent(id: string) {
+    const data: ActionModalData = {
+      actionIllustration: ActionModalIllustration.delete,
+      title: 'Delete school',
+      actionColor: 'warn',
+      subtext: 'are you sure you want to delete this student from the system?',
+      actionType: 'decision',
+      decisionText: 'Delete',
+    };
+    const dialogRef = this.dialog.open(ActionModalComponent, {
+      maxWidth: '400px',
+      maxHeight: '400px',
+      width: '100%',
+      height: '100%',
+      data,
+    });
+    dialogRef.componentInstance.decisionEmitter
+      .pipe(
+        takeUntil(this.destroy),
         catchError(error => {
           this.toastrService.error(
             error.error.message,
@@ -152,10 +276,35 @@ export class SchoolsComponent implements OnInit, OnDestroy {
           );
           return of(null);
         }),
-        finalize(() => (this.isLoadingResults = false)),
-        takeUntil(this.destroy),
-        map(response => response?.data || [])
+        finalize(() => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.disableClose = false;
+        }),
+        tap(() => {
+          dialogRef.disableClose = true;
+          dialogRef.componentInstance.isLoading = true;
+        }),
+        switchMap(() => this.schoolService.deleteSchool(id)),
+        tap(() => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.close();
+          this.page.setValue(1);
+          const data: ActionModalData = {
+            actionIllustration: ActionModalIllustration.delete,
+            title: 'completed',
+            actionColor: 'warn',
+            subtext: 'The school has successfully been deleted from the system',
+            actionType: 'close',
+          };
+          this.dialog.open(ActionModalComponent, {
+            maxWidth: '400px',
+            maxHeight: '400px',
+            width: '100%',
+            height: '100%',
+            data,
+          });
+        })
       )
-      .subscribe(schools => (this.data = schools));
+      .subscribe();
   }
 }

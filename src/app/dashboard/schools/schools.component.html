@@ -14,7 +14,7 @@
       </div>
       <div class="actions__right">
         <button
-          [disabled]="!data.length"
+          [disabled]="!data().length"
           (click)="downloadCSV()"
           class="download__btn btn"
           mat-flat-button>
@@ -47,7 +47,7 @@
     <div class="school-table-container">
       <table
         mat-table
-        [dataSource]="data"
+        [dataSource]="data()"
         class="example-table"
         matSort
         matSortActive="created"
@@ -86,8 +86,13 @@
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
-              <button mat-menu-item><mat-icon>edit</mat-icon>Edit</button>
-              <button class="delete__btn" mat-menu-item>
+              <button (click)="editSchool(row)" mat-menu-item>
+                <mat-icon>edit</mat-icon>Edit
+              </button>
+              <button
+                (click)="deleteStudent(row.id)"
+                class="delete__btn"
+                mat-menu-item>
                 <mat-icon color="warn">delete</mat-icon>Delete
               </button>
             </mat-menu>
