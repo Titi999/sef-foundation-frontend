@@ -99,6 +99,11 @@ export const dashboardRoutes: Routes = [
         component: CreateRequestComponent,
         canActivate: [CanActiveBeneficiary],
       },
+      {
+        path: 'edit-request/:id',
+        component: CreateRequestComponent,
+        canActivate: [CanActiveBeneficiary],
+      },
     ],
   },
 ];

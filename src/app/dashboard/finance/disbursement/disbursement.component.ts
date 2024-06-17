@@ -31,7 +31,7 @@ import {
   ActionModalIllustration,
 } from '@app/shared/action-modal/action-modal.type';
 import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
-import { serverError } from '@app/libs/constants';
+import { requestFilters, serverError } from '@app/libs/constants';
 import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 
@@ -77,11 +77,7 @@ export class DisbursementComponent implements AfterViewInit, OnDestroy {
   public categoryFilters = [
     { value: 'Professional Course', label: 'Professional Course' },
   ];
-  public statusFilters = [
-    { value: 'pending', label: 'Pending' },
-    { value: 'approved', label: 'Approved' },
-    { value: 'declined', label: 'Declined' },
-  ];
+  public statusFilters = requestFilters;
   public data: Disbursement[] = [];
   public isLoadingResults = false;
   public totalItems = 0;
