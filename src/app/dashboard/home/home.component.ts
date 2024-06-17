@@ -147,6 +147,19 @@ export class HomeComponent implements OnInit {
     };
   });
   public doughnutChartType: ChartType = 'doughnut';
+  public doughnutChartOptions: ChartConfiguration['options'] = {
+    devicePixelRatio: 2,
+    maintainAspectRatio: true,
+    responsive: true,
+    aspectRatio: 1,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top',
+        fullSize: true,
+      },
+    },
+  };
   public tableData = [
     {
       id: 1,

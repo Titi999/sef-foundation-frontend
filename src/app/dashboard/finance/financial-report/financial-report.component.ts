@@ -20,7 +20,6 @@ import { MatList, MatListItem } from '@angular/material/list';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatSelect } from '@angular/material/select';
 import { InfoCardComponent } from '@app/shared/info-card/info-card.component';
-import { ChartType } from 'chart.js';
 import Chart from 'chart.js/auto';
 import { ngxCsv } from 'ngx-csv';
 
@@ -63,7 +62,6 @@ export class FinancialReportComponent implements OnInit {
   selectedTerm!: string;
   selectedValue!: string;
   public startMinDate = new Date();
-  public barChartType: ChartType = 'bar';
   chart: unknown = [];
   data!: [];
 
@@ -94,10 +92,9 @@ export class FinancialReportComponent implements OnInit {
 
   private budgetAndDisbursementBarChart() {
     this.chart = new Chart('MyChart', {
-      type: 'bar', //this denotes tha type of chart
+      type: 'bar',
 
       data: {
-        // values on X-Axis
         labels: [
           'PRI.',
           'JHS.',
