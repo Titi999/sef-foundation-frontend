@@ -34,9 +34,8 @@ import {
 import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
 import { FinanceService } from '@app/dashboard/finance/finance.service';
 import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { StudentsService } from '@app/dashboard/students/students.service';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-request',
@@ -77,6 +76,7 @@ export class CreateRequestComponent implements OnDestroy, OnInit {
   });
   protected _onDestroy = new Subject<void>();
   public totalDistribution = 0;
+  public editId: string | undefined = undefined;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -85,10 +85,12 @@ export class CreateRequestComponent implements OnDestroy, OnInit {
     private readonly toastrService: ToastrService,
     private readonly dialog: MatDialog,
     private readonly router: Router,
-    private readonly studentsService: StudentsService
+    private readonly studentsService: StudentsService,
+    private readonly activatedRoute: ActivatedRoute
   ) {}
 
   ngOnInit() {
+    this.canEditRequest();
     this.beneficiaryInfoExists();
   }
 
@@ -107,6 +109,28 @@ export class CreateRequestComponent implements OnDestroy, OnInit {
   ngOnDestroy() {
     this._onDestroy.next();
     this._onDestroy.complete();
+  }
+
+  canEditRequest() {
+    if (this.router.url.startsWith('/dashboard/edit-request/')) {
+      const requestId = this.activatedRoute.snapshot.params['id'];
+      this.isChecking = true;
+      this.financeService
+        .getDisbursement(requestId)
+        .pipe(
+          finalize(() => (this.isChecking = false)),
+          tap(({ data }) => {
+            this.editId = data.id;
+            this.requestForm.controls.amount.setValue(data.amount.toString());
+            data.disbursementDistribution.map(({ amount, title }) => {
+              this.distributionForm.controls.amount.setValue(amount.toString());
+              this.distributionForm.controls.title.setValue(title);
+              this.addDistribution();
+            });
+          })
+        )
+        .subscribe();
+    }
   }
 
   get disbursementDistributions(): FormArray {
@@ -161,40 +185,77 @@ export class CreateRequestComponent implements OnDestroy, OnInit {
           .disbursementDistribution.value as CreateDisbursementDistribution[],
       };
       this.isLoading = true;
-      this.financeService
-        .createBeneficiaryDisbursement(disbursementDetails)
-        .pipe(
-          first(),
-          catchError(error => {
-            this.toastrService.error(
-              error.error.message,
-              error.error.error || serverError
-            );
-            return of(null);
-          }),
-          finalize(() => {
-            this.isLoading = false;
-          })
-        )
-        .subscribe(response => {
-          if (response) {
-            const data: ActionModalData = {
-              actionIllustration: ActionModalIllustration.success,
-              title: 'Congratulations!',
-              actionColor: 'primary',
-              subtext: 'Well done, You have successfully created a request',
-              actionType: 'close',
-            };
-            this.dialog.open(ActionModalComponent, {
-              maxWidth: '400px',
-              maxHeight: '400px',
-              width: '100%',
-              height: '100%',
-              data,
-            });
-            void this.router.navigate(['dashboard/requests']);
-          }
-        });
+      if (this.editId) {
+        this.financeService
+          .editRequest(this.editId, disbursementDetails)
+          .pipe(
+            first(),
+            catchError(error => {
+              this.toastrService.error(
+                error.error.message,
+                error.error.error || serverError
+              );
+              return of(null);
+            }),
+            finalize(() => {
+              this.isLoading = false;
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              const data: ActionModalData = {
+                actionIllustration: ActionModalIllustration.success,
+                title: 'Congratulations!',
+                actionColor: 'primary',
+                subtext: 'Well done, You have successfully edited a request',
+                actionType: 'close',
+              };
+              this.dialog.open(ActionModalComponent, {
+                maxWidth: '400px',
+                maxHeight: '400px',
+                width: '100%',
+                height: '100%',
+                data,
+              });
+              void this.router.navigate(['dashboard/requests']);
+            }
+          });
+      } else {
+        this.financeService
+          .createBeneficiaryDisbursement(disbursementDetails)
+          .pipe(
+            first(),
+            catchError(error => {
+              this.toastrService.error(
+                error.error.message,
+                error.error.error || serverError
+              );
+              return of(null);
+            }),
+            finalize(() => {
+              this.isLoading = false;
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              const data: ActionModalData = {
+                actionIllustration: ActionModalIllustration.success,
+                title: 'Congratulations!',
+                actionColor: 'primary',
+                subtext: 'Well done, You have successfully created a request',
+                actionType: 'close',
+              };
+              this.dialog.open(ActionModalComponent, {
+                maxWidth: '400px',
+                maxHeight: '400px',
+                width: '100%',
+                height: '100%',
+                data,
+              });
+              void this.router.navigate(['dashboard/requests']);
+            }
+          });
+      }
     } else {
       this.bannerText =
         'Please make sure your distribution equals disbursement amount';

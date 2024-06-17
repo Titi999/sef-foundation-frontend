@@ -71,10 +71,25 @@ export class FinanceService {
     );
   }
 
+  public editRequest(
+    id: string,
+    disbursementData: Omit<CreateDisbursement, 'studentId'>
+  ) {
+    const userId = this.authService.loggedInUser()?.user.id;
+    return this.http.patch<Response<Disbursement>>(
+      `${this.url}/request/${userId}/${id}`,
+      disbursementData
+    );
+  }
+
   public deleteBudget(id: string) {
     return this.http.delete<Response<BudgetAllocationComponent>>(
       `budget/${id}`
     );
+  }
+
+  public deleteDisbursementByBeneficiary(id: string) {
+    return this.http.delete(`${this.url}/disbursement/${id}`);
   }
 
   public getDisbursements(

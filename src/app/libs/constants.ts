@@ -6,6 +6,13 @@ export const statusFilters = [
   { label: 'Inactive', value: 'inactive' },
 ] as const;
 
+export const requestFilters = [
+  { value: '', label: 'All' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'approved', label: 'Approved' },
+  { value: 'declined', label: 'Declined' },
+];
+
 export const budgetDistributions = [
   { label: 'Primary School Fees', value: 'Primary School Fees' },
   { label: 'Junior High School Fees', value: 'Junior High School Fees' },

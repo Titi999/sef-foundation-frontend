@@ -106,24 +106,21 @@
         <ng-container matColumnDef="more">
           <th mat-header-cell *matHeaderCellDef>More</th>
           <td mat-cell *matCellDef="let row">
-            <button [matMenuTriggerFor]="menu" mat-icon-button>
-              <mat-icon>more_vert</mat-icon>
-            </button>
+            @if (row.status === 'pending') {
+              <button [matMenuTriggerFor]="menu" mat-icon-button>
+                <mat-icon>more_vert</mat-icon>
+              </button>
+            }
             <mat-menu #menu="matMenu">
-              <button mat-menu-item><mat-icon>edit</mat-icon>Edit</button>
-              <button class="delete__btn" mat-menu-item>
+              <button [routerLink]="'../edit-request/' + row.id" mat-menu-item>
+                <mat-icon>edit</mat-icon>Edit
+              </button>
+              <button
+                (click)="delete(row.id)"
+                class="delete__btn"
+                mat-menu-item>
                 <mat-icon color="warn">delete</mat-icon>Delete
               </button>
-              @if (row.status === 'active') {
-                <button mat-menu-item>
-                  <mat-icon>hide_source</mat-icon>Deactivate
-                </button>
-              }
-              @if (row.status === 'inactive') {
-                <button mat-menu-item>
-                  <mat-icon>check</mat-icon>Activate
-                </button>
-              }
             </mat-menu>
           </td>
         </ng-container>
