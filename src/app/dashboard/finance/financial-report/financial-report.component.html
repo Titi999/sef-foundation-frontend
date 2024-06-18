@@ -69,14 +69,32 @@
   <div class="bar-chart">
     <div class="bar-header">
       <h3 class="bar-chart-title">Budget vs. Disbursement</h3>
-      <button
-        (click)="downloadCSV()"
-        class="download__btn btn"
-        mat-flat-button
-        color="primary">
-        <mat-icon>download</mat-icon>
-        Download CSV
-      </button>
+
+      <div class="bar-right-header">
+        <div class="selectWrapper">
+          <select class="selectBox">
+            <option value="jan-apr">Jan - Apr</option>
+            <option value="may-aug">May - Aug</option>
+            <option value="sep-dec">Sep - Dec</option>
+          </select>
+        </div>
+        <div class="selectYearWrapper">
+          <select class="selectYearBox">
+            <option value="2024">2024</option>
+            <option value="2024">2023</option>
+            <option value="2024">2022</option>
+            <option value="2024">2021</option>
+          </select>
+        </div>
+        <button
+          (click)="downloadCSV()"
+          class="download__btn btn"
+          mat-flat-button
+          color="primary">
+          <mat-icon>download</mat-icon>
+          Download CSV
+        </button>
+      </div>
     </div>
     <canvas id="MyChart">{{ chart }}</canvas>
   </div>
