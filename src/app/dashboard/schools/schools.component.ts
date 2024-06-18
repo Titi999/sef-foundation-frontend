@@ -96,6 +96,7 @@ interface School {
     MatRadioButton,
     MatRadioGroup,
     ReactiveFormsModule,
+    MatInput,
   ],
   templateUrl: './schools.component.html',
   styleUrl: './schools.component.scss',
@@ -200,7 +201,7 @@ export class SchoolsComponent implements OnDestroy, AfterViewInit {
     const data: School = school;
     const dialogRef = this.dialog.open(AddSchoolComponent, {
       maxWidth: '500px',
-      maxHeight: '700px',
+      maxHeight: '500px',
       width: '100%',
       height: '100%',
       data,

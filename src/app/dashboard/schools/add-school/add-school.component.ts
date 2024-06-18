@@ -130,7 +130,7 @@ export class AddSchoolComponent {
         const { id } = this.data;
         const school = this.schoolForm.value as unknown as Omit<School, 'id'>;
         this.schoolService
-          .updateSchool(id, school)
+          .updateSchool(id, name, email, phone, location)
           .pipe(
             first(),
             catchError(error => {
