@@ -139,7 +139,6 @@ export class AuthService {
   }
 
   public updateUser(user: User) {
-    console.log('updateUser', user);
     const currentUser = this.loggedInUser();
     if (currentUser) {
       const updatedData: VerifyLogin = {
