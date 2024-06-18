@@ -137,24 +137,6 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  public deleteUser() {
-    const data: ActionModalData = {
-      actionIllustration: ActionModalIllustration.delete,
-      title: 'Delete user',
-      actionColor: 'warn',
-      subtext: 'are you sure you want to delete this user from the system?',
-      actionType: 'decision',
-      decisionText: 'Delete',
-    };
-    this.dialog.open(ActionModalComponent, {
-      maxWidth: '400px',
-      maxHeight: '400px',
-      width: '100%',
-      height: '100%',
-      data,
-    });
-  }
-
   public submitChangeName() {
     const id = this.authService.loggedInUser()?.user.id;
     const { name } = this.generalInfoForm.value;
@@ -174,7 +156,11 @@ export class SettingsComponent implements OnInit {
           finalize(() => (this.generalInfoloading = false))
         )
         .subscribe(response => {
-          this.toastrService.success(response?.message);
+          if (response) {
+            this.authService.updateUser(response.data);
+            this.toggleGeneralInfoEditMode();
+            this.toastrService.success(response?.message);
+          }
         });
     }
   }
@@ -199,7 +185,9 @@ export class SettingsComponent implements OnInit {
           finalize(() => (this.passwordLoading = false))
         )
         .subscribe(response => {
-          this.toastrService.success(response?.message);
+          if (response) {
+            this.toastrService.success(response.message);
+          }
         });
     }
   }
