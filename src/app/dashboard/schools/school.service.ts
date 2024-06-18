@@ -45,10 +45,18 @@ export class SchoolService {
     });
   }
 
-  public updateSchool(id: string, school: Omit<School, 'id'>) {
-    return this.http.patch<Response<School>>(`${this.baseUrl}`, {
-      id,
-      school,
+  public updateSchool(
+    id: string,
+    name: string,
+    email: string,
+    phone: string,
+    location: string
+  ) {
+    return this.http.patch<Response<School>>(`${this.baseUrl}/${id}`, {
+      name,
+      email,
+      phone,
+      location,
     });
   }
 
