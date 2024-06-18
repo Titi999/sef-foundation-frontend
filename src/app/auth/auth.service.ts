@@ -137,4 +137,16 @@ export class AuthService {
   public get accessToken() {
     return computed(() => this.userSignal()?.accessToken);
   }
+
+  public updateUser(user: User) {
+    const currentUser = this.loggedInUser();
+    if (currentUser) {
+      const updatedData: VerifyLogin = {
+        ...currentUser,
+        user,
+      };
+
+      this.setUser(updatedData);
+    }
+  }
 }
