@@ -14,14 +14,14 @@
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Classes</mat-label>
-      <mat-select formControlName="classes" multiple>
+      <mat-select formControlName="level" multiple>
         @for (classItem of classesList; track classItem.label) {
           <mat-option [value]="classItem.value">{{
             classItem.label
           }}</mat-option>
         }
       </mat-select>
-      <mat-error>{{ getFormErrors('classes') }}</mat-error>
+      <mat-error>{{ getFormErrors('level') }}</mat-error>
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Email</mat-label>

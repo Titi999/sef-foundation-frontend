@@ -30,7 +30,7 @@
       <mat-select formControlName="school" placeholder="School" #singleSelect>
         <mat-option>
           <ngx-mat-select-search
-            ngxMatSelectSearchClear="fsdfsd"
+            ngxMatSelectSearchClear=""
             placeholderLabel="Search school"
             noEntriesFoundLabel="No school found"
             [formControl]="schoolFilterCtrl"></ngx-mat-select-search>
@@ -43,10 +43,19 @@
       </mat-select>
     </mat-form-field>
     <mat-form-field appearance="outline">
-      <mat-label>Class</mat-label>
-      <input formControlName="level" id="class" matInput type="text" />
+      <mat-label>Select Class</mat-label>
+      <mat-select formControlName="level">
+        @for (classItem of classesList; track classItem) {
+          <mat-option [value]="classItem">{{ classItem }}</mat-option>
+        }
+      </mat-select>
       <mat-error>{{ getFormErrors('level') }}</mat-error>
     </mat-form-field>
+    <!--    <mat-form-field appearance="outline">-->
+    <!--      <mat-label>Class</mat-label>-->
+    <!--      <input formControlName="level" id="class" matInput type="text" />-->
+    <!--      <mat-error>{{ getFormErrors('level') }}</mat-error>-->
+    <!--    </mat-form-field>-->
     <mat-form-field appearance="outline">
       <mat-label>Phone</mat-label>
       <input formControlName="phone" id="phone" matInput type="tel" />

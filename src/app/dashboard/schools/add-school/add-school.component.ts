@@ -64,7 +64,7 @@ export class AddSchoolComponent {
       Validators.pattern(/^\d{10}$/),
     ]),
     location: new FormControl('', [Validators.required]),
-    classes: new FormControl<string[][]>([], [Validators.required]),
+    level: new FormControl<string[][]>([], [Validators.required]),
   });
   protected schools: School[] = [];
 
@@ -89,7 +89,7 @@ export class AddSchoolComponent {
         }
       }
 
-      this.schoolForm.controls.classes.setValue(classes);
+      this.schoolForm.controls.level.setValue(classes);
       this.title = 'Edit school details';
       this.subtext = 'kindly fill in the details to update the school';
       this.buttonText = 'Update';
@@ -106,7 +106,7 @@ export class AddSchoolComponent {
       School,
       'classes'
     >;
-    const classes = this.schoolForm.controls.classes.value?.flat() as string[];
+    const classes = this.schoolForm.controls.level.value?.flat() as string[];
     if (this.schoolForm.valid) {
       this.isLoading = true;
       if (!this.data) {
@@ -191,7 +191,7 @@ export class AddSchoolComponent {
   }
 
   getFormErrors(
-    controlName: 'name' | 'email' | 'phone' | 'location' | 'classes'
+    controlName: 'name' | 'email' | 'phone' | 'location' | 'level'
   ) {
     const control = this.schoolForm.get(controlName);
     if (control?.errors?.['required']) {

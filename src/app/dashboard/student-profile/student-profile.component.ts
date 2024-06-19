@@ -72,6 +72,7 @@ import { MatDialog } from '@angular/material/dialog';
 export class StudentProfileComponent implements OnInit, OnDestroy {
   public showBanner: boolean = false;
   public beneficiaryExists = false;
+  public classesList: string[] = [];
   public userProfileForm = this.fb.group({
     parent: [
       '',
@@ -130,6 +131,14 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._onDestroy))
       .subscribe(() => {
         this.filterSchool();
+      });
+
+    this.userProfileForm.controls.school.valueChanges
+      .pipe(takeUntil(this._onDestroy))
+      .subscribe(value => {
+        this.classesList =
+          this.schools.find(school => school.id === value)?.classes || [];
+        this.userProfileForm.controls.level.enable();
       });
   }
 

@@ -121,13 +121,24 @@
 
               <!-- Right -->
               <div class="card-content__right">
+                <!--                <mat-form-field appearance="outline">-->
+                <!--                  <mat-label>Class</mat-label>-->
+                <!--                  <input-->
+                <!--                    matInput-->
+                <!--                    formControlName="level"-->
+                <!--                    id="level"-->
+                <!--                    type="text" />-->
+                <!--                  <mat-error>{{ getFormErrors('level') }}</mat-error>-->
+                <!--                </mat-form-field>-->
                 <mat-form-field appearance="outline">
-                  <mat-label>Level</mat-label>
-                  <input
-                    matInput
-                    formControlName="level"
-                    id="level"
-                    type="text" />
+                  <mat-label>Select Class</mat-label>
+                  <mat-select formControlName="level">
+                    @for (classItem of classesList; track classItem) {
+                      <mat-option [value]="classItem">{{
+                        classItem
+                      }}</mat-option>
+                    }
+                  </mat-select>
                   <mat-error>{{ getFormErrors('level') }}</mat-error>
                 </mat-form-field>
               </div>
