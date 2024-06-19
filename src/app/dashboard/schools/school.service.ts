@@ -11,6 +11,7 @@ export interface School {
   phone: string;
   location: string;
   status: 'active' | 'inactive';
+  classes: string[];
 }
 
 @Injectable({
@@ -35,13 +36,15 @@ export class SchoolService {
     name: string,
     email: string,
     phone: string,
-    location: string
+    location: string,
+    classes: string[]
   ) {
     return this.http.post<Response<School>>(`${this.baseUrl}`, {
       name,
       email,
       phone,
       location,
+      classes,
     });
   }
 
@@ -50,13 +53,15 @@ export class SchoolService {
     name: string,
     email: string,
     phone: string,
-    location: string
+    location: string,
+    classes: string[]
   ) {
     return this.http.patch<Response<School>>(`${this.baseUrl}/${id}`, {
       name,
       email,
       phone,
       location,
+      classes,
     });
   }
 

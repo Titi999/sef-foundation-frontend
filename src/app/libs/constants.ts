@@ -130,3 +130,36 @@ export const multi = [
     ],
   },
 ];
+
+export const classesList = [
+  {
+    label: 'University',
+    value: [
+      'Level 100',
+      'Level 200',
+      'Level 300',
+      'Level 400',
+      'Level 500',
+      'Level 600',
+    ],
+  },
+  {
+    label: 'Senior High',
+    value: ['SHS 1', 'SHS 2', 'SHS 3'],
+  },
+  {
+    label: 'Junior High',
+    value: ['JHS 1', 'JHS 2', 'JHS 3'],
+  },
+  {
+    label: 'Primary',
+    value: [
+      'Primary 1',
+      'Primary 2',
+      'Primary 3',
+      'Primary 4',
+      'Primary 5',
+      'Primary 6',
+    ],
+  },
+];

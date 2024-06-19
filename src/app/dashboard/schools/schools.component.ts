@@ -147,7 +147,7 @@ export class SchoolsComponent implements OnDestroy, AfterViewInit {
   public addSchool() {
     const dialogRef = this.dialog.open(AddSchoolComponent, {
       maxWidth: '400px',
-      maxHeight: '480px',
+      maxHeight: '530px',
       width: '100%',
       height: '100%',
     });
