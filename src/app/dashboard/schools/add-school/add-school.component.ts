@@ -16,22 +16,23 @@ import {
 import { MatError, MatFormFieldModule } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatSelect } from '@angular/material/select';
-// import { fullNameValidator } from '@app/libs/validators';
-import { serverError } from '@app/libs/constants';
+import { classesList, serverError } from '@app/libs/constants';
 import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
 import {
   ActionModalData,
   ActionModalIllustration,
 } from '@app/shared/action-modal/action-modal.type';
 import { ToastrService } from 'ngx-toastr';
-import { Subject, catchError, finalize, first, of } from 'rxjs';
+import { catchError, finalize, first, of } from 'rxjs';
 import { School, SchoolService } from '../school.service';
+import { areAllValuesIncluded } from '@app/libs/util';
 
 interface AddSchool {
   name: string;
   email: string;
   phone: string;
   location: string;
+  classes: string[];
 }
 
 @Component({
@@ -63,9 +64,8 @@ export class AddSchoolComponent {
       Validators.pattern(/^\d{10}$/),
     ]),
     location: new FormControl('', [Validators.required]),
+    classes: new FormControl<string[][]>([], [Validators.required]),
   });
-  public schoolFilterCtrl = new FormControl<string>('');
-  protected _onDestroy = new Subject<void>();
   protected schools: School[] = [];
 
   constructor(
@@ -76,10 +76,24 @@ export class AddSchoolComponent {
     @Inject(MAT_DIALOG_DATA) public data: AddSchool & { id: string }
   ) {
     if (data) {
+      const formValues = {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        location: data.location,
+      };
+      const classes = [];
+      for (const classItem of classesList) {
+        if (areAllValuesIncluded(classItem.value, data.classes)) {
+          classes.push(classItem.value);
+        }
+      }
+
+      this.schoolForm.controls.classes.setValue(classes);
       this.title = 'Edit school details';
       this.subtext = 'kindly fill in the details to update the school';
       this.buttonText = 'Update';
-      this.schoolForm.patchValue(data);
+      this.schoolForm.patchValue(formValues);
     } else {
       this.title = 'Add a new school';
       this.subtext = 'kindly fill in the details to add a new school';
@@ -88,13 +102,18 @@ export class AddSchoolComponent {
   }
 
   submit() {
-    const { name, email, phone, location } = this.schoolForm.value as School;
+    const { name, email, phone, location } = this.schoolForm.value as Omit<
+      School,
+      'classes'
+    >;
+    const classes = this.schoolForm.controls.classes.value?.flat() as string[];
     if (this.schoolForm.valid) {
       this.isLoading = true;
       if (!this.data) {
         this.schoolService
-          .addSchool(name, email, phone, location)
+          .addSchool(name, email, phone, location, classes)
           .pipe(
+            first(),
             catchError(error => {
               this.toastrService.error(
                 error.error.message,
@@ -130,7 +149,7 @@ export class AddSchoolComponent {
         const { id } = this.data;
         const school = this.schoolForm.value as unknown as Omit<School, 'id'>;
         this.schoolService
-          .updateSchool(id, name, email, phone, location)
+          .updateSchool(id, name, email, phone, location, classes)
           .pipe(
             first(),
             catchError(error => {
@@ -171,7 +190,9 @@ export class AddSchoolComponent {
     }
   }
 
-  getFormErrors(controlName: 'name' | 'email' | 'phone' | 'location') {
+  getFormErrors(
+    controlName: 'name' | 'email' | 'phone' | 'location' | 'classes'
+  ) {
     const control = this.schoolForm.get(controlName);
     if (control?.errors?.['required']) {
       return 'This field is required';
@@ -197,4 +218,6 @@ export class AddSchoolComponent {
     }
     return '';
   }
+
+  protected readonly classesList = classesList;
 }

@@ -56,7 +56,7 @@ import {
   ActionModalIllustration,
 } from '@app/shared/action-modal/action-modal.type';
 import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
-import { serverError } from '@app/libs/constants';
+import { serverError, statusFilters } from '@app/libs/constants';
 
 interface School {
   name: string;
@@ -103,6 +103,7 @@ interface School {
 })
 export class SchoolsComponent implements OnDestroy, AfterViewInit {
   public searchValue = new FormControl('');
+  public statusControl = new FormControl('');
   public isLoadingResults = false;
   public data: WritableSignal<School[]> = signal([]);
   public readonly displayedColumns: string[] = [
@@ -138,7 +139,7 @@ export class SchoolsComponent implements OnDestroy, AfterViewInit {
   }
 
   downloadCSV() {
-    new ngxCsv(this.data, 'Schools', {
+    new ngxCsv(this.data(), 'Schools', {
       headers: ['ID', 'NAME', 'EMAIL', 'PHONE', 'LOCATION', 'STATUS'],
     });
   }
@@ -146,7 +147,7 @@ export class SchoolsComponent implements OnDestroy, AfterViewInit {
   public addSchool() {
     const dialogRef = this.dialog.open(AddSchoolComponent, {
       maxWidth: '400px',
-      maxHeight: '480px',
+      maxHeight: '530px',
       width: '100%',
       height: '100%',
     });
@@ -170,15 +171,16 @@ export class SchoolsComponent implements OnDestroy, AfterViewInit {
         filter((searchValue): searchValue is string => searchValue !== null)
       ),
       this.page.valueChanges.pipe(startWith(1)),
+      this.statusControl.valueChanges.pipe(startWith('')),
       this.paginator.page.pipe(startWith(new PageEvent())),
     ])
       .pipe(
         takeUntil(this.destroy),
         debounceTime(1000),
-        switchMap(([search, page]) => {
+        switchMap(([search, page, status]) => {
           this.isLoadingResults = true;
           return this.schoolService
-            .getSchools(page || 1, search)
+            .getSchools(page || 1, search, status || '')
             .pipe(catchError(() => of(null)));
         }),
         map(data => {
@@ -219,12 +221,12 @@ export class SchoolsComponent implements OnDestroy, AfterViewInit {
       .subscribe();
   }
 
-  public deleteStudent(id: string) {
+  public deleteSchool(id: string) {
     const data: ActionModalData = {
       actionIllustration: ActionModalIllustration.delete,
       title: 'Delete school',
       actionColor: 'warn',
-      subtext: 'are you sure you want to delete this student from the system?',
+      subtext: 'are you sure you want to delete this school from the system?',
       actionType: 'decision',
       decisionText: 'Delete',
     };
@@ -237,14 +239,7 @@ export class SchoolsComponent implements OnDestroy, AfterViewInit {
     });
     dialogRef.componentInstance.decisionEmitter
       .pipe(
-        takeUntil(this.destroy),
-        catchError(error => {
-          this.toastrService.error(
-            error.error.message,
-            error.error.error || serverError
-          );
-          return of(null);
-        }),
+        first(),
         finalize(() => {
           dialogRef.componentInstance.isLoading = false;
           dialogRef.disableClose = false;
@@ -272,8 +267,92 @@ export class SchoolsComponent implements OnDestroy, AfterViewInit {
             height: '100%',
             data,
           });
+        }),
+        catchError(error => {
+          dialogRef.close();
+          console.log(error, 'error');
+          this.toastrService.error(
+            error.error.message,
+            error.error.error || serverError
+          );
+          return of(null);
         })
       )
       .subscribe();
   }
+
+  changeStatus(status: 'active' | 'inactive', id: string) {
+    const isActivate = status === 'active';
+    const data: ActionModalData = {
+      actionIllustration: isActivate
+        ? ActionModalIllustration.deactivate
+        : ActionModalIllustration.activate,
+      title: isActivate ? 'Deactivate user' : 'Activate user',
+      actionColor: isActivate ? 'warn' : 'primary',
+      subtext: isActivate
+        ? 'are you sure you want to deactivate this school?'
+        : 'are you sure you want to activate this school?',
+      actionType: 'decision',
+      decisionText: isActivate ? 'Deactivate' : 'Activate',
+    };
+    const dialogRef = this.dialog.open(ActionModalComponent, {
+      maxWidth: '400px',
+      maxHeight: '400px',
+      width: '100%',
+      height: '100%',
+      data,
+    });
+
+    const request = isActivate
+      ? this.schoolService.deactivateSchool(id)
+      : this.schoolService.activateSchool(id);
+
+    dialogRef.componentInstance.decisionEmitter
+      .pipe(
+        takeUntil(this.destroy),
+        catchError(error => {
+          this.toastrService.error(
+            error.error.message,
+            error.error.error || serverError
+          );
+          return of(null);
+        }),
+        finalize(() => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.disableClose = false;
+        }),
+        tap(() => {
+          dialogRef.componentInstance.isLoading = true;
+          dialogRef.disableClose = true;
+        }),
+        switchMap(() => request),
+        tap(response => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.close();
+          const isActive = response.data.status === 'active';
+          this.page.setValue(1);
+          const data: ActionModalData = {
+            actionIllustration: isActive
+              ? ActionModalIllustration.success
+              : ActionModalIllustration.deactivate,
+            title: isActive ? 'Congratulations!' : 'Completed',
+            actionColor: isActive ? 'primary' : 'warn',
+            subtext: isActive
+              ? 'you have successfully activated the school'
+              : 'The school has been successfully deactivated',
+            actionType: 'close',
+          };
+          this.dialog.open(ActionModalComponent, {
+            maxWidth: '400px',
+            maxHeight: '400px',
+            width: '100%',
+            height: '100%',
+            data,
+          });
+        })
+      )
+      .subscribe();
+  }
+
+  protected readonly statusFilters = statusFilters;
 }

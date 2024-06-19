@@ -13,6 +13,17 @@
       <mat-error>{{ getFormErrors('name') }}</mat-error>
     </mat-form-field>
     <mat-form-field appearance="outline">
+      <mat-label>Classes</mat-label>
+      <mat-select formControlName="classes" multiple>
+        @for (classItem of classesList; track classItem.label) {
+          <mat-option [value]="classItem.value">{{
+            classItem.label
+          }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>{{ getFormErrors('classes') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
       <mat-label>Email</mat-label>
       <input formControlName="email" id="email" matInput type="email" />
       <mat-error>{{ getFormErrors('email') }}</mat-error>
