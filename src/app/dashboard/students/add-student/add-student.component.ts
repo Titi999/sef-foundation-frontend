@@ -69,6 +69,7 @@ export class AddStudentComponent implements OnInit {
   public subtext!: string;
   public isLoading: boolean = false;
   public buttonText!: string;
+  public classesList: string[] = [];
   public studentForm = new FormGroup({
     name: new FormControl('', [
       Validators.required,
@@ -81,7 +82,9 @@ export class AddStudentComponent implements OnInit {
       onlyAlphabeticalCharactersAndSpaceAllowed(),
     ]),
     school: new FormControl('', [Validators.required]),
-    level: new FormControl('', [Validators.required]),
+    level: new FormControl({ value: '', disabled: true }, [
+      Validators.required,
+    ]),
     phone: new FormControl('', [
       Validators.required,
       Validators.pattern('[- +()0-9]{10,}'),
@@ -126,6 +129,14 @@ export class AddStudentComponent implements OnInit {
       .subscribe(() => {
         this.filterSchool();
       });
+
+    this.studentForm.controls.school.valueChanges
+      .pipe(takeUntil(this._onDestroy))
+      .subscribe(value => {
+        this.classesList =
+          this.schools.find(school => school.id === value)?.classes || [];
+        this.studentForm.controls.level.enable();
+      });
   }
 
   public getAllSchools() {
@@ -145,6 +156,13 @@ export class AddStudentComponent implements OnInit {
       .subscribe(response => {
         if (response) {
           this.schools = response.data;
+          if (this.data) {
+            this.classesList =
+              this.schools.find(
+                school => school.id === this.studentForm.controls.school.value
+              )?.classes || [];
+            this.studentForm.controls.level.enable();
+          }
           this.filteredSchools.next(response.data.slice());
         }
       });
