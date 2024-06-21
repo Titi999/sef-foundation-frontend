@@ -81,6 +81,14 @@ export class AddStudentComponent implements OnInit {
       eachWordShouldBeginWithCapital(),
       onlyAlphabeticalCharactersAndSpaceAllowed(),
     ]),
+    grandParent: new FormControl('', [
+      eachWordShouldBeginWithCapital(),
+      onlyAlphabeticalCharactersAndSpaceAllowed(),
+    ]),
+    greatGrandparent: new FormControl('', [
+      eachWordShouldBeginWithCapital(),
+      onlyAlphabeticalCharactersAndSpaceAllowed(),
+    ]),
     school: new FormControl('', [Validators.required]),
     level: new FormControl({ value: '', disabled: true }, [
       Validators.required,
@@ -264,6 +272,22 @@ export class AddStudentComponent implements OnInit {
     }
     switch (controlName) {
       case 'parent':
+        if (control?.errors?.['eachWordShouldBeginWithCapital']) {
+          return 'Each name should begin with a capital letter';
+        }
+        if (control?.errors?.['onlyAlphabeticalCharactersAndSpaceAllowed']) {
+          return 'Only Alphabets and spaces allowed';
+        }
+        break;
+      case 'greatGrandparent':
+        if (control?.errors?.['eachWordShouldBeginWithCapital']) {
+          return 'Each name should begin with a capital letter';
+        }
+        if (control?.errors?.['onlyAlphabeticalCharactersAndSpaceAllowed']) {
+          return 'Only Alphabets and spaces allowed';
+        }
+        break;
+      case 'grandParent':
         if (control?.errors?.['eachWordShouldBeginWithCapital']) {
           return 'Each name should begin with a capital letter';
         }

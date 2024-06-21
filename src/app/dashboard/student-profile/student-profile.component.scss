@@ -29,6 +29,7 @@
     justify-content: space-between;
     gap: 3rem;
     margin: 1rem;
+    height: 100%;
 
     .card-content__left,
     .card-content__right {
@@ -38,9 +39,6 @@
     }
   }
 
-  .mat-mdc-card-content {
-    height: 40vh;
-  }
   .education-container {
     margin-top: 40px;
   }
@@ -51,12 +49,6 @@
   @media (max-width: 850px) {
     .user-profile-form {
       display: block;
-    }
-    .mat-mdc-card-content {
-      height: 70vh;
-    }
-    .eductaion-content {
-      height: 40vh;
     }
   }
 

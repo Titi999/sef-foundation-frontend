@@ -56,6 +56,8 @@ export class StudentsService {
     level: string,
     phone: string,
     parentPhone: string,
+    grandParent: string,
+    greatGrandparent: string,
     description?: string
   ): Observable<Response<Student>> {
     return this.http.post<Response<Student>>(`${this.url}/add-student/${id}`, {
@@ -66,6 +68,8 @@ export class StudentsService {
       description,
       phone,
       parentPhone,
+      grandParent,
+      greatGrandparent,
     });
   }
 
@@ -77,11 +81,13 @@ export class StudentsService {
     level: string,
     phone: string,
     parentPhone: string,
+    grandParent: string,
+    greatGrandparent: string,
     description?: string
   ): Observable<Response<Student>> {
     if (this.authService.role() === UserRoles.BENEFICIARY) {
       return this.http.patch<Response<Student>>(
-        `${this.url}/beneficiary/edit-student/${id}`,
+        `${this.url}/beneficiary/edit-student/${this.authService.loggedInUser()?.user.id}`,
         {
           name,
           parent,
@@ -90,6 +96,8 @@ export class StudentsService {
           description,
           phone,
           parentPhone,
+          grandParent,
+          greatGrandparent,
         }
       );
     } else {
@@ -103,6 +111,8 @@ export class StudentsService {
           description,
           phone,
           parentPhone,
+          grandParent,
+          greatGrandparent,
         }
       );
     }

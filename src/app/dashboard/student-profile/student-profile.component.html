@@ -59,6 +59,15 @@
                   </textarea>
                   <mat-error>{{ getFormErrors('description') }}</mat-error>
                 </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Grand Parent's Name</mat-label>
+                  <input
+                    matInput
+                    formControlName="grandParent"
+                    id="grandParent"
+                    type="text" />
+                  <mat-error>{{ getFormErrors('grandParent') }}</mat-error>
+                </mat-form-field>
               </div>
 
               <!-- Right -->
@@ -80,6 +89,15 @@
                     id="parentPhone"
                     type="text" />
                   <mat-error>{{ getFormErrors('parentPhone') }}</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Great Grand Parent's Name</mat-label>
+                  <input
+                    matInput
+                    formControlName="greatGrandparent"
+                    id="greatGrandparent"
+                    type="text" />
+                  <mat-error>{{ getFormErrors('greatGrandparent') }}</mat-error>
                 </mat-form-field>
               </div>
             </div>
