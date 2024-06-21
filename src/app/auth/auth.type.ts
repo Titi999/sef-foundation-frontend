@@ -13,6 +13,7 @@ export interface User {
   email_verified_at: string;
   created_at: string;
   updated_at: string;
+  deactivated_at: Date;
   status: string;
   firstLogin: boolean;
 }

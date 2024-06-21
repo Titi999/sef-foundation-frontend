@@ -11,6 +11,7 @@ export interface Student {
   parentPhone: string;
   status: 'active' | 'inactive';
   created_at: Date;
+  deactivated_at: Date;
   updated_at: Date;
 }
 
