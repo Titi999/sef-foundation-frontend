@@ -92,6 +92,7 @@ export class StudentsComponent implements AfterViewInit, OnDestroy {
     'class',
     'parent',
     'status',
+    'deactivated_at',
     'more',
   ];
   public searchValue = new FormControl('');

@@ -91,6 +91,7 @@ export class UserAdministrationComponent implements AfterViewInit, OnDestroy {
     'email',
     'role',
     'status',
+    'deactivated_at',
     'more',
   ];
   public data: User[] = [];
