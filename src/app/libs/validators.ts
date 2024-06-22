@@ -25,7 +25,7 @@ export function fullNameValidator(): ValidatorFn {
 
 export function eachWordShouldBeginWithCapital(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    const fullName = control.value as string;
+    const fullName = (control.value as string) || '';
     for (const word of fullName.split(' '))
       if (word[0] == undefined || word[0] == word[0].toLowerCase())
         return { eachWordShouldBeginWithCapital: true };
@@ -36,7 +36,7 @@ export function eachWordShouldBeginWithCapital(): ValidatorFn {
 export function onlyAlphabeticalCharactersAndSpaceAllowed(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const regex = /^[a-zA-Z\s]*$/;
-    if (!(control.value as string).match(regex))
+    if (!((control.value as string) || '').match(regex))
       return { onlyAlphabeticalCharactersAndSpaceAllowed: true };
     return null;
   };

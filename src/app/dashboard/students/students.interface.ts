@@ -1,29 +1,27 @@
 import { School } from '../schools/school.service';
 
-export interface Student {
-  id: string;
-  name: string;
-  parent: string;
+export interface Student extends SchoolBase {
   school: School;
-  level: string;
-  description: string;
-  phone: string;
-  parentPhone: string;
   status: 'active' | 'inactive';
   created_at: Date;
   deactivated_at: Date;
   updated_at: Date;
 }
 
-export interface CreateStudent {
+interface SchoolBase {
   id: string;
   name: string;
   parent: string;
-  school: string;
   level: string;
   description: string;
   phone: string;
   parentPhone: string;
+  grandParent: string;
+  greatGrandparent: string;
+}
+
+export interface CreateStudent extends SchoolBase {
+  school: string;
 }
 
 export type studentFormControls =
@@ -33,4 +31,6 @@ export type studentFormControls =
   | 'level'
   | 'phone'
   | 'parentPhone'
-  | 'description';
+  | 'description'
+  | 'grandParent'
+  | 'greatGrandparent';

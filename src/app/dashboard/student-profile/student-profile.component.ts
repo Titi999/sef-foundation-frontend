@@ -26,7 +26,6 @@ import {
   first,
   map,
   of,
-  take,
   takeUntil,
 } from 'rxjs';
 import { CreateStudent, Student } from '../students/students.interface';
@@ -74,6 +73,7 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
   public beneficiaryExists = false;
   public classesList: string[] = [];
   public userProfileForm = this.fb.group({
+    id: [''],
     parent: [
       '',
       [
@@ -94,6 +94,20 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
     parentPhone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
     school: ['', [Validators.required]],
     level: ['', [Validators.required]],
+    grandParent: [
+      '',
+      [
+        eachWordShouldBeginWithCapital(),
+        onlyAlphabeticalCharactersAndSpaceAllowed(),
+      ],
+    ],
+    greatGrandparent: [
+      '',
+      [
+        eachWordShouldBeginWithCapital(),
+        onlyAlphabeticalCharactersAndSpaceAllowed(),
+      ],
+    ],
     description: [''],
   });
   public isLoading = false;
@@ -122,10 +136,7 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getAllSchools();
-    this.route.params.pipe(take(1)).subscribe(params => {
-      this.userId = params['id'];
-      this.getBeneficiary(params['id']);
-    });
+    this.getBeneficiary(this.route.snapshot.params['id']);
 
     this.schoolFilterCtrl.valueChanges
       .pipe(takeUntil(this._onDestroy))
@@ -181,8 +192,17 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
   }
 
   public createBeneficiary() {
-    const { name, level, parent, parentPhone, phone, school, description } =
-      this.userProfileForm.value as CreateStudent;
+    const {
+      name,
+      level,
+      parent,
+      parentPhone,
+      phone,
+      school,
+      description,
+      greatGrandparent,
+      grandParent,
+    } = this.userProfileForm.value as CreateStudent;
     const userId = this.authService.loggedInUser()?.user.id;
     if (userId && this.userProfileForm.valid) {
       this.isLoading = true;
@@ -195,6 +215,8 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
           level,
           phone,
           parentPhone,
+          grandParent,
+          greatGrandparent,
           description
         )
         .pipe(
@@ -234,19 +256,31 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
   }
 
   public updateBeneficiary() {
-    const { name, level, parent, parentPhone, phone, school, description } =
-      this.userProfileForm.value as CreateStudent;
-    if (this.userId && this.userProfileForm.valid) {
+    const {
+      id,
+      name,
+      level,
+      parent,
+      parentPhone,
+      phone,
+      school,
+      description,
+      grandParent,
+      greatGrandparent,
+    } = this.userProfileForm.value as CreateStudent;
+    if (this.userProfileForm.valid) {
       this.isUpdateLoading = true;
       this.studentService
         .updateBeneficiary(
-          this.userId,
+          id,
           name,
           parent,
           school,
           level,
           phone,
           parentPhone,
+          grandParent,
+          greatGrandparent,
           description
         )
         .pipe(
@@ -280,6 +314,8 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
             });
           }
         });
+    } else {
+      this.userProfileForm.markAllAsTouched();
     }
   }
 
@@ -330,6 +366,22 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
     }
     switch (controlName) {
       case 'parent':
+        if (control?.errors?.['eachWordShouldBeginWithCapital']) {
+          return 'Each name should begin with a capital letter';
+        }
+        if (control?.errors?.['onlyAlphabeticalCharactersAndSpaceAllowed']) {
+          return 'Only Alphabets and spaces allowed';
+        }
+        break;
+      case 'greatGrandparent':
+        if (control?.errors?.['eachWordShouldBeginWithCapital']) {
+          return 'Each name should begin with a capital letter';
+        }
+        if (control?.errors?.['onlyAlphabeticalCharactersAndSpaceAllowed']) {
+          return 'Only Alphabets and spaces allowed';
+        }
+        break;
+      case 'grandParent':
         if (control?.errors?.['eachWordShouldBeginWithCapital']) {
           return 'Each name should begin with a capital letter';
         }
