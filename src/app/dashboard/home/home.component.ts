@@ -19,12 +19,19 @@ import { MatGridList, MatGridTile } from '@angular/material/grid-list';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { catchError, finalize, first, map } from 'rxjs/operators';
+import {
+  catchError,
+  finalize,
+  first,
+  map,
+  startWith,
+  switchMap,
+} from 'rxjs/operators';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { MatError, MatFormFieldModule } from '@angular/material/form-field';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -42,6 +49,7 @@ import {
 import { ToastrService } from 'ngx-toastr';
 import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
 import { formatNumber } from '@app/libs/numberFormatter';
+import { getYearsDropDownValues } from '@app/libs/util';
 
 @Component({
   selector: 'app-home',
@@ -87,6 +95,7 @@ export class HomeComponent implements OnInit {
   private doughnutLabel: WritableSignal<string[]> = signal([]);
   private doughnutData: WritableSignal<number[]> = signal([]);
   public isLoading = false;
+  public yearControl = new FormControl('');
   public totalFundingDisbursed: Signal<ChartConfiguration['data']> = computed(
     () => {
       return {
@@ -160,26 +169,6 @@ export class HomeComponent implements OnInit {
       },
     },
   };
-  public tableData = [
-    {
-      id: 1,
-      recipient: 'Foreigner Abu',
-      category: 'Stipends',
-      amountAllocated: 10000,
-      dateAllocated: new Date(),
-      dateDisbursed: new Date(),
-      status: 'Pending',
-    },
-    {
-      id: 2,
-      recipient: 'James Bond',
-      category: 'Edu. Materials',
-      amountAllocated: 7585,
-      dateAllocated: new Date(),
-      dateDisbursed: new Date(),
-      status: 'Approved',
-    },
-  ];
   public readonly displayedColumns: string[] = [
     'recipient',
     'category',
@@ -256,44 +245,50 @@ export class HomeComponent implements OnInit {
 
   private getStatistics() {
     this.isLoading = true;
-    this.financeService
-      .getStatistics()
+    this.yearControl.valueChanges
       .pipe(
-        first(),
-        tap(({ data }) => {
-          this.fundsAllocated = formatNumber(data.fundsAllocated);
-          this.fundsDisbursed = formatNumber(data.fundsDisbursed);
-          this.studentsSupported = formatNumber(data.studentsSupported);
-          const fundingData = monthNames.map(month => {
-            let amount = 0;
-            data.totalFundingDisbursed.forEach(item => {
-              if (month === item.month) {
-                amount = item.total;
-              }
-            });
-            return amount;
-          });
-          const doughnutLabel = data.fundingDistribution.map(item => {
-            return item.title;
-          });
-          const doughnutData = data.fundingDistribution.map(item => {
-            return item.amount;
-          });
-          this.doughnutLabel.set(doughnutLabel);
-          this.doughnutData.set(doughnutData);
-          this.data.set(fundingData);
-        }),
-        catchError(error => {
-          this.toastrService.error(
-            error.error.message,
-            error.error.error || serverError
-          );
-          return of(null);
-        }),
-        finalize(() => {
-          this.isLoading = false;
-        })
+        startWith(''),
+        switchMap(year =>
+          this.financeService.getStatistics(year || '').pipe(
+            first(),
+            tap(({ data }) => {
+              this.fundsAllocated = formatNumber(data.fundsAllocated);
+              this.fundsDisbursed = formatNumber(data.fundsDisbursed);
+              this.studentsSupported = formatNumber(data.studentsSupported);
+              const fundingData = monthNames.map(month => {
+                let amount = 0;
+                data.totalFundingDisbursed.forEach(item => {
+                  if (month === item.month) {
+                    amount = item.total;
+                  }
+                });
+                return amount;
+              });
+              const doughnutLabel = data.fundingDistribution.map(item => {
+                return item.title;
+              });
+              const doughnutData = data.fundingDistribution.map(item => {
+                return item.amount;
+              });
+              this.doughnutLabel.set(doughnutLabel);
+              this.doughnutData.set(doughnutData);
+              this.data.set(fundingData);
+            }),
+            catchError(error => {
+              this.toastrService.error(
+                error.error.message,
+                error.error.error || serverError
+              );
+              return of(null);
+            }),
+            finalize(() => {
+              this.isLoading = false;
+            })
+          )
+        )
       )
       .subscribe();
   }
+
+  protected readonly getYearsDropDownValues = getYearsDropDownValues;
 }
