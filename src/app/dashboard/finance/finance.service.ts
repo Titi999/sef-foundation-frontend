@@ -141,9 +141,11 @@ export class FinanceService {
     );
   }
 
-  public getStatistics(): Observable<Response<IOverviewStatistics>> {
+  public getStatistics(
+    year: string
+  ): Observable<Response<IOverviewStatistics>> {
     return this.http.get<Response<IOverviewStatistics>>(
-      `${this.url}/statistics`
+      `${this.url}/statistics?year=${year}`
     );
   }
 }

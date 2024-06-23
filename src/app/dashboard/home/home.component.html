@@ -1,9 +1,23 @@
 <div class="grid-container">
   <app-spinner [isLoading]="isLoading" />
-  <h1 class="overview__title">Overview</h1>
-  <p class="overview__description">
-    an overview of the total funds, number of students etc.
-  </p>
+  <div class="overview__header">
+    <div>
+      <h1 class="overview__title">Overview</h1>
+      <p class="overview__description">
+        an overview of the total funds, number of students etc.
+      </p>
+    </div>
+    <div>
+      <mat-form-field appearance="outline">
+        <mat-label>Year</mat-label>
+        <mat-select [formControl]="yearControl">
+          @for (item of getYearsDropDownValues(); track item.value) {
+            <mat-option [value]="item.value">{{ item.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
   <mat-grid-list cols="3" rowHeight="200px">
     @for (card of cards | async; track card) {
       <mat-grid-tile [colspan]="card.cols" [rowspan]="card.rows">
@@ -59,15 +73,6 @@
               }
               @case (5) {
                 <div class="card__container">
-                  <mat-form-field appearance="outline" class="select__wrapper">
-                    <mat-label>Year</mat-label>
-                    <mat-select>
-                      <mat-option value="2024">2024</mat-option>
-                      <mat-option value="2024">2023</mat-option>
-                      <mat-option value="2024">2022</mat-option>
-                      <mat-option value="2024">2021</mat-option>
-                    </mat-select>
-                  </mat-form-field>
                   <div class="linechart-container">
                     <canvas
                       class="canvas"
