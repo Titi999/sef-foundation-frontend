@@ -26,7 +26,29 @@ export const budgetDistributions = [
   { label: 'Second Degree Tuition Fees', value: 'Second Degree Tuition Fees' },
   { label: 'Professional Course Fees', value: 'Professional Course Fees' },
   { label: 'Contingency', value: 'Contingency' },
-  { label: 'Other', value: 'Other' },
+  {
+    label: 'Organ Practice Lessons',
+    value: 'Organ Practice Lessons',
+  },
+  {
+    label: 'Abacus',
+    value: 'Abacus',
+  },
+  {
+    label: 'Utility',
+    value: 'Utility',
+  },
+  {
+    label: 'Vocation training during holidays',
+    value: 'Vocation training during holidays',
+  },
+  {
+    label: 'Security and Maintenance',
+    value: 'Security and Maintenance',
+  },
+  { label: 'Miscellaneous / Up Keep', value: 'Miscellaneous / Up Keep' },
+  { label: 'Medicals (SBH)', value: 'Medicals (SBH)' },
+  { label: 'National Service Scheme', value: 'National Service Scheme' },
 ];
 
 export const monthNames = [

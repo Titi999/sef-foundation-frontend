@@ -41,7 +41,7 @@ import {
 } from 'rxjs';
 import { Student } from '@app/dashboard/students/students.interface';
 import { StudentsService } from '@app/dashboard/students/students.service';
-import { serverError } from '@app/libs/constants';
+import { budgetDistributions, serverError } from '@app/libs/constants';
 import { ToastrService } from 'ngx-toastr';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { BannerComponent } from '@app/shared/banner/banner.component';
@@ -58,6 +58,7 @@ import { ActionModalComponent } from '@app/shared/action-modal/action-modal.comp
 import { ActivatedRoute, Router } from '@angular/router';
 import { Papa } from 'ngx-papaparse';
 import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
+import { MatChip } from '@angular/material/chips';
 
 @Component({
   selector: 'app-create-disbursement',
@@ -86,6 +87,7 @@ import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
     MatProgressSpinner,
     BannerComponent,
     SpinnerComponent,
+    MatChip,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './create-disbursement.component.html',
@@ -110,11 +112,13 @@ export class CreateDisbursementComponent implements OnInit, OnDestroy {
   public distributionForm = this.fb.group({
     title: ['', Validators.required],
     amount: ['', Validators.required],
+    comments: [''],
   });
   public totalDistribution = 0;
   public showBanner = false;
   public bannerText = '';
   public isLoadingDisbursement = false;
+  budgetDistributionsCategory = budgetDistributions;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -214,28 +218,44 @@ export class CreateDisbursementComponent implements OnInit, OnDestroy {
   }
 
   addDistribution() {
-    if (this.disbursementForm.controls.amount.valid) {
-      const amount = this.distributionForm.controls.amount.value;
-      const values = new FormGroup({
-        title: new FormControl(this.distributionForm.controls.title.value),
-        amount: new FormControl(amount),
-      });
-      this.totalDistribution += parseInt(amount as string);
-      const totalBudget = parseInt(
-        this.disbursementForm.controls.amount.value || '0'
-      );
-      if (this.totalDistribution > totalBudget) {
-        this.bannerText =
-          'Your disbursement distribution as exceeded your total budget.';
-        this.showBanner = true;
-        return;
-      }
-      this.disbursementDistributions.push(values);
-      this.distributionForm.reset();
-    } else {
-      this.bannerText = 'Please enter disbursement amount before distribution';
-      this.showBanner = true;
-    }
+    // if (this.disbursementForm.controls.amount.valid) {
+    const amount = this.distributionForm.controls.amount.value;
+    const values = new FormGroup({
+      title: new FormControl(this.distributionForm.controls.title.value),
+      amount: new FormControl(amount),
+      comments: new FormControl(this.distributionForm.controls.comments.value),
+    });
+    this.totalDistribution += parseInt(amount as string);
+    this.disbursementForm.controls.amount.setValue(
+      this.totalDistribution.toString()
+    );
+    // const totalBudget = parseInt(
+    //   this.disbursementForm.controls.amount.value || '0'
+    // );
+    // if (this.totalDistribution > totalBudget) {
+    //   this.bannerText =
+    //     'Your disbursement distribution as exceeded your total budget.';
+    //   this.showBanner = true;
+    //   return;
+    // }
+    this.disbursementDistributions.push(values);
+    this.distributionForm.reset();
+    // }
+    // else {
+    //   this.bannerText = 'Please enter disbursement amount before distribution';
+    //   this.showBanner = true;
+    // }
+  }
+
+  getCategories() {
+    const distributions = new Set(
+      (this.disbursementDistributions.value as { title: string }[]).map(
+        criteria => criteria.title
+      )
+    );
+    return this.budgetDistributionsCategory.filter(
+      category => !distributions.has(category.value)
+    );
   }
 
   submit() {
@@ -321,8 +341,7 @@ export class CreateDisbursementComponent implements OnInit, OnDestroy {
           });
       }
     } else {
-      this.bannerText =
-        'Please make sure your distribution equals disbursement amount';
+      this.bannerText = 'Please make sure you add a disbursement distribution';
       this.showBanner = true;
     }
   }
@@ -337,7 +356,10 @@ export class CreateDisbursementComponent implements OnInit, OnDestroy {
 
   deleteDistribution(index: number) {
     this.totalDistribution -= parseInt(
-      this.disbursementDistributions.at(index).value
+      this.disbursementDistributions.at(index).value.amount
+    );
+    this.disbursementForm.controls.amount.setValue(
+      this.totalDistribution.toString()
     );
     this.disbursementDistributions.removeAt(index);
   }
@@ -356,6 +378,7 @@ export class CreateDisbursementComponent implements OnInit, OnDestroy {
             distribution.push({
               title: data[i][0],
               amount: data[i][1],
+              comments: data[i][2],
             });
           }
         }

@@ -47,6 +47,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BannerComponent } from '@app/shared/banner/banner.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatChip } from '@angular/material/chips';
 
 @Component({
   selector: 'app-create-budget',
@@ -77,6 +79,8 @@ import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
     BannerComponent,
     MatProgressSpinner,
     SpinnerComponent,
+    MatCheckbox,
+    MatChip,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './create-budget.component.html',
@@ -96,6 +100,8 @@ export class CreateBudgetComponent implements OnInit {
   distributionForm = this.fb.group({
     title: ['', Validators.required],
     amount: ['', Validators.required],
+    comments: [''],
+    boardingHouse: [false],
   });
   showBanner = false;
   bannerText = '';
@@ -114,20 +120,20 @@ export class CreateBudgetComponent implements OnInit {
 
   ngOnInit() {
     this.canEditBudget();
-    this.budgetForm.valueChanges
-      .pipe(
-        tap(() => {
-          const totalBudget = parseInt(
-            this.budgetForm.controls.total.value || '0'
-          );
-          if (this.totalDistribution > totalBudget) {
-            this.bannerText =
-              'Your category distribution as exceeded your total budget. Please consider making an adjustment';
-            this.showBanner = true;
-          }
-        })
-      )
-      .subscribe();
+    // this.budgetForm.valueChanges
+    //   .pipe(
+    //     tap(() => {
+    //       const totalBudget = parseInt(
+    //         this.budgetForm.controls.total.value || '0'
+    //       );
+    //       if (this.totalDistribution > totalBudget) {
+    //         this.bannerText =
+    //           'Your category distribution as exceeded your total budget. Please consider making an adjustment';
+    //         this.showBanner = true;
+    //       }
+    //     })
+    //   )
+    //   .subscribe();
   }
 
   canEditBudget() {
@@ -161,8 +167,13 @@ export class CreateBudgetComponent implements OnInit {
     const values = new FormGroup({
       title: new FormControl(this.distributionForm.controls.title.value),
       amount: new FormControl(amount),
+      comments: new FormControl(this.distributionForm.controls.comments.value),
+      boardingHouse: new FormControl(
+        !!this.distributionForm.controls.boardingHouse.value
+      ),
     });
     this.totalDistribution += parseInt(amount as string);
+    this.budgetForm.controls.total.setValue(this.totalDistribution.toString());
     this.budgetDistributions.push(values);
     this.distributionForm.reset();
   }
@@ -173,8 +184,9 @@ export class CreateBudgetComponent implements OnInit {
 
   deleteDistribution(index: number) {
     this.totalDistribution -= parseInt(
-      this.budgetDistributions.at(index).value
+      this.budgetDistributions.at(index).value.amount
     );
+    this.budgetForm.controls.total.setValue(this.totalDistribution.toString());
     this.budgetDistributions.removeAt(index);
   }
 
