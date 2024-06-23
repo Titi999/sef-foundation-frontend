@@ -20,6 +20,7 @@ import { SchoolsComponent } from './schools/schools.component';
 import { FinancialReportComponent } from './finance/financial-report/financial-report.component';
 import { RequestsComponent } from '@app/dashboard/requests/requests.component';
 import { CreateRequestComponent } from '@app/dashboard/requests/create-request/create-request.component';
+import { PerformanceComponent } from './performance/performance.component';
 
 export const dashboardRoutes: Routes = [
   {
@@ -103,6 +104,10 @@ export const dashboardRoutes: Routes = [
         path: 'edit-request/:id',
         component: CreateRequestComponent,
         canActivate: [CanActiveBeneficiary],
+      },
+      {
+        path: 'performance',
+        component: PerformanceComponent,
       },
     ],
   },
