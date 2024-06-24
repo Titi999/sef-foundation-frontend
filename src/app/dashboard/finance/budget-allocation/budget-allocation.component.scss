@@ -142,3 +142,11 @@ table {
   display: flex;
   justify-content: space-between;
 }
+
+.row {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgb(230, 230, 230);
+  }
+}

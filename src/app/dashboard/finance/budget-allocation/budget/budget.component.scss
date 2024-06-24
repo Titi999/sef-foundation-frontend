@@ -1,0 +1,118 @@
+@use '../../../../../scss/colors' as colors;
+@use '../../../../../scss/global' as font;
+
+* {
+  color: colors.$sys-light-on-surface-variant;
+}
+
+.grid-container {
+  margin: 20px;
+
+  .overview__title {
+    font-size: 22px;
+    color: map-get(colors.$primary-palette, 500);
+    margin-left: 15px;
+  }
+
+  .overview__description {
+    font-size: font.$font-size-sm;
+    margin-left: 15px;
+    margin-top: 10px;
+  }
+}
+
+.dashboard-card {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+}
+
+.more-button {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  border: 1px solid colors.$schemes-surface-variant;
+  border-radius: 10px;
+}
+
+.dashboard-card-content {
+  text-align: center;
+}
+
+.card__container {
+  position: relative;
+  width: 100%;
+}
+
+.select__wrapper {
+  position: absolute;
+  right: 0;
+  top: -80px;
+  width: 120px;
+}
+
+.mat-mdc-card-content:last-child {
+  padding-top: 50px;
+  padding-bottom: 16px;
+}
+
+.figure {
+  font-size: font.$font-size-xxl;
+  position: relative;
+
+  span {
+    position: absolute;
+    left: 0;
+    bottom: -20px;
+  }
+}
+
+.status__chip__active {
+  background-color: colors.$schemes-primary !important;
+
+  span {
+    color: map-get(colors.$primary-palette, 500);
+    font-weight: 500;
+  }
+}
+
+.status__chip__inactive {
+  background-color: colors.$schemes-error-container !important;
+
+  span {
+    color: colors.$schemes-error;
+    font-weight: 500;
+  }
+}
+
+// TODO: Make this better
+.doughnut-container {
+  max-height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.linechart-container {
+  //height: 420px;
+  //width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.overview__header {
+  display: flex;
+  justify-content: space-between;
+}
+
+table {
+  width: 100%;
+}
+
+tr.mat-mdc-footer-row td {
+  font-weight: bold;
+}
