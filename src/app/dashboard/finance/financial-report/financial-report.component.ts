@@ -1,4 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  computed,
+  OnInit,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import {
   FormBuilder,
   FormsModule,
@@ -20,8 +27,15 @@ import { MatList, MatListItem } from '@angular/material/list';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatSelect } from '@angular/material/select';
 import { InfoCardComponent } from '@app/shared/info-card/info-card.component';
-import Chart from 'chart.js/auto';
 import { ngxCsv } from 'ngx-csv';
+import { FinanceService } from '@app/dashboard/finance/finance.service';
+import { first, of, tap } from 'rxjs';
+import { catchError, finalize } from 'rxjs/operators';
+import { serverError } from '@app/libs/constants';
+import { ToastrService } from 'ngx-toastr';
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
+import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
 
 interface Category {
   value: string;
@@ -53,16 +67,18 @@ interface Term {
     MatListItem,
     MatDatepickerModule,
     MatButton,
+    BaseChartDirective,
+    SpinnerComponent,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './financial-report.component.html',
   styleUrl: './financial-report.component.scss',
 })
 export class FinancialReportComponent implements OnInit {
+  isLoading = false;
   selectedTerm!: string;
   selectedValue!: string;
   public startMinDate = new Date();
-  chart: unknown = [];
   data!: [];
 
   financialReportForm = this.fb.group({
@@ -71,6 +87,11 @@ export class FinancialReportComponent implements OnInit {
     term: ['', Validators.required],
     category: ['', Validators.required],
   });
+  private reportLabel: WritableSignal<string[]> = signal([]);
+  private disbursementDistributionAmounts: WritableSignal<number[]> = signal(
+    []
+  );
+  private budgetDistributionAmounts: WritableSignal<number[]> = signal([]);
 
   terms: Term[] = [
     { label: 'jan-apr', value: 'Jan - Apr' },
@@ -84,59 +105,92 @@ export class FinancialReportComponent implements OnInit {
     { value: 'tacos-2', viewValue: 'Tacos' },
   ];
 
-  constructor(private readonly fb: FormBuilder) {}
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly financeService: FinanceService,
+    private readonly toastrService: ToastrService
+  ) {}
 
   ngOnInit(): void {
-    this.budgetAndDisbursementBarChart();
+    this.getReport();
   }
 
-  private budgetAndDisbursementBarChart() {
-    this.chart = new Chart('MyChart', {
-      type: 'bar',
-
-      data: {
-        labels: [
-          'PRI.',
-          'JHS.',
-          'SHS.',
-          'VOC.',
-          'HND.',
-          '1st DEG.',
-          '2nd DEG.',
-          'PROF.',
-        ],
-        datasets: [
-          {
-            label: 'Budget',
-            data: ['667', '576', '572', '79', '92', '574', '573', '576'],
-            backgroundColor: '#1F6587',
-            borderRadius: 5,
-          },
-          {
-            label: 'Disbursement',
-            data: ['542', '542', '536', '327', '17', '10.00', '538', '541'],
-            backgroundColor: '#C5E7FF',
-            borderRadius: 5,
-          },
-        ],
+  public chartOptions: ChartConfiguration['options'] = {
+    aspectRatio: 2.5,
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top',
       },
-      options: {
-        aspectRatio: 2.5,
-        responsive: true,
-        plugins: {
-          legend: {
-            display: true,
-            position: 'top',
-          },
+    },
+  };
+  public chartType: ChartType = 'bar';
+
+  public chart: Signal<ChartData<'bar'>> = computed(() => {
+    return {
+      labels: this.reportLabel(),
+      datasets: [
+        {
+          label: 'Budget',
+          data: this.budgetDistributionAmounts(),
+          backgroundColor: '#1F6587',
+          borderRadius: 5,
         },
-      },
-    });
-  }
+        {
+          label: 'Disbursement',
+          data: this.disbursementDistributionAmounts(),
+          backgroundColor: '#C5E7FF',
+          borderRadius: 5,
+        },
+      ],
+    };
+  });
 
   downloadCSV() {
     new ngxCsv(this.data, 'Budgets', {
       // Appropriate headers needs to be provided for CSV
       headers: [],
     });
+  }
+
+  getReport() {
+    this.isLoading = true;
+    this.financeService
+      .getReports('')
+      .pipe(
+        first(),
+        tap(({ data }) => {
+          const labels: string[] = [];
+          const budgetAmounts: number[] = [];
+          const disbursementAmounts: number[] = [];
+          console.log(data);
+          data.forEach(
+            ({
+              title,
+              budgetDistributionAmount,
+              disbursementDistributionAmount,
+            }) => {
+              labels.push(title);
+              budgetAmounts.push(budgetDistributionAmount);
+              disbursementAmounts.push(disbursementDistributionAmount);
+            }
+          );
+          this.reportLabel.set(labels);
+          this.budgetDistributionAmounts.set(budgetAmounts);
+          this.disbursementDistributionAmounts.set(disbursementAmounts);
+        }),
+        catchError(error => {
+          this.toastrService.error(
+            error.error.message,
+            error.error.error || serverError
+          );
+          return of(null);
+        }),
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe();
   }
 }
