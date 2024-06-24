@@ -20,17 +20,17 @@
       <mat-date-range-picker #picker></mat-date-range-picker>
       <mat-error></mat-error>
     </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Budget Allocation</mat-label>
-      <input
-        formControlName="total"
-        matInput
-        type="number"
-        class="currency-right-align"
-        placeholder="0" />
-      <span matTextPrefix>GH&#8373;&nbsp;</span>
-      <span matTextSuffix>.00</span>
-    </mat-form-field>
+    <!--    <mat-form-field appearance="outline">-->
+    <!--      <mat-label>Budget Allocation</mat-label>-->
+    <!--      <input-->
+    <!--        formControlName="total"-->
+    <!--        matInput-->
+    <!--        type="number"-->
+    <!--        class="currency-right-align"-->
+    <!--        placeholder="0" />-->
+    <!--      <span matTextPrefix>GH&#8373;&nbsp;</span>-->
+    <!--      <span matTextSuffix>.00</span>-->
+    <!--    </mat-form-field>-->
   </div>
 </app-info-card>
 <app-info-card title="Category Distribution">
@@ -64,6 +64,17 @@
         <span matTextPrefix>GH&#8373;&nbsp;</span>
         <span matTextSuffix>.00</span>
       </mat-form-field>
+      <mat-checkbox
+        color="primary"
+        [formControl]="distributionForm.controls.boardingHouse"
+        >BOARDING HOUSE</mat-checkbox
+      >
+      <mat-form-field appearance="outline">
+        <mat-label>Comments</mat-label>
+        <textarea
+          [formControl]="distributionForm.controls.comments"
+          matInput></textarea>
+      </mat-form-field>
     </div>
     <div class="add__distribution">
       <button
@@ -89,6 +100,17 @@
             <mat-icon>delete</mat-icon>
           </button>
         </div>
+      }
+    </div>
+    <div class="total-distribution">
+      @if (budgetForm.controls.total.value) {
+        <mat-chip class="status__chip__active">
+          <span
+            >Total Distribution: GH&#8373;{{
+              budgetForm.controls.total.value
+            }}</span
+          >
+        </mat-chip>
       }
     </div>
   </div>

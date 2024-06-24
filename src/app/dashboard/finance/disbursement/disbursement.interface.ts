@@ -31,4 +31,5 @@ export interface CreateDisbursement {
 export interface CreateDisbursementDistribution {
   title: string;
   amount: number;
+  comments: string;
 }

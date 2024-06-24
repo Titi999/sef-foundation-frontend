@@ -28,4 +28,6 @@ export interface CreateBudget {
 export interface CreateBudgetDistribution {
   title: string;
   amount: number;
+  boardingHouse: boolean;
+  comments: string;
 }
