@@ -8,9 +8,9 @@ import {
 } from '@angular/core';
 import {
   FormBuilder,
+  FormControl,
   FormsModule,
   ReactiveFormsModule,
-  Validators,
 } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatOption, provideNativeDateAdapter } from '@angular/material/core';
@@ -27,25 +27,15 @@ import { MatList, MatListItem } from '@angular/material/list';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatSelect } from '@angular/material/select';
 import { InfoCardComponent } from '@app/shared/info-card/info-card.component';
-import { ngxCsv } from 'ngx-csv';
 import { FinanceService } from '@app/dashboard/finance/finance.service';
-import { first, of, tap } from 'rxjs';
-import { catchError, finalize } from 'rxjs/operators';
+import { first, of, switchMap, tap } from 'rxjs';
+import { catchError, finalize, startWith } from 'rxjs/operators';
 import { serverError } from '@app/libs/constants';
 import { ToastrService } from 'ngx-toastr';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
-
-interface Category {
-  value: string;
-  viewValue: string;
-}
-
-interface Term {
-  label: string;
-  value: string;
-}
+import { getShortMonthAndYear } from '@app/libs/date';
 
 @Component({
   selector: 'app-financial-report',
@@ -76,44 +66,14 @@ interface Term {
 })
 export class FinancialReportComponent implements OnInit {
   isLoading = false;
-  selectedTerm!: string;
-  selectedValue!: string;
-  public startMinDate = new Date();
+  budgetsDropDownValues: { label: string; value: string }[] = [];
   data!: [];
-
-  financialReportForm = this.fb.group({
-    startDate: ['', Validators.required],
-    endDate: ['', Validators.required],
-    term: ['', Validators.required],
-    category: ['', Validators.required],
-  });
   private reportLabel: WritableSignal<string[]> = signal([]);
   private disbursementDistributionAmounts: WritableSignal<number[]> = signal(
     []
   );
   private budgetDistributionAmounts: WritableSignal<number[]> = signal([]);
-
-  terms: Term[] = [
-    { label: 'jan-apr', value: 'Jan - Apr' },
-    { label: 'jun-aug', value: 'Jun - Aug' },
-    { label: 'sep-dec', value: 'Sep - Dec' },
-  ];
-
-  categories: Category[] = [
-    { value: 'steak-0', viewValue: 'Steak' },
-    { value: 'pizza-1', viewValue: 'Pizza' },
-    { value: 'tacos-2', viewValue: 'Tacos' },
-  ];
-
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly financeService: FinanceService,
-    private readonly toastrService: ToastrService
-  ) {}
-
-  ngOnInit(): void {
-    this.getReport();
-  }
+  public selectedBudgetControl = new FormControl('');
 
   public chartOptions: ChartConfiguration['options'] = {
     aspectRatio: 2.5,
@@ -146,39 +106,77 @@ export class FinancialReportComponent implements OnInit {
       ],
     };
   });
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly financeService: FinanceService,
+    private readonly toastrService: ToastrService
+  ) {}
 
-  downloadCSV() {
-    new ngxCsv(this.data, 'Budgets', {
-      // Appropriate headers needs to be provided for CSV
-      headers: [],
-    });
+  ngOnInit(): void {
+    this.getAllBudgets();
+    this.getReport();
   }
 
   getReport() {
+    this.selectedBudgetControl.valueChanges
+      .pipe(
+        startWith(''),
+        tap(() => (this.isLoading = true)),
+        switchMap(budgetId =>
+          this.financeService.getReports(budgetId || '').pipe(
+            first(),
+            tap(({ data }) => {
+              const labels: string[] = [];
+              const budgetAmounts: number[] = [];
+              const disbursementAmounts: number[] = [];
+              data.forEach(
+                ({
+                  title,
+                  budgetDistributionAmount,
+                  disbursementDistributionAmount,
+                }) => {
+                  labels.push(title);
+                  budgetAmounts.push(budgetDistributionAmount);
+                  disbursementAmounts.push(disbursementDistributionAmount);
+                }
+              );
+              this.reportLabel.set(labels);
+              this.budgetDistributionAmounts.set(budgetAmounts);
+              this.disbursementDistributionAmounts.set(disbursementAmounts);
+            }),
+            catchError(error => {
+              this.toastrService.error(
+                error.error.message,
+                error.error.error || serverError
+              );
+              return of(null);
+            }),
+            finalize(() => {
+              this.isLoading = false;
+            })
+          )
+        )
+      )
+      .subscribe();
+  }
+
+  getAllBudgets() {
     this.isLoading = true;
     this.financeService
-      .getReports('')
+      .getAllBudgets()
       .pipe(
         first(),
         tap(({ data }) => {
-          const labels: string[] = [];
-          const budgetAmounts: number[] = [];
-          const disbursementAmounts: number[] = [];
-          console.log(data);
-          data.forEach(
-            ({
-              title,
-              budgetDistributionAmount,
-              disbursementDistributionAmount,
-            }) => {
-              labels.push(title);
-              budgetAmounts.push(budgetDistributionAmount);
-              disbursementAmounts.push(disbursementDistributionAmount);
-            }
-          );
-          this.reportLabel.set(labels);
-          this.budgetDistributionAmounts.set(budgetAmounts);
-          this.disbursementDistributionAmounts.set(disbursementAmounts);
+          const budgetsItems = data.map(item => {
+            return {
+              label: `${getShortMonthAndYear(item.startDate)} - ${getShortMonthAndYear(item.endDate)}`,
+              value: item.id,
+            };
+          });
+          this.budgetsDropDownValues = [
+            { label: 'All', value: '' },
+            ...budgetsItems,
+          ];
         }),
         catchError(error => {
           this.toastrService.error(
