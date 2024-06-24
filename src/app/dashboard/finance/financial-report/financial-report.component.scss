@@ -81,7 +81,7 @@ $padding: 0 5px;
   border: $border;
 
   &.selectWrapper {
-    border-radius: $border-radius 0 0 $border-radius;
+    border-radius: $border-radius $border-radius $border-radius $border-radius;
   }
 
   &.selectYearWrapper {

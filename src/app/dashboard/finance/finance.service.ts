@@ -39,6 +39,12 @@ export class FinanceService {
     );
   }
 
+  public getAllBudgets(): Observable<Response<BudgetAllocation[]>> {
+    return this.http.get<Response<BudgetAllocation[]>>(
+      `${this.url}/budgets/all`
+    );
+  }
+
   public getBudget(id: string): Observable<Response<BudgetAllocation>> {
     return this.http.get<Response<BudgetAllocation>>(
       `${this.url}/budgets/${id}`
@@ -151,10 +157,10 @@ export class FinanceService {
   }
 
   public getReports(
-    year: string
+    budgetId: string
   ): Observable<Response<FinanceReportInterface[]>> {
     return this.http.get<Response<FinanceReportInterface[]>>(
-      `${this.url}/report?year=${year}`
+      `${this.url}/report?budget=${budgetId}`
     );
   }
 }
