@@ -18,6 +18,7 @@ import {
 } from '@app/dashboard/finance/disbursement/disbursement.interface';
 import { AuthService } from '@app/auth/auth.service';
 import { BudgetAllocationComponent } from '@app/dashboard/finance/budget-allocation/budget-allocation.component';
+import { FinanceReportInterface } from '@app/dashboard/finance/financial-report/finance-report.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -146,6 +147,14 @@ export class FinanceService {
   ): Observable<Response<IOverviewStatistics>> {
     return this.http.get<Response<IOverviewStatistics>>(
       `${this.url}/statistics?year=${year}`
+    );
+  }
+
+  public getReports(
+    year: string
+  ): Observable<Response<FinanceReportInterface[]>> {
+    return this.http.get<Response<FinanceReportInterface[]>>(
+      `${this.url}/report?year=${year}`
     );
   }
 }

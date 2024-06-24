@@ -1,3 +1,4 @@
+<app-spinner [isLoading]="isLoading" />
 <div class="financial-report__container">
   <h1 class="financial-report__title">Financial Report</h1>
   <p class="financial-report__description">report on all activities</p>
@@ -96,6 +97,10 @@
         </button>
       </div>
     </div>
-    <canvas id="MyChart">{{ chart }}</canvas>
+    <canvas
+      baseChart
+      [data]="chart()"
+      [type]="chartType"
+      [options]="chartOptions"></canvas>
   </div>
 </div>
