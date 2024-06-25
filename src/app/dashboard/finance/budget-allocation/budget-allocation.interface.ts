@@ -14,6 +14,8 @@ export interface BudgetDistribution {
   id: string;
   title: string;
   amount: number;
+  boardingHouse: boolean;
+  comments: string;
   created_at: Date;
   updated_at: Date;
 }

@@ -21,6 +21,7 @@ import { FinancialReportComponent } from './finance/financial-report/financial-r
 import { RequestsComponent } from '@app/dashboard/requests/requests.component';
 import { CreateRequestComponent } from '@app/dashboard/requests/create-request/create-request.component';
 import { PerformanceComponent } from './performance/performance.component';
+import { BudgetComponent } from '@app/dashboard/finance/budget-allocation/budget/budget.component';
 
 export const dashboardRoutes: Routes = [
   {
@@ -58,6 +59,10 @@ export const dashboardRoutes: Routes = [
           {
             path: 'budget-allocation',
             component: BudgetAllocationComponent,
+          },
+          {
+            path: 'budget-allocation/:id',
+            component: BudgetComponent,
           },
           {
             path: 'create-budget',

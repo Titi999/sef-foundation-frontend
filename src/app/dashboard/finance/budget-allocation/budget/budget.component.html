@@ -1,0 +1,86 @@
+<div class="grid-container">
+  <app-spinner [isLoading]="isLoading" />
+  <div class="overview__header">
+    <div>
+      <h1 class="overview__title">Budget</h1>
+      <p class="overview__description">a detailed view of a budget</p>
+    </div>
+  </div>
+  <mat-grid-list cols="4">
+    @for (card of cards | async; track card) {
+      <mat-grid-tile [colspan]="card.cols" [rowspan]="card.rows">
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>
+              <div>{{ card.title }}</div>
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="dashboard-card-content">
+            @switch (card.id) {
+              @case (1) {
+                <div class="doughnut-container">
+                  <canvas
+                    baseChart
+                    [data]="chart()"
+                    [type]="doughnutChartType"
+                    [options]="doughnutChartOptions">
+                  </canvas>
+                </div>
+              }
+              @case (2) {
+                <div class="doughnut-container">
+                  <canvas
+                    class="canvas"
+                    baseChart
+                    [data]="chartSefBoarding()"
+                    [options]="doughnutChartOptions"
+                    [type]="doughnutChartType"></canvas>
+                </div>
+              }
+              @case (3) {
+                <table
+                  mat-table
+                  [dataSource]="budgetAllocation?.budgetDistribution || []"
+                  class="mat-elevation-z8">
+                  <!-- Item Column -->
+                  <ng-container matColumnDef="description">
+                    <th mat-header-cell *matHeaderCellDef>Description</th>
+                    <td mat-cell *matCellDef="let distribution">
+                      {{ distribution.title }}
+                    </td>
+                    <td mat-footer-cell *matFooterCellDef>Total</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="comments">
+                    <th mat-header-cell *matHeaderCellDef>Comments</th>
+                    <td mat-cell *matCellDef="let distribution">
+                      {{ distribution.comments }}
+                    </td>
+                    <td mat-footer-cell *matFooterCellDef></td>
+                  </ng-container>
+
+                  <!-- Cost Column -->
+                  <ng-container matColumnDef="amount">
+                    <th mat-header-cell *matHeaderCellDef>Amount</th>
+                    <td mat-cell *matCellDef="let distribution">
+                      {{ distribution.amount | currency }}
+                    </td>
+                    <td mat-footer-cell *matFooterCellDef>
+                      {{ budgetAllocation?.total | currency }}
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr
+                    mat-row
+                    *matRowDef="let row; columns: displayedColumns"></tr>
+                  <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+                </table>
+              }
+            }
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile>
+    }
+  </mat-grid-list>
+</div>
