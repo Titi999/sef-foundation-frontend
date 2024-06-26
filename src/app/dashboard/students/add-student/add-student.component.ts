@@ -119,7 +119,6 @@ export class AddStudentComponent implements OnInit {
     private readonly schoolService: SchoolService
   ) {
     if (data) {
-      console.log(data, 'data');
       this.title = 'Edit student details';
       this.subtext = 'kindly fill in the details to update the beneficiary';
       this.buttonText = 'Update';

@@ -67,15 +67,8 @@
           <mat-option [value]="classItem">{{ classItem }}</mat-option>
         }
       </mat-select>
-      @if (getFormErrors('level')) {
-        <mat-error>{{ getFormErrors('level') }}</mat-error>
-      }
+      <mat-error>{{ getFormErrors('level') }}</mat-error>
     </mat-form-field>
-    <!--    <mat-form-field appearance="outline">-->
-    <!--      <mat-label>Class</mat-label>-->
-    <!--      <input formControlName="level" id="class" matInput type="text" />-->
-    <!--      <mat-error>{{ getFormErrors('level') }}</mat-error>-->
-    <!--    </mat-form-field>-->
     <mat-form-field appearance="outline">
       <mat-label>Phone</mat-label>
       <input formControlName="phone" id="phone" matInput type="tel" />
