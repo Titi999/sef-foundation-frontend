@@ -18,6 +18,7 @@ interface SchoolBase {
   parentPhone: string;
   grandParent: string;
   greatGrandparent: string;
+  boardingHouse: boolean;
 }
 
 export interface CreateStudent extends SchoolBase {
