@@ -50,6 +50,12 @@ import { ToastrService } from 'ngx-toastr';
 import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
 import { formatNumber } from '@app/libs/numberFormatter';
 import { getYearsDropDownValues } from '@app/libs/util';
+import {
+  IBeneficiaryOverviewStatistics,
+  IOverviewStatistics,
+} from '@app/shared/shared.type';
+import { UserRoles } from '@app/auth/auth.type';
+import { AuthService } from '@app/auth/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -88,9 +94,12 @@ import { getYearsDropDownValues } from '@app/libs/util';
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
+  public role!: UserRoles;
   public fundsAllocated = '';
   public fundsDisbursed = '';
   public studentsSupported = '';
+  public fundsRequested = '';
+  public fundsDeclined = '';
   private data: WritableSignal<number[]> = signal([]);
   private doughnutLabel: WritableSignal<string[]> = signal([]);
   private doughnutData: WritableSignal<number[]> = signal([]);
@@ -194,7 +203,8 @@ export class HomeComponent implements OnInit {
 
       return [
         {
-          title: 'Funds allocated',
+          title:
+            this.role === 'beneficiary' ? 'Funds Requested' : 'Funds allocated',
           cols: 1,
           rows: 1,
           id: 1,
@@ -206,7 +216,10 @@ export class HomeComponent implements OnInit {
           id: 2,
         },
         {
-          title: 'Students supported',
+          title:
+            this.role === 'beneficiary'
+              ? 'Funds Declined'
+              : 'Students supported',
           cols: 1,
           rows: 1,
           id: 3,
@@ -236,10 +249,15 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private readonly financeService: FinanceService,
-    private toastrService: ToastrService
+    private toastrService: ToastrService,
+    private readonly authService: AuthService
   ) {}
 
   ngOnInit() {
+    const role = this.authService.role();
+    if (role) {
+      this.role = role;
+    }
     this.getStatistics();
   }
 
@@ -252,9 +270,31 @@ export class HomeComponent implements OnInit {
           this.financeService.getStatistics(year || '').pipe(
             first(),
             tap(({ data }) => {
-              this.fundsAllocated = formatNumber(data.fundsAllocated);
+              const overviewStatistics = data as IOverviewStatistics;
+              const beneficiaryOverviewStatistics =
+                data as IBeneficiaryOverviewStatistics;
+              if (beneficiaryOverviewStatistics.fundsRequest) {
+                this.fundsDeclined = formatNumber(
+                  beneficiaryOverviewStatistics.fundsDeclined
+                );
+                this.fundsRequested = formatNumber(
+                  beneficiaryOverviewStatistics.fundsRequest
+                );
+                console.log(this.fundsRequested);
+              }
+              if (
+                overviewStatistics.fundsAllocated &&
+                overviewStatistics.studentsSupported
+              ) {
+                this.fundsAllocated = formatNumber(
+                  overviewStatistics.fundsAllocated
+                );
+                this.studentsSupported = formatNumber(
+                  overviewStatistics.studentsSupported
+                );
+              }
+
               this.fundsDisbursed = formatNumber(data.fundsDisbursed);
-              this.studentsSupported = formatNumber(data.studentsSupported);
               const fundingData = monthNames.map(month => {
                 let amount = 0;
                 data.totalFundingDisbursed.forEach(item => {

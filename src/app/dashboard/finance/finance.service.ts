@@ -8,6 +8,7 @@ import {
 } from '@app/dashboard/finance/budget-allocation/budget-allocation.interface';
 import { Observable } from 'rxjs';
 import {
+  IBeneficiaryOverviewStatistics,
   IOverviewStatistics,
   Pagination,
   Response,
@@ -19,6 +20,7 @@ import {
 import { AuthService } from '@app/auth/auth.service';
 import { BudgetAllocationComponent } from '@app/dashboard/finance/budget-allocation/budget-allocation.component';
 import { FinanceReportInterface } from '@app/dashboard/finance/financial-report/finance-report.interface';
+import { UserRoles } from '@app/auth/auth.type';
 
 @Injectable({
   providedIn: 'root',
@@ -150,10 +152,19 @@ export class FinanceService {
 
   public getStatistics(
     year: string
-  ): Observable<Response<IOverviewStatistics>> {
-    return this.http.get<Response<IOverviewStatistics>>(
-      `${this.url}/statistics?year=${year}`
-    );
+  ): Observable<
+    Response<IOverviewStatistics | IBeneficiaryOverviewStatistics>
+  > {
+    if (this.authService.role() === UserRoles.BENEFICIARY) {
+      const id = this.authService.loggedInUser()?.user.id;
+      return this.http.get<Response<IOverviewStatistics>>(
+        `${this.url}/statistics/${id}?year=${year}`
+      );
+    } else {
+      return this.http.get<Response<IBeneficiaryOverviewStatistics>>(
+        `${this.url}/statistics?year=${year}`
+      );
+    }
   }
 
   public getReports(
