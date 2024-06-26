@@ -44,6 +44,7 @@ import { ActionModalComponent } from '@app/shared/action-modal/action-modal.comp
 import { AsyncPipe, NgForOf } from '@angular/common';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { School, SchoolService } from '@app/dashboard/schools/school.service';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-add-student',
@@ -60,6 +61,7 @@ import { School, SchoolService } from '@app/dashboard/schools/school.service';
     AsyncPipe,
     NgxMatSelectSearchModule,
     NgForOf,
+    MatCheckbox,
   ],
   templateUrl: './add-student.component.html',
   styleUrl: './add-student.component.scss',
@@ -99,6 +101,7 @@ export class AddStudentComponent implements OnInit {
     ]),
     parentPhone: new FormControl('', [Validators.pattern('[- +()0-9]{6,}')]),
     description: new FormControl(''),
+    boardingHouse: new FormControl(false),
   });
   public schoolFilterCtrl = new FormControl<string>('');
   public filteredSchools: ReplaySubject<School[]> = new ReplaySubject<School[]>(

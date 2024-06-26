@@ -69,11 +69,6 @@
       </mat-select>
       <mat-error>{{ getFormErrors('level') }}</mat-error>
     </mat-form-field>
-    <!--    <mat-form-field appearance="outline">-->
-    <!--      <mat-label>Class</mat-label>-->
-    <!--      <input formControlName="level" id="class" matInput type="text" />-->
-    <!--      <mat-error>{{ getFormErrors('level') }}</mat-error>-->
-    <!--    </mat-form-field>-->
     <mat-form-field appearance="outline">
       <mat-label>Phone</mat-label>
       <input formControlName="phone" id="phone" matInput type="tel" />
@@ -88,6 +83,12 @@
         placeholder="Add any description or comment"></textarea>
       <mat-error>{{ getFormErrors('description') }}</mat-error>
     </mat-form-field>
+    <mat-checkbox
+      color="primary"
+      [formControl]="this.studentForm.controls.boardingHouse"
+      class="boarding-house"
+      >SEF Boarding House</mat-checkbox
+    >
     <div class="actions">
       <button
         [disabled]="isLoading"

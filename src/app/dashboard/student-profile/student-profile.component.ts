@@ -45,6 +45,7 @@ import {
 } from '@app/shared/action-modal/action-modal.type';
 import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
 import { MatDialog } from '@angular/material/dialog';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-student-profile',
@@ -64,6 +65,7 @@ import { MatDialog } from '@angular/material/dialog';
     CommonModule,
     NgxMatSelectSearchModule,
     SpinnerComponent,
+    MatCheckbox,
   ],
   templateUrl: './student-profile.component.html',
   styleUrl: './student-profile.component.scss',
@@ -109,11 +111,11 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
       ],
     ],
     description: [''],
+    boardingHouse: [false],
   });
   public isLoading = false;
   public loading = false;
   public isUpdateLoading = false;
-  public userId!: string;
   private unsubscribe = new Subject<void>();
   public schoolFilterCtrl = new FormControl<string>('');
   public filteredSchools: ReplaySubject<School[]> = new ReplaySubject<School[]>(
@@ -202,6 +204,7 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
       description,
       greatGrandparent,
       grandParent,
+      boardingHouse,
     } = this.userProfileForm.value as CreateStudent;
     const userId = this.authService.loggedInUser()?.user.id;
     if (userId && this.userProfileForm.valid) {
@@ -217,6 +220,7 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
           parentPhone,
           grandParent,
           greatGrandparent,
+          boardingHouse,
           description
         )
         .pipe(
@@ -267,6 +271,7 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
       description,
       grandParent,
       greatGrandparent,
+      boardingHouse,
     } = this.userProfileForm.value as CreateStudent;
     if (this.userProfileForm.valid) {
       this.isUpdateLoading = true;
@@ -281,6 +286,7 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
           parentPhone,
           grandParent,
           greatGrandparent,
+          boardingHouse,
           description
         )
         .pipe(

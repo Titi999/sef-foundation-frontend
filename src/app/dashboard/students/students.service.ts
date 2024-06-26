@@ -58,6 +58,7 @@ export class StudentsService {
     parentPhone: string,
     grandParent: string,
     greatGrandparent: string,
+    boardingHouse: boolean,
     description?: string
   ): Observable<Response<Student>> {
     return this.http.post<Response<Student>>(`${this.url}/add-student/${id}`, {
@@ -70,6 +71,7 @@ export class StudentsService {
       parentPhone,
       grandParent,
       greatGrandparent,
+      boardingHouse,
     });
   }
 
@@ -83,6 +85,7 @@ export class StudentsService {
     parentPhone: string,
     grandParent: string,
     greatGrandparent: string,
+    boardingHouse: boolean,
     description?: string
   ): Observable<Response<Student>> {
     if (this.authService.role() === UserRoles.BENEFICIARY) {
@@ -98,6 +101,7 @@ export class StudentsService {
           parentPhone,
           grandParent,
           greatGrandparent,
+          boardingHouse,
         }
       );
     } else {
@@ -113,6 +117,7 @@ export class StudentsService {
           parentPhone,
           grandParent,
           greatGrandparent,
+          boardingHouse,
         }
       );
     }

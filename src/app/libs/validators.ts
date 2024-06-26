@@ -26,6 +26,9 @@ export function fullNameValidator(): ValidatorFn {
 export function eachWordShouldBeginWithCapital(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const fullName = (control.value as string) || '';
+    if (!fullName) {
+      return null;
+    }
     for (const word of fullName.split(' '))
       if (word[0] == undefined || word[0] == word[0].toLowerCase())
         return { eachWordShouldBeginWithCapital: true };
