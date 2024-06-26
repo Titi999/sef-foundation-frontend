@@ -38,7 +38,11 @@
                 }
                 @case (3) {
                   <button mat-icon-button class="more-button" aria-label="Icon">
-                    <mat-icon>people</mat-icon>
+                    @if (role === 'beneficiary') {
+                      <mat-icon>attach_money</mat-icon>
+                    } @else {
+                      <mat-icon>people</mat-icon>
+                    }
                   </button>
                 }
               }
@@ -48,7 +52,11 @@
             @switch (card.id) {
               @case (1) {
                 <div class="figure">
-                  <span>{{ fundsAllocated }}</span>
+                  @if (role === 'beneficiary') {
+                    <span>{{ fundsRequested }}</span>
+                  } @else {
+                    <span>{{ fundsAllocated }}</span>
+                  }
                 </div>
               }
               @case (2) {
@@ -58,7 +66,11 @@
               }
               @case (3) {
                 <div class="figure">
-                  <span>{{ studentsSupported }}</span>
+                  @if (role === 'beneficiary') {
+                    <span>{{ fundsDeclined }}</span>
+                  } @else {
+                    <span>{{ studentsSupported }}</span>
+                  }
                 </div>
               }
               @case (4) {
