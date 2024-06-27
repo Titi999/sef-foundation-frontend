@@ -13,17 +13,12 @@ import { MatError, MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { AuthService } from '@app/auth/auth.service';
-import { passwordValidator } from '@app/libs/validators';
-import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
-import {
-  ActionModalData,
-  ActionModalIllustration,
-} from '@app/shared/action-modal/action-modal.type';
-import { AvatarModule } from 'ngx-avatars';
-import { SettingsService } from './settings.service';
-import { catchError, finalize, of } from 'rxjs';
-import { ToastrService } from 'ngx-toastr';
 import { serverError } from '@app/libs/constants';
+import { passwordValidator } from '@app/libs/validators';
+import { AvatarModule } from 'ngx-avatars';
+import { ToastrService } from 'ngx-toastr';
+import { catchError, finalize, of } from 'rxjs';
+import { SettingsService } from './settings.service';
 
 @Component({
   selector: 'app-settings',
@@ -187,6 +182,7 @@ export class SettingsComponent implements OnInit {
         .subscribe(response => {
           if (response) {
             this.toastrService.success(response.message);
+            this.authService.logout().subscribe();
           }
         });
     }

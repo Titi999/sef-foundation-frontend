@@ -35,14 +35,37 @@
     .more-button {
       position: absolute;
       top: 5px;
-      right: 10px;
-      border: 1px solid colors.$schemes-surface-variant;
+      right: 65px;
+      // border: 1px solid colors.$schemes-surface-variant;
       border-radius: 10px;
+      width: 50px;
     }
 
     .figure {
       font-size: font.$font-size-xxl;
       position: relative;
+
+      .category {
+        font-size: font.$font-size-md;
+      }
+
+      .rank {
+        font-size: font.$font-size-md;
+        width: fit-content;
+        padding: 5px 15px;
+        border-radius: 15px;
+        &.rank-1 {
+          background-color: #91cef4;
+        }
+
+        &.rank-2 {
+          background-color: #ffdf9e;
+        }
+
+        &.rank-3 {
+          background-color: #d7dadf;
+        }
+      }
     }
   }
 
@@ -72,5 +95,9 @@
     display: flex;
     gap: 20px;
     align-items: center;
+  }
+
+  .type__select__wrapper {
+    margin-right: 20px;
   }
 }

@@ -163,3 +163,10 @@ export const classesList = [
     ],
   },
 ];
+
+export const typesList = [
+  {
+    label: 'Funds received',
+    value: 'Funds received',
+  },
+];
