@@ -5,6 +5,14 @@
       <p class="performance__description">the overall details of sef</p>
     </div>
     <div class="">
+      <mat-form-field appearance="outline" class="type__select__wrapper">
+        <mat-label>Type</mat-label>
+        <mat-select>
+          @for (type of typeList; track type) {
+            <mat-option [value]="type.label">{{ type.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
       <mat-form-field appearance="outline" class="select__wrapper">
         <mat-label>Category</mat-label>
         <mat-select>
@@ -27,17 +35,32 @@
             @switch (card.id) {
               @case (1) {
                 <button mat-icon-button class="more-button" aria-label="Icon">
-                  <mat-icon>trending_down</mat-icon>
+                  <!-- <mat-icon>trending_down</mat-icon> -->
+                  <ngx-avatars
+                    [name]="'Kofi Kankam'"
+                    class="avatar"
+                    size="90"
+                    src=""></ngx-avatars>
                 </button>
               }
               @case (2) {
                 <button mat-icon-button class="more-button" aria-label="Icon">
-                  <mat-icon>attach_money</mat-icon>
+                  <!-- <mat-icon>attach_money</mat-icon> -->
+                  <ngx-avatars
+                    [name]="'Thomas Edison'"
+                    class="avatar"
+                    size="90"
+                    src=""></ngx-avatars>
                 </button>
               }
               @case (3) {
                 <button mat-icon-button class="more-button" aria-label="Icon">
-                  <mat-icon>warning</mat-icon>
+                  <!-- <mat-icon>warning</mat-icon> -->
+                  <ngx-avatars
+                    [name]="'Daniel Bernoulli'"
+                    class="avatar"
+                    size="90"
+                    src=""></ngx-avatars>
                 </button>
               }
             }
@@ -47,17 +70,23 @@
           @switch (card.id) {
             @case (1) {
               <div class="figure">
-                <span>85%</span>
+                <p>85K</p>
+                <p class="category">First degree</p>
+                <p class="rank rank-1">Rank: 1st</p>
               </div>
             }
             @case (2) {
               <div class="figure">
-                <span>10</span>
+                <p>10K</p>
+                <p class="category">Second degree</p>
+                <p class="rank rank-2">Rank: 2nd</p>
               </div>
             }
             @case (3) {
               <div class="figure">
-                <span>5</span>
+                <p>5K</p>
+                <p class="category">HND</p>
+                <p class="rank rank-3">Rank: 3rd</p>
               </div>
             }
           }

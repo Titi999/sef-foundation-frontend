@@ -32,10 +32,11 @@ import {
   MatCellDef,
   MatCell,
 } from '@angular/material/table';
-import { classesList, statusFilters } from '@app/libs/constants';
+import { classesList, statusFilters, typesList } from '@app/libs/constants';
 import { RoundedInputComponent } from '@app/shared/rounded-input/rounded-input.component';
 import { ngxCsv } from 'ngx-csv';
 import { Subject, map } from 'rxjs';
+import { AvatarModule } from 'ngx-avatars';
 
 interface PerformanceType {
   id: string;
@@ -86,12 +87,14 @@ interface PerformanceType {
     MatMenuItem,
     MatRadioButton,
     MatRadioGroup,
+    AvatarModule,
   ],
   templateUrl: './performance.component.html',
   styleUrl: './performance.component.scss',
 })
 export class PerformanceComponent {
   protected classList = classesList;
+  protected typeList = typesList;
   private breakpointObserver = inject(BreakpointObserver);
   public searchValue = new FormControl('');
   public isLoadingResults = true;
@@ -143,19 +146,19 @@ export class PerformanceComponent {
 
       return [
         {
-          title: 'Average Scores',
+          title: 'Kofi Kankam',
           cols: 1,
           rows: 1,
           id: 1,
         },
         {
-          title: 'Highest Achievers',
+          title: 'Thomas Edison',
           cols: 1,
           rows: 1,
           id: 2,
         },
         {
-          title: 'Lowest Performers',
+          title: 'Daniel Bernoulli',
           cols: 1,
           rows: 1,
           id: 3,
