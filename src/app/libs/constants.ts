@@ -187,8 +187,13 @@ export const classesList = [
 ];
 
 export const typesList = [
+  { label: 'All', value: '' },
   {
-    label: 'Funds received',
-    value: 'Funds received',
+    label: 'Approved Disbursement',
+    value: 'approved',
+  },
+  {
+    label: 'Declined Disbursement',
+    value: 'declined',
   },
 ];

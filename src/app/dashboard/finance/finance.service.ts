@@ -10,6 +10,7 @@ import { Observable } from 'rxjs';
 import {
   IBeneficiaryOverviewStatistics,
   IOverviewStatistics,
+  IPerformance,
   Pagination,
   Response,
 } from '@app/shared/shared.type';
@@ -172,6 +173,18 @@ export class FinanceService {
   ): Observable<Response<FinanceReportInterface[]>> {
     return this.http.get<Response<FinanceReportInterface[]>>(
       `${this.url}/report?budget=${budgetId}`
+    );
+  }
+
+  public getPerformance(
+    search: string,
+    page: number,
+    type: string,
+    year: string,
+    category: string[]
+  ): Observable<Response<IPerformance>> {
+    return this.http.get<Response<IPerformance>>(
+      `${this.url}/performance?page=${page}&search=${search}&type=${type}&year=${year}&category=${category}`
     );
   }
 }

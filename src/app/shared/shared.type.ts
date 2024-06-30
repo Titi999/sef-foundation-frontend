@@ -36,3 +36,15 @@ export interface ITitleAmount {
   title: string;
   amount: number;
 }
+
+export interface IStudentPerformanceRanks {
+  student: string;
+  totalDisbursement: number;
+  school: string;
+  level: string;
+}
+
+export interface IPerformance {
+  studentPerformanceRank: IStudentPerformanceRanks[];
+  studentTotalDisbursements: Pagination<IStudentPerformanceRanks[]>;
+}
