@@ -280,7 +280,6 @@ export class HomeComponent implements OnInit {
                 this.fundsRequested = formatNumber(
                   beneficiaryOverviewStatistics.fundsRequest
                 );
-                console.log(this.fundsRequested);
               }
               if (
                 overviewStatistics.fundsAllocated &&
