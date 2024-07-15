@@ -164,12 +164,25 @@
                   }
                 </span>
               </a>
+              <a class="nav-item" mat-list-item>
+                <span
+                  class="entry"
+                  matTooltip="Academic Performance"
+                  matTooltipPosition="right"
+                  [routerLink]="'academic-performance'"
+                  routerLinkActive="entry__active">
+                  <mat-icon>bar_chart</mat-icon>
+                  @if (!isCollapsed) {
+                    <span>Performance</span>
+                  }
+                </span>
+              </a>
             }
             @if (getUserRole() === UserRoles.SUPER_ADMIN) {
               @if (!isCollapsed) {
                 <mat-tree
                   class="nav-item"
-                  [dataSource]="dataSource"
+                  [dataSource]="financeDataSource"
                   [treeControl]="treeControl">
                   <mat-tree-node *matTreeNodeDef="let node; when: hasChild">
                     <a
@@ -181,12 +194,11 @@
                       mat-list-item>
                       <span
                         role="button"
-                        (keyup)="('')"
                         tabindex=""
                         style="border: none"
                         class="entry"
                         [class.entry__active]="getFinanceActiveCSS(node.name)"
-                        (click)="routeFinance(node.name)"
+                        (click)="routeNode(node.name)"
                         [attr.aria-label]="'Toggle ' + node.name">
                         @if (node.name === 'Finance') {
                           <mat-icon>payments</mat-icon>
@@ -196,7 +208,7 @@
                         @if (!isCollapsed) {
                           <span
                             [class.tree--entry__active]="
-                              getOtherFinanceActiveCSS(node.name)
+                              getNodeActiveCSS(node.name)
                             "
                             class="tree-entry"
                             >{{ node.name }}</span
@@ -227,25 +239,25 @@
                   xPosition="after"
                   yPosition="below">
                   <button
-                    (click)="routeFinance('Budget Allocation')"
+                    (click)="routeNode('Budget Allocation')"
                     [class.tree--entry__active]="
-                      getOtherFinanceActiveCSS('Budget Allocation')
+                      getNodeActiveCSS('Budget Allocation')
                     "
                     mat-menu-item>
                     Budget Allocation
                   </button>
                   <button
-                    (click)="routeFinance('Disbursements')"
+                    (click)="routeNode('Disbursements')"
                     [class.tree--entry__active]="
-                      getOtherFinanceActiveCSS('Disbursements')
+                      getNodeActiveCSS('Disbursements')
                     "
                     mat-menu-item>
                     Disbursements
                   </button>
                   <button
-                    (click)="routeFinance('Financial Report')"
+                    (click)="routeNode('Financial Report')"
                     [class.tree--entry__active]="
-                      getOtherFinanceActiveCSS('Financial Report')
+                      getNodeActiveCSS('Financial Report')
                     "
                     mat-menu-item>
                     Financial Report
@@ -286,19 +298,88 @@
                 </span>
               </a>
             }
-            <a class="nav-item" mat-list-item>
-              <span
-                class="entry"
-                matTooltip="Performance"
-                matTooltipPosition="right"
-                routerLink="performance"
-                routerLinkActive="entry__active">
-                <mat-icon>bar_chart</mat-icon>
-                @if (!isCollapsed) {
-                  <span>Performance</span>
-                }
-              </span>
-            </a>
+            @if (
+              getUserRole() === UserRoles.SUPER_ADMIN ||
+              getUserRole() === UserRoles.ADMIN
+            ) {
+              @if (!isCollapsed) {
+                <mat-tree
+                  class="nav-item"
+                  [dataSource]="performanceDataSource"
+                  [treeControl]="treeControl">
+                  <mat-tree-node *matTreeNodeDef="let node; when: hasChild">
+                    <a
+                      style="border: none"
+                      matTreeNodeToggle
+                      class="nav-item"
+                      [matTooltip]="node.name"
+                      matTooltipPosition="right"
+                      mat-list-item>
+                      <span
+                        role="button"
+                        tabindex=""
+                        style="border: none"
+                        class="entry"
+                        [class.entry__active]="
+                          getPerformanceActiveCSS(node.name)
+                        "
+                        (click)="routeNode(node.name)"
+                        [attr.aria-label]="'Toggle ' + node.name">
+                        @if (node.name === 'Performance') {
+                          <mat-icon>bar_chart</mat-icon>
+                        } @else {
+                          <span></span>
+                        }
+                        @if (!isCollapsed) {
+                          <span
+                            [class.tree--entry__active]="
+                              getNodeActiveCSS(node.name)
+                            "
+                            class="tree-entry"
+                            >{{ node.name }}</span
+                          >
+                        }
+                      </span>
+                    </a>
+                  </mat-tree-node>
+                </mat-tree>
+              } @else {
+                <a
+                  [matMenuTriggerFor]="performanceMenu"
+                  class="nav-item"
+                  mat-list-item>
+                  <span
+                    [class.entry__active]="
+                      getPerformanceActiveCSS('Performance')
+                    "
+                    class="entry"
+                    matTooltip="Performance"
+                    matTooltipPosition="right">
+                    <mat-icon>bar_chart</mat-icon>
+                    @if (!isCollapsed) {
+                      <span>Performance</span>
+                    }
+                  </span>
+                </a>
+                <mat-menu
+                  #performanceMenu="matMenu"
+                  xPosition="after"
+                  yPosition="below">
+                  <button
+                    (click)="routeNode('Academic')"
+                    [class.tree--entry__active]="getNodeActiveCSS('Academic')"
+                    mat-menu-item>
+                    Academic Performance
+                  </button>
+                  <button
+                    (click)="routeNode('Financial')"
+                    [class.tree--entry__active]="getNodeActiveCSS('Financial')"
+                    mat-menu-item>
+                    Financial Performance
+                  </button>
+                </mat-menu>
+              }
+            }
           </div>
           <div class="navigation-bottom-items">
             <a class="nav-item" mat-list-item>

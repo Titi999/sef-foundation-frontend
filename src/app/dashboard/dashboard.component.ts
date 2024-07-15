@@ -19,13 +19,13 @@ import {
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatIconButton } from '@angular/material/button';
 
-interface FinanceNode {
+interface Node {
   name: string;
   routerLink: string;
-  children?: FinanceNode[];
+  children?: Node[];
 }
 
-const TREE_DATA: FinanceNode[] = [
+const FINANCE_TREE_DATA: Node[] = [
   {
     name: 'Finance',
     routerLink: 'finance',
@@ -33,6 +33,17 @@ const TREE_DATA: FinanceNode[] = [
       { name: 'Budget Allocation', routerLink: 'finance/budget-allocation' },
       { name: 'Disbursements', routerLink: 'finance/disbursements' },
       { name: 'Financial Report', routerLink: 'finance/financial-report' },
+    ],
+  },
+];
+
+const PERFORMANCE_TREE_DATA: Node[] = [
+  {
+    name: 'Performance',
+    routerLink: 'performance',
+    children: [
+      { name: 'Academic', routerLink: 'performance/academic' },
+      { name: 'Financial', routerLink: 'performance/financial' },
     ],
   },
 ];
@@ -66,7 +77,7 @@ interface FlatNode {
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
-  private _transformer = (node: FinanceNode, level: number) => {
+  private _transformer = (node: Node, level: number) => {
     return {
       expandable: !!node.children && node.children.length > 0,
       name: node.name,
@@ -87,7 +98,14 @@ export class DashboardComponent implements OnInit {
     node => node.children
   );
 
-  dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+  financeDataSource = new MatTreeFlatDataSource(
+    this.treeControl,
+    this.treeFlattener
+  );
+  performanceDataSource = new MatTreeFlatDataSource(
+    this.treeControl,
+    this.treeFlattener
+  );
 
   hasChild = (_: number, node: FlatNode) => node.expandable;
   @ViewChild(MatSidenav)
@@ -102,7 +120,8 @@ export class DashboardComponent implements OnInit {
     private authService: AuthService,
     private router: Router
   ) {
-    this.dataSource.data = TREE_DATA;
+    this.financeDataSource.data = FINANCE_TREE_DATA;
+    this.performanceDataSource.data = PERFORMANCE_TREE_DATA;
   }
 
   ngOnInit() {
@@ -139,21 +158,33 @@ export class DashboardComponent implements OnInit {
     );
   }
 
-  getOtherFinanceActiveCSS(name: string) {
-    const dashboardUrl = '/dashboard/finance';
+  getPerformanceActiveCSS(name: string) {
+    return (
+      this.router.url.startsWith('/dashboard/performance') &&
+      name === 'Performance'
+    );
+  }
+
+  getNodeActiveCSS(name: string) {
+    const financeUrl = '/dashboard/finance';
+    const performanceUrl = '/dashboard/performance';
     switch (name) {
       case 'Budget Allocation':
-        return this.router.url === `${dashboardUrl}/budget-allocation`;
+        return this.router.url === `${financeUrl}/budget-allocation`;
       case 'Disbursements':
-        return this.router.url === `${dashboardUrl}/disbursements`;
+        return this.router.url === `${financeUrl}/disbursements`;
       case 'Financial Report':
-        return this.router.url === `${dashboardUrl}/financial-report`;
+        return this.router.url === `${financeUrl}/financial-report`;
+      case 'Academic':
+        return this.router.url === `${performanceUrl}/academic`;
+      case 'Financial':
+        return this.router.url === `${performanceUrl}/financial`;
       default:
         return false;
     }
   }
 
-  routeFinance(type: string) {
+  routeNode(type: string) {
     switch (type) {
       case 'finance':
         return;
@@ -165,6 +196,14 @@ export class DashboardComponent implements OnInit {
         break;
       case 'Financial Report':
         void this.router.navigate(['dashboard/finance/financial-report']);
+        break;
+      case 'Financial':
+        void this.router.navigate(['dashboard/performance/financial']);
+        break;
+      case 'Academic':
+        void this.router.navigate(['dashboard/performance/academic']);
+        break;
+      default:
         break;
     }
   }

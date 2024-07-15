@@ -22,6 +22,8 @@ import { RequestsComponent } from '@app/dashboard/requests/requests.component';
 import { CreateRequestComponent } from '@app/dashboard/requests/create-request/create-request.component';
 import { PerformanceComponent } from './performance/performance.component';
 import { BudgetComponent } from '@app/dashboard/finance/budget-allocation/budget/budget.component';
+import { AcademicComponent } from '@app/dashboard/performance/academic/academic.component';
+import { BeneficiaryAcademicsComponent } from '@app/dashboard/performance/beneficiary-academics/beneficiary-academics.component';
 
 export const dashboardRoutes: Routes = [
   {
@@ -111,8 +113,16 @@ export const dashboardRoutes: Routes = [
         canActivate: [CanActiveBeneficiary],
       },
       {
+        path: 'academic-performance',
+        component: BeneficiaryAcademicsComponent,
+        canActivate: [CanActiveBeneficiary],
+      },
+      {
         path: 'performance',
-        component: PerformanceComponent,
+        children: [
+          { path: 'financial', component: PerformanceComponent },
+          { path: 'academic', component: AcademicComponent },
+        ],
       },
     ],
   },
