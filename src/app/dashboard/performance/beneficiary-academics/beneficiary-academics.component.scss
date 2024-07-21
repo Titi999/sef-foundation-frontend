@@ -1,0 +1,28 @@
+@use '../../../../scss/colors' as colors;
+@use '../../../../scss/global' as font;
+
+.beneficiary-academics-container {
+  margin: 20px;
+
+  .beneficiary-academics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .beneficiary-academics__title {
+    font-size: 22px;
+    color: map-get(colors.$primary-palette, 500);
+    margin-left: 15px;
+  }
+
+  .beneficiary-academics__description {
+    font-size: font.$font-size-sm;
+    margin-left: 15px;
+    margin-top: 10px;
+  }
+
+  .barChart-container {
+    margin: 20px;
+  }
+}
