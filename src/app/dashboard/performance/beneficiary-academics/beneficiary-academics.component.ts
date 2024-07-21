@@ -57,7 +57,7 @@ export class BeneficiaryAcademicsComponent {
       labels: ['2022', '2023', '2024'],
     };
   });
-  public lineChartOptions: ChartConfiguration['options'] = {
+  public chartOptions: ChartConfiguration['options'] = {
     elements: {
       line: {
         tension: 0.5,
@@ -67,6 +67,6 @@ export class BeneficiaryAcademicsComponent {
       legend: { display: true },
     },
   };
-  public lineChartType: ChartType = 'bar';
+  public chartType: ChartType = 'bar';
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 }
