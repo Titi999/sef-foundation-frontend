@@ -1,1 +1,27 @@
-<p>beneficiary-academics works!</p>
+<div class="beneficiary-academics-container">
+    <div class="beneficiary-academics-header">
+        <div class="">
+          <h1 class="beneficiary-academics__title">Beneficiary academics</h1>
+          <p class="beneficiary-academics__description">academic details of beneficiary</p>
+        </div>
+        <div class="">
+          <mat-form-field appearance="outline">
+            <mat-label>Year</mat-label>
+            <mat-select [formControl]="yearControl">
+              @for (item of getYearsDropDownValues(); track item.value) {
+                <mat-option [value]="item.value">{{ item.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+    </div>
+
+    <div class="barChart-container">
+        <canvas
+          class="canvas"
+          baseChart
+          [data]="beneficiaryData()"
+          [options]="lineChartOptions"
+          [type]="lineChartType"></canvas>
+      </div>
+</div>
