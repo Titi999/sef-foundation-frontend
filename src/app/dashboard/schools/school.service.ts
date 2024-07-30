@@ -28,7 +28,7 @@ export class SchoolService {
 
   public getSchools(page: number, searchTerm: string, status: string) {
     return this.http.get<Response<Pagination<School[]>>>(
-      `${this.baseUrl}?page=${page}&searchTerm=${searchTerm}&status=${status}`
+      `${this.baseUrl}/get?page=${page}&searchTerm=${searchTerm}&status=${status}`
     );
   }
 
@@ -39,7 +39,7 @@ export class SchoolService {
     location: string,
     classes: string[]
   ) {
-    return this.http.post<Response<School>>(`${this.baseUrl}`, {
+    return this.http.post<Response<School>>(`${this.baseUrl}/create`, {
       name,
       email,
       phone,

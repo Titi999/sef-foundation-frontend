@@ -29,7 +29,7 @@ export class StudentsService {
 
   public getStudents(page: number, searchTerm: string, status: string) {
     return this.http.get<Response<Pagination<Student[]>>>(
-      `${this.url}?page=${page}&searchTerm=${searchTerm}&status=${status}`
+      `${this.url}/get?page=${page}&searchTerm=${searchTerm}&status=${status}`
     );
   }
 
