@@ -13,7 +13,7 @@ export class UserAdministrationService {
 
   getUsers(page: number, search: string = '', role: string, status: string) {
     return this.http.get<Response<Pagination<User[]>>>(
-      `${this.url}?page=${page}&searchTerm=${search}&status=${status}&role=${role}`
+      `${this.url}/get-users?page=${page}&searchTerm=${search}&status=${status}&role=${role}`
     );
   }
 

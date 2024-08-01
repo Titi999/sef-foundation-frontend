@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://sef-foundation-backend.onrender.com',
+  apiUrl: 'https://data-service.sefad2009.org',
 };

@@ -123,6 +123,7 @@ export const dashboardRoutes: Routes = [
           { path: 'financial', component: PerformanceComponent },
           { path: 'academic', component: AcademicComponent },
         ],
+        canActivate: [CanActiveAdmin],
       },
     ],
   },

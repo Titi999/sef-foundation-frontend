@@ -1,1 +1,147 @@
-<p>academic works!</p>
+<app-spinner [isLoading]="isLoadingResults" />
+@if (!isLoadingResults) {
+  <div class="performance-container">
+    <div class="performance-header">
+      <div class="">
+        <h1 class="performance__title">Academics</h1>
+        <p class="performance__description">Academic performance details</p>
+      </div>
+      <div class="">
+        <mat-form-field appearance="outline" class="type__select__wrapper">
+          <mat-label>Type</mat-label>
+          <mat-select [formControl]="termControl">
+            @for (term of termList; track term) {
+              <mat-option [value]="term.value">{{ term.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+<!--        Perhaps may consider other filters in the future?-->
+<!--        <mat-form-field appearance="outline" class="type__select__wrapper">-->
+<!--          <mat-label>Category</mat-label>-->
+<!--          <mat-select [formControl]="categoryControl">-->
+<!--            <mat-option [value]="''">All</mat-option>-->
+<!--            @for (category of classList; track category) {-->
+<!--              <mat-option [value]="category.value">{{-->
+<!--                  category.label-->
+<!--                }}</mat-option>-->
+<!--            }-->
+<!--          </mat-select>-->
+<!--        </mat-form-field>-->
+        <mat-form-field appearance="outline">
+          <mat-label>Year</mat-label>
+          <mat-select [formControl]="yearControl">
+            @for (item of getYearsDropDownValues(); track item.value) {
+              <mat-option [value]="item.value">{{ item.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="performance-cards">
+      @for (card of cards(); track card) {
+        <mat-card class="performance-card">
+          <mat-card-header>
+            <mat-card-title>
+              <div>{{ card.title }}</div>
+              <button mat-icon-button class="more-button" aria-label="Icon">
+                <ngx-avatars
+                  [name]="card.title"
+                  class="avatar"
+                  size="90"
+                  src=""></ngx-avatars>
+              </button>
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="dashboard-card-content">
+            <div class="figure">
+              <p>{{ formatNumber(Number(card.averageScore) || 0) }}%</p>
+              <p class="category">{{ card.level }}</p>
+              <p
+                class="rank rank-1"
+                [class.rank-1]="card.id === 1"
+                [class.rank-2]="card.id === 2"
+                [class.rank-3]="card.id === 3">
+                Rank: {{ card.id }}st
+              </p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+    <div class="display-style">
+      <mat-button-toggle-group [formControl]="displayStyleControl">
+        <mat-button-toggle value="chart">Chart</mat-button-toggle>
+        <mat-button-toggle value="table">Table</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+    @if (displayStyleControl.value === 'table') {
+      <div class="performance-table">
+        <div class="performance-table-header">
+          <div class="performance-table-left">
+            <h4>Students</h4>
+            <div class="search__input__wrapper">
+              <app-rounded-input
+                [control]="searchControl"
+                placeholder="Search students or school" />
+            </div>
+          </div>
+          <div class="performance-table-right">
+            <button
+              [disabled]="!data.length"
+              (click)="downloadCSV()"
+              color="primary"
+              class="download__btn btn"
+              mat-flat-button>
+              <mat-icon>download</mat-icon>
+              Download CSV
+            </button>
+          </div>
+        </div>
+        <table mat-table [dataSource]="data" class="performance-table">
+          <ng-container matColumnDef="student">
+            <th mat-header-cell *matHeaderCellDef>Student</th>
+            <td mat-cell *matCellDef="let data">{{ data.studentName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="grade">
+            <th mat-header-cell *matHeaderCellDef>Class / Level</th>
+            <td mat-cell *matCellDef="let data">{{ data.grade }}</td>
+          </ng-container>
+          <ng-container matColumnDef="school">
+            <th mat-header-cell *matHeaderCellDef>School</th>
+            <td mat-cell *matCellDef="let data">{{ data.school }}</td>
+          </ng-container>
+          <ng-container matColumnDef="averageScore">
+            <th mat-header-cell *matHeaderCellDef>Average Score</th>
+            <td mat-cell *matCellDef="let data">
+              {{ data.averageScore }}%
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="row"></tr>
+        </table>
+      </div>
+      <mat-paginator
+        [length]="totalItems"
+        [pageSize]="10"
+        (page)="onPaginationChange($event)"
+        [pageIndex]="page.value ? page.value - 1 : 0"
+        [pageSizeOptions]="[]"></mat-paginator>
+    } @else if (displayStyleControl.value === 'chart') {
+      <div class="card__container">
+        <div class="linechart-container">
+          <canvas
+            class="canvas"
+            baseChart
+            [data]="chart()"
+            [options]="chartOptions"
+            [type]="chartType"></canvas>
+        </div>
+      </div>
+    }
+  </div>
+}

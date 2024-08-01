@@ -197,3 +197,16 @@ export const typesList = [
     value: 'declined',
   },
 ];
+
+export const termList = [
+  { label: 'All', value: '' },
+  { label: 'First', value: 'first' },
+  {
+    label: 'Second',
+    value: 'second',
+  },
+  {
+    label: 'Third',
+    value: 'third',
+  },
+];
