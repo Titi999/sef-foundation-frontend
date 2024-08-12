@@ -15,18 +15,6 @@
             }
           </mat-select>
         </mat-form-field>
-<!--        Perhaps may consider other filters in the future?-->
-<!--        <mat-form-field appearance="outline" class="type__select__wrapper">-->
-<!--          <mat-label>Category</mat-label>-->
-<!--          <mat-select [formControl]="categoryControl">-->
-<!--            <mat-option [value]="''">All</mat-option>-->
-<!--            @for (category of classList; track category) {-->
-<!--              <mat-option [value]="category.value">{{-->
-<!--                  category.label-->
-<!--                }}</mat-option>-->
-<!--            }-->
-<!--          </mat-select>-->
-<!--        </mat-form-field>-->
         <mat-form-field appearance="outline">
           <mat-label>Year</mat-label>
           <mat-select [formControl]="yearControl">
@@ -113,9 +101,7 @@
           </ng-container>
           <ng-container matColumnDef="averageScore">
             <th mat-header-cell *matHeaderCellDef>Average Score</th>
-            <td mat-cell *matCellDef="let data">
-              {{ data.averageScore }}%
-            </td>
+            <td mat-cell *matCellDef="let data">{{ data.averageScore }}%</td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

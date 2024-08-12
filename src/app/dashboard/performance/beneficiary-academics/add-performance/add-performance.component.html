@@ -1,0 +1,70 @@
+<div class="main-container">
+  <div class="title">
+    <span class="main">{{ title }}</span>
+    <span class="sub">{{ subtext }}</span>
+  </div>
+  <form
+    (ngSubmit)="submit()"
+    [formGroup]="addPerformanceForm"
+    class="add-user__form__container">
+    <mat-form-field appearance="outline">
+      <mat-label>Course</mat-label>
+      <input formControlName="course" id="course" matInput type="text" />
+      <mat-error>{{ getFormErrors('course') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Score</mat-label>
+      <input formControlName="score" id="score" matInput type="number" />
+      <mat-error>{{ getFormErrors('score') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="type__select__wrapper">
+      <mat-label>Term</mat-label>
+      <mat-select formControlName="term">
+        @for (term of termList; track term) {
+          <mat-option [value]="term.value">{{ term.label }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>{{ getFormErrors('score') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Year</mat-label>
+      <mat-select formControlName="year">
+        @for (item of getYearsDropDownValues().slice(1); track item.value) {
+          <mat-option [value]="item.value">{{ item.label }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>{{ getFormErrors('year') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Remarks</mat-label>
+      <textarea
+        formControlName="remarks"
+        id="remarks"
+        matInput
+        type="text"></textarea>
+      <mat-error>{{ getFormErrors('remarks') }}</mat-error>
+    </mat-form-field>
+    <div class="actions">
+      <button
+        [disabled]="isLoading"
+        class="submit__btn cancel"
+        mat-flat-button
+        mat-dialog-close
+        type="button">
+        <span>Cancel</span>
+      </button>
+      <button
+        [disabled]="isLoading"
+        class="submit__btn"
+        mat-flat-button
+        color="primary"
+        type="submit">
+        @if (isLoading) {
+          <span class="loading">Loading...</span>
+        } @else {
+          <span>{{ buttonText }}</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>
