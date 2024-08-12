@@ -1,1 +1,116 @@
-<p>beneficiary-academics works!</p>
+<app-spinner [isLoading]="isLoadingResults" />
+@if (!isLoadingResults) {
+  <div class="performance-container">
+    <div class="performance-header">
+      <div class="">
+        <h1 class="performance__title">Academics</h1>
+        <p class="performance__description">Academic performance details</p>
+      </div>
+      <div class="">
+        <mat-form-field appearance="outline" class="type__select__wrapper">
+          <mat-label>Term</mat-label>
+          <mat-select [formControl]="termControl">
+            @for (term of termList; track term) {
+              <mat-option [value]="term.value">{{ term.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Year</mat-label>
+          <mat-select [formControl]="yearControl">
+            @for (item of getYearsDropDownValues().slice(1); track item.value) {
+              <mat-option [value]="item.value">{{ item.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="performance-table">
+      <div class="performance-table-header">
+        <div class="performance-table-left">
+          <h4>Students</h4>
+          <div class="search__input__wrapper">
+            <app-rounded-input
+              [control]="searchControl"
+              placeholder="Search course" />
+          </div>
+        </div>
+        <div class="performance-table-right">
+          <button
+            (click)="addAcademicPerformance()"
+            class="add__btn btn"
+            mat-flat-button
+            color="primary">
+            <mat-icon>add</mat-icon>
+            New Record
+          </button>
+          <button
+            [disabled]="!data.length"
+            (click)="downloadCSV()"
+            color="primary"
+            class="download__btn btn"
+            mat-flat-button>
+            <mat-icon>download</mat-icon>
+            Download CSV
+          </button>
+        </div>
+      </div>
+      <table mat-table [dataSource]="data" class="performance-table">
+        <ng-container matColumnDef="course">
+          <th mat-header-cell *matHeaderCellDef>Course</th>
+          <td mat-cell *matCellDef="let data">{{ data.course | titlecase }}</td>
+        </ng-container>
+        <ng-container matColumnDef="score">
+          <th mat-header-cell *matHeaderCellDef>Score</th>
+          <td mat-cell *matCellDef="let data">{{ data.score }}%</td>
+        </ng-container>
+        <ng-container matColumnDef="grade">
+          <th mat-header-cell *matHeaderCellDef>Grade</th>
+          <td mat-cell *matCellDef="let data">{{ data.grade }}</td>
+        </ng-container>
+        <ng-container matColumnDef="term">
+          <th mat-header-cell *matHeaderCellDef>Term</th>
+          <td mat-cell *matCellDef="let data">{{ data.term | titlecase }}</td>
+        </ng-container>
+        <ng-container matColumnDef="year">
+          <th mat-header-cell *matHeaderCellDef>Year</th>
+          <td mat-cell *matCellDef="let data">{{ data.year }}</td>
+        </ng-container>
+        <ng-container matColumnDef="more">
+          <th mat-header-cell *matHeaderCellDef>More</th>
+          <td mat-cell *matCellDef="let row">
+            <button
+              (click)="$event.stopPropagation()"
+              [matMenuTriggerFor]="menu"
+              mat-icon-button>
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button (click)="editAcademicPerformance(row)" mat-menu-item>
+                <mat-icon>edit</mat-icon>Edit
+              </button>
+              <button
+                (click)="deleteStudent(row.id)"
+                class="delete__btn"
+                mat-menu-item>
+                <mat-icon color="warn">delete</mat-icon>Delete
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="row"></tr>
+      </table>
+    </div>
+    <mat-paginator
+      [length]="totalItems"
+      [pageSize]="10"
+      (page)="onPaginationChange($event)"
+      [pageIndex]="page.value ? page.value - 1 : 0"
+      [pageSizeOptions]="[]"></mat-paginator>
+  </div>
+}
