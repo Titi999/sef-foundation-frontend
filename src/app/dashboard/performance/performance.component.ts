@@ -185,7 +185,7 @@ export class PerformanceComponent implements OnInit {
 
   private readonly matchesBreakpoint = toSignal(
     this.breakpointObserver
-      .observe(Breakpoints.Handset)
+      .observe(Breakpoints.Tablet)
       .pipe(map(({ matches }) => matches))
   );
 
@@ -195,24 +195,24 @@ export class PerformanceComponent implements OnInit {
       return [
         {
           title: ranks[0]?.student,
-          cols: 1,
-          rows: 1,
+          cols: 3,
+          rows: 3,
           id: 1,
           level: ranks[0]?.level,
           totalDisbursement: ranks[0]?.totalDisbursement,
         },
         {
           title: ranks[1]?.student,
-          cols: 1,
-          rows: 1,
+          cols: 3,
+          rows: 3,
           id: 2,
           level: ranks[1]?.level,
           totalDisbursement: ranks[1]?.totalDisbursement,
         },
         {
           title: ranks[2]?.student,
-          cols: 1,
-          rows: 1,
+          cols: 3,
+          rows: 3,
           id: 3,
           level: ranks[2]?.level,
           totalDisbursement: ranks[2]?.totalDisbursement,

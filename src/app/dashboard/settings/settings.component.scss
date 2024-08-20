@@ -61,10 +61,15 @@
     gap: 30px;
     margin: 20px;
 
+    @media (max-width: 768px) {
+      flex-wrap: wrap;
+    }
+
     .edit__left,
     .edit__right {
       display: flex;
       flex-direction: column;
+      flex-wrap: wrap;
       width: 100%;
       gap: 20px;
 

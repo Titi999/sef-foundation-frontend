@@ -5,9 +5,18 @@
   margin: 20px;
 
   .performance-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    @media (min-width: 1040px) {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media (max-width: 1040px) {
+      .main-filters {
+        margin-top: 1rem;
+        padding-left: 1rem;
+      }
+    }
   }
 
   .performance__title {
@@ -26,6 +35,10 @@
     display: flex;
     gap: 40px;
     margin-left: 20px;
+
+    @media (max-width: 1024px) {
+      flex-wrap: wrap;
+    }
 
     .performance-card {
       width: 100%;
@@ -88,6 +101,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
   }
 
   .performance-table-left,
