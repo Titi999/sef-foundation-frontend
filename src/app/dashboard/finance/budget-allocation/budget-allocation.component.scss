@@ -83,6 +83,8 @@ table {
   margin: 0 1rem;
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .actions__left {
@@ -101,6 +103,8 @@ table {
   align-items: center;
   column-gap: 0.5rem;
   color: colors.$sys-light-on-surface-variant;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .btn {

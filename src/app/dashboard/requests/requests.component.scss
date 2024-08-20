@@ -66,6 +66,8 @@ table {
   margin: 0 1rem;
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .actions__left {

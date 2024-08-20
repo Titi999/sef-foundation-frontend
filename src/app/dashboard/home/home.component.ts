@@ -194,10 +194,37 @@ export class HomeComponent implements OnInit {
     map(({ matches }) => {
       if (matches) {
         return [
-          { title: 'Card 1', cols: 1, rows: 1, id: 1 },
-          { title: 'Card 2', cols: 1, rows: 1, id: 2 },
-          { title: 'Card 3', cols: 1, rows: 1, id: 3 },
-          { title: 'Card 4', cols: 1, rows: 1, id: 4 },
+          {
+            title:
+              this.role === 'beneficiary'
+                ? 'Funds Requested'
+                : 'Funds allocated',
+            cols: 3,
+            rows: 1,
+            id: 1,
+          },
+          { title: 'Funds disbursed', cols: 3, rows: 1, id: 2 },
+          {
+            title:
+              this.role === 'beneficiary'
+                ? 'Funds Declined'
+                : 'Students supported',
+            cols: 3,
+            rows: 1,
+            id: 3,
+          },
+          {
+            title: 'Funding distribution',
+            cols: 3,
+            rows: 3,
+            id: 4,
+          },
+          {
+            title: 'Total Funding Disbursed Over Time',
+            cols: 3,
+            rows: 3,
+            id: 5,
+          },
         ];
       }
 
@@ -236,13 +263,6 @@ export class HomeComponent implements OnInit {
           rows: 3,
           id: 5,
         },
-        //TODO: Will not be implemented now due to lack of time
-        // {
-        //   title: 'Users',
-        //   cols: 3,
-        //   rows: 3,
-        //   id: 6,
-        // },
       ];
     })
   );
