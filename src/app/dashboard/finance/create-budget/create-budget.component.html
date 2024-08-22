@@ -20,17 +20,6 @@
       <mat-date-range-picker #picker></mat-date-range-picker>
       <mat-error></mat-error>
     </mat-form-field>
-    <!--    <mat-form-field appearance="outline">-->
-    <!--      <mat-label>Budget Allocation</mat-label>-->
-    <!--      <input-->
-    <!--        formControlName="total"-->
-    <!--        matInput-->
-    <!--        type="number"-->
-    <!--        class="currency-right-align"-->
-    <!--        placeholder="0" />-->
-    <!--      <span matTextPrefix>GH&#8373;&nbsp;</span>-->
-    <!--      <span matTextSuffix>.00</span>-->
-    <!--    </mat-form-field>-->
   </div>
 </app-info-card>
 <app-info-card title="Category Distribution">
@@ -42,6 +31,21 @@
         [backgroundColor]="'blue'"
         (closeBtn)="closeBanner()" />
     }
+    <div class="upload-wrapper">
+      <button
+        (click)="fileUpload.click()"
+        class="submit__btn"
+        mat-flat-button
+        color="primary">
+        <mat-icon>upload</mat-icon>
+        <span>Upload</span>
+      </button>
+      <input
+        type="file"
+        class="file-input"
+        (change)="bulkUpload($event)"
+        #fileUpload />
+    </div>
     <div class="container">
       <mat-form-field appearance="outline">
         <mat-label>Category</mat-label>
