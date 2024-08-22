@@ -49,6 +49,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatChip } from '@angular/material/chips';
+import { Papa } from 'ngx-papaparse';
 
 @Component({
   selector: 'app-create-budget',
@@ -115,25 +116,12 @@ export class CreateBudgetComponent implements OnInit {
     private readonly toastrService: ToastrService,
     private readonly dialog: MatDialog,
     private readonly router: Router,
-    private readonly activatedRoute: ActivatedRoute
+    private readonly activatedRoute: ActivatedRoute,
+    private readonly papa: Papa
   ) {}
 
   ngOnInit() {
     this.canEditBudget();
-    // this.budgetForm.valueChanges
-    //   .pipe(
-    //     tap(() => {
-    //       const totalBudget = parseInt(
-    //         this.budgetForm.controls.total.value || '0'
-    //       );
-    //       if (this.totalDistribution > totalBudget) {
-    //         this.bannerText =
-    //           'Your category distribution as exceeded your total budget. Please consider making an adjustment';
-    //         this.showBanner = true;
-    //       }
-    //     })
-    //   )
-    //   .subscribe();
   }
 
   canEditBudget() {
@@ -297,5 +285,31 @@ export class CreateBudgetComponent implements OnInit {
 
   closeBanner() {
     this.showBanner = false;
+  }
+
+  bulkUpload(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    this.papa.parse(file as Blob, {
+      complete: ({ data }) => {
+        const distribution = [];
+        for (let i = 1; i < data.length; i++) {
+          if (data[i][0] && data[i][1]) {
+            distribution.push({
+              title: data[i][0],
+              amount: data[i][1],
+              comments: data[i][2],
+            });
+          }
+        }
+        distribution.forEach(distribution => {
+          this.distributionForm.controls.amount.setValue(distribution.amount);
+          this.distributionForm.controls.title.setValue(distribution.title);
+          this.distributionForm.controls.comments.setValue(
+            distribution.comments
+          );
+          this.addDistribution();
+        });
+      },
+    });
   }
 }
