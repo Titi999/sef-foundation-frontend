@@ -151,7 +151,6 @@ export class CreateBudgetComponent implements OnInit {
   }
 
   addDistribution() {
-    console.log('value');
     const amount = this.distributionForm.controls.amount.value;
     const values = new FormGroup({
       title: new FormControl(this.distributionForm.controls.title.value),
