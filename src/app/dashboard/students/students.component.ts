@@ -49,6 +49,7 @@ import {
 } from '@app/shared/action-modal/action-modal.type';
 import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
 import { ToastrService } from 'ngx-toastr';
+import { ZeroPadPipe } from '@app/pipes/zero-pad.pipe';
 
 @Component({
   selector: 'app-students',
@@ -80,6 +81,7 @@ import { ToastrService } from 'ngx-toastr';
     MatRadioButton,
     MatRadioGroup,
     ReactiveFormsModule,
+    ZeroPadPipe,
   ],
   templateUrl: './students.component.html',
   styleUrl: './students.component.scss',
@@ -90,7 +92,7 @@ export class StudentsComponent implements AfterViewInit, OnDestroy {
     'name',
     'school',
     'class',
-    'parent',
+    'code',
     'status',
     'deactivated_at',
     'more',

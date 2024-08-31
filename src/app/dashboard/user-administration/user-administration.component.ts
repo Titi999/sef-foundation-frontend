@@ -167,7 +167,7 @@ export class UserAdministrationComponent implements AfterViewInit, OnDestroy {
   addUser() {
     const dialogRef = this.dialog.open(AddUserComponent, {
       maxWidth: '400px',
-      maxHeight: '400px',
+      maxHeight: '500px',
       width: '100%',
       height: '100%',
     });

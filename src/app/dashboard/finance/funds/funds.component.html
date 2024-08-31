@@ -1,18 +1,14 @@
 <div class="grid-container">
-  <div class="title-wrapper">
-    <div>
-      <h1 class="title">Disbursements</h1>
-      <p class="description">allocation of funds to various students</p>
-    </div>
-  </div>
-  <div class="table__container">
+  <h1 class="students__title">Funds</h1>
+  <p class="students__description">List of all funds of SEF</p>
+  <div class="students__table__container">
     <div class="actions__wrapper">
       <div class="actions__left">
-        <span>Disbursements</span>
+        <span>Funds</span>
         <div class="search__input__wrapper">
-          <app-rounded-input
-            [control]="searchValue"
-            placeholder="Search students / title" />
+          <!--          <app-rounded-input-->
+          <!--            [control]="searchValue"-->
+          <!--            placeholder="Search name, school" />-->
         </div>
       </div>
       <div class="actions__right">
@@ -27,6 +23,17 @@
           <button mat-menu-item [matMenuTriggerFor]="period">Period</button>
           <button mat-menu-item [matMenuTriggerFor]="year">Year</button>
         </mat-menu>
+        <mat-menu #period="matMenu">
+          <mat-radio-group [formControl]="periodControl">
+            @for (period of budgetPeriods; track period.value) {
+              <button mat-menu-item>
+                <mat-radio-button [value]="period.value" color="primary">
+                  {{ period.label }}
+                </mat-radio-button>
+              </button>
+            }
+          </mat-radio-group>
+        </mat-menu>
         <mat-menu #year="matMenu">
           <mat-radio-group [formControl]="yearControl">
             @for (year of getYearsDropDownValues(); track year.value) {
@@ -38,32 +45,20 @@
             }
           </mat-radio-group>
         </mat-menu>
-        <mat-menu #period="matMenu">
-          <mat-radio-group [formControl]="periodControl">
-            @for (period of budgetPeriods; track period.value) {
-              <button mat-menu-item>
-                <mat-radio-button color="primary" [value]="period.value">
-                  {{ period.label }}
-                </mat-radio-button>
-              </button>
-            }
-          </mat-radio-group>
-        </mat-menu>
-        <!--        <button-->
-        <!--          [disabled]="!data.length"-->
-        <!--          (click)="downloadCSV()"-->
-        <!--          class="download__btn btn"-->
-        <!--          mat-flat-button>-->
-        <!--          <mat-icon>download</mat-icon>-->
-        <!--          Download CSV-->
-        <!--        </button>-->
         <button
-          (click)="addDisbursement()"
+          [disabled]="!data.length"
+          class="download__btn btn"
+          mat-flat-button>
+          <mat-icon>download</mat-icon>
+          Download CSV
+        </button>
+        <button
+          (click)="addFund()"
           class="add__btn btn"
           mat-flat-button
           color="primary">
           <mat-icon>add</mat-icon>
-          New disbursement
+          New Fund
         </button>
       </div>
     </div>
@@ -76,10 +71,10 @@
     }
     @if (!isLoadingResults && !data.length) {
       <div class="empty-table no-results">
-        <span>No disbursements found</span>
+        <span>No funds found</span>
       </div>
     }
-    <div class="table-container">
+    <div class="students-table-container">
       <table
         mat-table
         [dataSource]="data"
@@ -88,32 +83,43 @@
         matSortActive="created"
         matSortDisableClear
         matSortDirection="desc">
-        <ng-container matColumnDef="amount">
-          <th mat-header-cell *matHeaderCellDef>Amount</th>
-          <td mat-cell *matCellDef="let row">
-            {{ row.amount | currency: 'GH&#8373; ' }}
-          </td>
+        <!-- Number Column -->
+        <ng-container matColumnDef="created_at">
+          <th mat-header-cell *matHeaderCellDef>Date Created</th>
+          <td mat-cell *matCellDef="let row">{{ row.created_at | date }}</td>
         </ng-container>
-
+        <ng-container matColumnDef="period">
+          <th mat-header-cell *matHeaderCellDef>Period</th>
+          <td mat-cell *matCellDef="let row">{{ row.period }}</td>
+        </ng-container>
         <ng-container matColumnDef="year">
           <th mat-header-cell *matHeaderCellDef>Year</th>
           <td mat-cell *matCellDef="let row">
             {{ row.year }}
           </td>
         </ng-container>
+        <ng-container matColumnDef="comments">
+          <th mat-header-cell *matHeaderCellDef>Comments</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.comments }}
+          </td>
+        </ng-container>
 
         <ng-container matColumnDef="more">
           <th mat-header-cell *matHeaderCellDef>More</th>
           <td mat-cell *matCellDef="let row">
-            <button [matMenuTriggerFor]="menu" mat-icon-button>
+            <button
+              (click)="$event.stopPropagation()"
+              [matMenuTriggerFor]="menu"
+              mat-icon-button>
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
-              <button mat-menu-item (click)="addDisbursement(row)">
+              <button (click)="addFund(row)" mat-menu-item>
                 <mat-icon>edit</mat-icon>Edit
               </button>
               <button
-                (click)="deleteDisbursement(row.id)"
+                (click)="deleteStudent(row.id)"
                 class="delete__btn"
                 mat-menu-item>
                 <mat-icon color="warn">delete</mat-icon>Delete
@@ -121,28 +127,18 @@
             </mat-menu>
           </td>
         </ng-container>
-
-        <ng-container matColumnDef="title">
-          <th mat-header-cell *matHeaderCellDef>Title / Student</th>
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>Amount</th>
           <td mat-cell *matCellDef="let row">
-            {{ row.__student__?.name ?? row.title | titlecase }}
+            {{ row.amount | currency: 'GH&#8373; ' }}
           </td>
         </ng-container>
 
-        <!-- State Column -->
-        <ng-container matColumnDef="period">
-          <th mat-header-cell *matHeaderCellDef>Period</th>
-          <td mat-cell *matCellDef="let row">{{ row.period }}</td>
-        </ng-container>
-
-        <!-- Created Column -->
-        <ng-container matColumnDef="created_at">
-          <th mat-header-cell *matHeaderCellDef>Created at</th>
-          <td mat-cell *matCellDef="let row">{{ row.created_at | date }}</td>
-        </ng-container>
-
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="row"></tr>
       </table>
     </div>
 

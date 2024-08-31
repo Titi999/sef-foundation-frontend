@@ -1,8 +1,36 @@
 @use '../../../../../scss/colors' as colors;
 @use '../../../../../scss/global' as font;
 
-* {
-  color: colors.$sys-light-on-surface-variant;
+.distribution-table {
+  margin-top: 1.5rem;
+  width: 100%;
+  overflow: auto;
+  max-width: 100%;
+  position: relative;
+
+  .filters {
+    display: flex;
+    justify-content: space-between;
+
+    span {
+      color: map-get(colors.$primary-palette, 500);
+      font-weight: bold;
+    }
+  }
+
+  table {
+    width: 100%;
+  }
+}
+
+.mat-mdc-header-cell, .mat-mdc-footer-cell, .mat-mdc-cell {
+  min-width: 200px;
+  box-sizing: border-box;
+}
+
+
+.add__btn {
+  color: white;
 }
 
 .grid-container {
@@ -89,7 +117,7 @@
 
 // TODO: Make this better
 .doughnut-container {
-  max-height: 400px;
+  max-height: 800px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -107,6 +135,11 @@
 .overview__header {
   display: flex;
   justify-content: space-between;
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+  }
 }
 
 table {

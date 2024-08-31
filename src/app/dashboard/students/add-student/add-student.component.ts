@@ -78,6 +78,7 @@ export class AddStudentComponent implements OnInit {
       eachWordShouldBeginWithCapital(),
       onlyAlphabeticalCharactersAndSpaceAllowed(),
     ]),
+    email: new FormControl('', [Validators.email]),
     parent: new FormControl('', [
       Validators.required,
       eachWordShouldBeginWithCapital(),
@@ -126,6 +127,10 @@ export class AddStudentComponent implements OnInit {
         ...data,
         school: data.school.id,
       });
+      if (data.user) {
+        this.studentForm.controls.email.setValue(data.user.email);
+        this.studentForm.controls.email.disable();
+      }
     } else {
       this.title = 'Add a new student';
       this.subtext = 'kindly fill in the details to create a new beneficiary';

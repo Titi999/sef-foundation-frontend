@@ -1,106 +1,208 @@
-<app-spinner [isLoading]="isChecking" />
-@if (beneficiaryExists && !isChecking) {
-  <div class="upload-wrapper"></div>
-  <app-info-card title="Disbursement Details">
-    <div viewMode></div>
-    <div editMode [formGroup]="requestForm" class="container">
+<app-spinner [isLoading]="isLoadingBudget" />
+
+<app-info-card title="Request Distribution">
+  <div viewMode></div>
+  <div editMode>
+    <div class="container">
       <mat-form-field appearance="outline">
-        <mat-label>Amount</mat-label>
+        <mat-select
+          [formControl]="requestForm.controls.budgetId"
+          placeholder="Select Period"
+          #singleSelect>
+          <mat-option>
+            <ngx-mat-select-search
+              ngxMatSelectSearchClear="clear"
+              placeholderLabel="Search budgets"
+              noEntriesFoundLabel="No budget found"
+              [formControl]="budgetsFilterCtrl"></ngx-mat-select-search>
+          </mat-option>
+          <mat-option
+            *ngFor="let budget of filteredBudgets | async"
+            [value]="budget.id">
+            {{ budget.period }} {{ budget.year }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>School</mat-label>
+        <input [formControl]="requestForm.controls.school" matInput />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Class</mat-label>
+        <input [formControl]="requestForm.controls.class" matInput />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Tuition</mat-label>
         <input
-          formControlName="amount"
+          [formControl]="requestForm.controls.tuition"
           matInput
           type="number"
           class="currency-right-align"
           placeholder="0" />
-        <span matTextPrefix>GH&#8373;&nbsp;</span>
+        <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span matTextSuffix>.00</span>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Text Books</mat-label>
+        <input
+          [formControl]="requestForm.controls.textBooks"
+          matInput
+          type="number"
+          class="currency-right-align"
+          placeholder="0" />
+        <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span matTextSuffix>.00</span>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Extra Classes</mat-label>
+        <input
+          [formControl]="requestForm.controls.extraClasses"
+          matInput
+          type="number"
+          class="currency-right-align"
+          placeholder="0" />
+        <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span matTextSuffix>.00</span>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Exam Fee</mat-label>
+        <input
+          [formControl]="requestForm.controls.examFee"
+          matInput
+          type="number"
+          class="currency-right-align"
+          placeholder="0" />
+        <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span matTextSuffix>.00</span>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Uniform or Bag</mat-label>
+        <input
+          [formControl]="requestForm.controls.uniformBag"
+          matInput
+          type="number"
+          class="currency-right-align"
+          placeholder="0" />
+        <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span matTextSuffix>.00</span>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Excursion</mat-label>
+        <input
+          [formControl]="requestForm.controls.excursion"
+          matInput
+          type="number"
+          class="currency-right-align"
+          placeholder="0" />
+        <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span matTextSuffix>.00</span>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Transportation</mat-label>
+        <input
+          [formControl]="requestForm.controls.transportation"
+          matInput
+          type="number"
+          class="currency-right-align"
+          placeholder="0" />
+        <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span matTextSuffix>.00</span>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Stationery</mat-label>
+        <input
+          [formControl]="requestForm.controls.stationery"
+          matInput
+          type="number"
+          class="currency-right-align"
+          placeholder="0" />
+        <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span matTextSuffix>.00</span>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Foot or Under Wears</mat-label>
+        <input
+          [formControl]="requestForm.controls.wears"
+          matInput
+          type="number"
+          class="currency-right-align"
+          placeholder="0" />
+        <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span matTextSuffix>.00</span>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>School Feeding</mat-label>
+        <input
+          [formControl]="requestForm.controls.schoolFeeding"
+          matInput
+          type="number"
+          class="currency-right-align"
+          placeholder="0" />
+        <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span matTextSuffix>.00</span>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>School Feeding</mat-label>
+        <input
+          [formControl]="requestForm.controls.schoolFeeding"
+          matInput
+          type="number"
+          class="currency-right-align"
+          placeholder="0" />
+        <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span matTextSuffix>.00</span>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Provisions</mat-label>
+        <input
+          [formControl]="requestForm.controls.provision"
+          matInput
+          type="number"
+          class="currency-right-align"
+          placeholder="0" />
+        <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span matTextSuffix>.00</span>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Home Care</mat-label>
+        <input
+          [formControl]="requestForm.controls.homeCare"
+          matInput
+          type="number"
+          class="currency-right-align"
+          placeholder="0" />
+        <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
         <span matTextSuffix>.00</span>
       </mat-form-field>
     </div>
-  </app-info-card>
-  <app-info-card title="Disbursement Distribution">
-    <div viewMode></div>
-    <div editMode>
-      @if (showBanner) {
-        <app-banner
-          [text]="bannerText"
-          [backgroundColor]="'blue'"
-          (closeBtn)="closeBanner()" />
-      }
-      <div class="container">
-        <mat-form-field appearance="outline">
-          <mat-label>Title</mat-label>
-          <input
-            [formControl]="distributionForm.controls.title"
-            matInput
-            type="text" />
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Amount</mat-label>
-          <input
-            [formControl]="distributionForm.controls.amount"
-            matInput
-            type="number"
-            class="currency-right-align"
-            placeholder="0" />
-          <span matTextPrefix>GH&#8373;&nbsp;</span>
-          <span matTextSuffix>.00</span>
-        </mat-form-field>
-      </div>
-      <div class="add__distribution">
-        <button
-          [disabled]="distributionForm.invalid"
-          class="submit__btn"
-          mat-flat-button
-          color="primary"
-          (click)="addDistribution()"
-          type="submit">
-          <span>Add</span>
-        </button>
-      </div>
-      <div class="distribution-lists">
-        @for (
-          distribution of disbursementDistributions.value;
-          track distribution;
-          let index = $index
-        ) {
-          <div class="distribution-list">
-            <span>{{ distribution.title }}</span>
-            <span>GH&#8373;&nbsp;{{ distribution.amount }}</span>
-            <button (click)="deleteDistribution(index)" mat-icon-button>
-              <mat-icon>delete</mat-icon>
-            </button>
-          </div>
-        }
-      </div>
+    <div class="total-distribution">
+      <mat-chip class="status__chip__active">
+        <span>Total Distribution: GH&#8373; {{ updateTotal() }}</span>
+      </mat-chip>
     </div>
-  </app-info-card>
-  <div class="actions">
-    <button
-      (click)="cancel()"
-      [disabled]="isLoading"
-      class="submit__btn cancel"
-      mat-flat-button
-      mat-dialog-close
-      type="button">
-      <span>Cancel</span>
-    </button>
-    <button
-      [disabled]="isLoading || requestForm.invalid"
-      class="submit__btn"
-      mat-flat-button
-      color="primary"
-      (click)="submit()"
-      type="submit">
-      @if (isLoading) {
-        <span class="loading">Loading...</span>
-      } @else {
-        <span>Save</span>
-      }
-    </button>
   </div>
-} @else if (!beneficiaryExists && !isChecking) {
-  <div class="beneficiary-exists">
-    <p>Please add beneficiary information before you can submit a request</p>
-    <mat-icon color="primary">private_connectivity</mat-icon>
-  </div>
-}
+</app-info-card>
+<div class="actions">
+  <button
+    (click)="cancel()"
+    [disabled]="isLoading"
+    class="submit__btn cancel"
+    mat-flat-button
+    mat-dialog-close
+    type="button">
+    <span>Cancel</span>
+  </button>
+  <button
+    [disabled]="isLoading"
+    class="submit__btn"
+    mat-flat-button
+    color="primary"
+    (click)="submit()"
+    type="submit">
+    @if (isLoading) {
+      <span class="loading">Loading...</span>
+    } @else {
+      <span>Save</span>
+    }
+  </button>
+</div>

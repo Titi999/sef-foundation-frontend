@@ -218,3 +218,19 @@ export enum Terms {
 }
 
 export const terms = [Terms.first, Terms.second, Terms.third] as const;
+
+export const budgetPeriods = [
+  { label: 'September - December', value: 'September - December' },
+  { label: 'January - April', value: 'January - April' },
+  { label: 'May - August', value: 'May - August' },
+];
+
+export const otherDistributionTitles = [
+  'Electricity',
+  'Water Bill',
+  'Fuel',
+  'Abacus',
+  'Clothes',
+  'PPE',
+  'Internet',
+];

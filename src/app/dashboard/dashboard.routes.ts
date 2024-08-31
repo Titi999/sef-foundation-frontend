@@ -24,6 +24,7 @@ import { PerformanceComponent } from './performance/performance.component';
 import { BudgetComponent } from '@app/dashboard/finance/budget-allocation/budget/budget.component';
 import { AcademicComponent } from '@app/dashboard/performance/academic/academic.component';
 import { BeneficiaryAcademicsComponent } from '@app/dashboard/performance/beneficiary-academics/beneficiary-academics.component';
+import { FundsComponent } from '@app/dashboard/finance/funds/funds.component';
 
 export const dashboardRoutes: Routes = [
   {
@@ -63,6 +64,10 @@ export const dashboardRoutes: Routes = [
             component: BudgetAllocationComponent,
           },
           {
+            path: 'funds',
+            component: FundsComponent,
+          },
+          {
             path: 'budget-allocation/:id',
             component: BudgetComponent,
           },
@@ -100,7 +105,6 @@ export const dashboardRoutes: Routes = [
       {
         path: 'requests',
         component: RequestsComponent,
-        canActivate: [CanActiveBeneficiary],
       },
       {
         path: 'create-request',

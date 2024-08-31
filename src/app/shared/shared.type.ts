@@ -17,24 +17,15 @@ export interface IOverviewStatistics extends IOverviewStatisticsBase {
 
 export interface IBeneficiaryOverviewStatistics
   extends IOverviewStatisticsBase {
-  fundsRequest: number;
-  fundsDeclined: number;
+  totalRequests: number;
+  pendingRequests: number;
 }
 
 export interface IOverviewStatisticsBase {
-  totalFundingDisbursed: IMonthTotal[];
-  fundingDistribution: ITitleAmount[];
+  totalFundingDisbursed: { labels: string[]; values: number[] };
+  fundingDistribution: { labels: string[]; values: number[] };
   fundsDisbursed: number;
-}
-
-export interface IMonthTotal {
-  month: string;
-  total: number;
-}
-
-export interface ITitleAmount {
-  title: string;
-  amount: number;
+  totalFunds: number;
 }
 
 export interface IStudentPerformanceRanks {
