@@ -1,108 +1,86 @@
 <app-spinner [isLoading]="isLoading" />
 <div class="financial-report__container">
   <h1 class="financial-report__title">Financial Report</h1>
-  <!--  <p class="financial-report__description">report on all activities</p>-->
-
-  <!--  TODO: I am not sure the details of this report at this point-->
-  <!--  <div class="">-->
-  <!--    <app-info-card title="Report Generation">-->
-  <!--      <div viewMode></div>-->
-  <!--      <div editMode [formGroup]="financialReportForm">-->
-  <!--        <div class="container">-->
-  <!--          <mat-form-field appearance="outline">-->
-  <!--            <mat-label>Enter a date range</mat-label>-->
-  <!--            <mat-date-range-input [min]="startMinDate" [rangePicker]="picker">-->
-  <!--              <input-->
-  <!--                matStartDate-->
-  <!--                formControlName="startDate"-->
-  <!--                placeholder="Start date" />-->
-  <!--              <input-->
-  <!--                matEndDate-->
-  <!--                formControlName="endDate"-->
-  <!--                placeholder="End date" />-->
-  <!--            </mat-date-range-input>-->
-  <!--            <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>-->
-  <!--            <mat-datepicker-toggle-->
-  <!--              matIconSuffix-->
-  <!--              [for]="picker"></mat-datepicker-toggle>-->
-  <!--            <mat-date-range-picker #picker></mat-date-range-picker>-->
-  <!--            <mat-error></mat-error>-->
-  <!--          </mat-form-field>-->
-  <!--          <mat-form-field appearance="outline">-->
-  <!--            <mat-label>Term</mat-label>-->
-  <!--            <mat-select [(ngModel)]="selectedTerm" name="term">-->
-  <!--              @for (term of terms; track term) {-->
-  <!--                <mat-option [value]="term.label">{{ term.value }}</mat-option>-->
-  <!--              }-->
-  <!--            </mat-select>-->
-  <!--          </mat-form-field>-->
-  <!--          <mat-form-field appearance="outline">-->
-  <!--            <mat-label>Category</mat-label>-->
-  <!--            <mat-select [(ngModel)]="selectedValue" name="category">-->
-  <!--              @for (category of categories; track category) {-->
-  <!--                <mat-option [value]="category.value">{{-->
-  <!--                  category.viewValue-->
-  <!--                }}</mat-option>-->
-  <!--              }-->
-  <!--            </mat-select>-->
-  <!--          </mat-form-field>-->
-  <!--        </div>-->
-
-  <!--        <div class="actions">-->
-  <!--          <button-->
-  <!--            class="submit__btn"-->
-  <!--            mat-stroked-button-->
-  <!--            color="primary"-->
-  <!--            type="button">-->
-  <!--            <span>Cancel</span>-->
-  <!--          </button>-->
-  <!--          <button-->
-  <!--            class="submit__btn"-->
-  <!--            mat-flat-button-->
-  <!--            color="primary"-->
-  <!--            type="submit">-->
-  <!--            <span>Generate report</span>-->
-  <!--          </button>-->
-  <!--        </div>-->
-  <!--      </div>-->
-  <!--    </app-info-card>-->
-  <!--  </div>-->
-
+  <div class="filter-fields">
+    <mat-form-field appearance="outline">
+      <mat-label>Year</mat-label>
+      <mat-select [formControl]="yearControl">
+        @for (item of getYearsDropDownValues(); track item.value) {
+          <mat-option [value]="item.value">{{ item.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Period</mat-label>
+      <mat-select [formControl]="periodControl">
+        @for (item of budgetPeriods; track item.value) {
+          <mat-option [value]="item.value">{{ item.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="display-style">
+    <mat-button-toggle-group [formControl]="displayStyleControl">
+      <mat-button-toggle value="chart">Chart</mat-button-toggle>
+      <mat-button-toggle value="table">Table</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
   <div class="bar-chart">
     <div class="bar-header">
-      <h3 class="bar-chart-title">Budget vs. Disbursement</h3>
-
-      <div class="bar-right-header">
-        <div class="selectWrapper">
-          <select [formControl]="selectedBudgetControl" class="selectBox">
-            @for (item of budgetsDropDownValues; track item.value) {
-              <option [value]="item.value">{{ item.label }}</option>
-            }
-          </select>
-        </div>
-        <!--        <div class="selectYearWrapper">-->
-        <!--          <select class="selectYearBox">-->
-        <!--            <option value="2024">2024</option>-->
-        <!--            <option value="2024">2023</option>-->
-        <!--            <option value="2024">2022</option>-->
-        <!--            <option value="2024">2021</option>-->
-        <!--          </select>-->
-        <!--        </div>-->
-        <!--        TODO: Not sure of the data to put in CSV at this point-->
-        <!--        <button-->
-        <!--          (click)="downloadCSV()"-->
-        <!--          class="download__btn btn"-->
-        <!--          mat-flat-button-->
-        <!--          color="primary">-->
-        <!--          <mat-icon>download</mat-icon>-->
-        <!--          Download CSV-->
-        <!--        </button>-->
-      </div>
+      <h3 class="bar-chart-title">Budget v Disbursement v Fund</h3>
     </div>
-    <canvas
-      baseChart
-      [data]="chart()"
-      [type]="chartType"
-      [options]="chartOptions"></canvas>
+    @if (displayStyleControl.value === 'table') {
+      <div class="students-table-container">
+        <table
+          mat-table
+          [dataSource]="accountingRows"
+          class="example-table"
+          matSort
+          matSortActive="created"
+          matSortDisableClear
+          matSortDirection="desc">
+          <!-- Number Column -->
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let row">{{ row.description }}</td>
+          </ng-container>
+          <ng-container matColumnDef="period">
+            <th mat-header-cell *matHeaderCellDef>Period</th>
+            <td mat-cell *matCellDef="let row">{{ row.period }}</td>
+          </ng-container>
+          <ng-container matColumnDef="year">
+            <th mat-header-cell *matHeaderCellDef>Year</th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.year }}
+            </td>
+          </ng-container>
+          <!-- Title Column -->
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef>Amount</th>
+            <td mat-cell *matCellDef="let row">{{ row.amount }}</td>
+          </ng-container>
+
+          <!-- State Column -->
+          <ng-container matColumnDef="runningTotal">
+            <th mat-header-cell *matHeaderCellDef>Running Total</th>
+            <td mat-cell *matCellDef="let row">{{ row.runningTotal }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            [class.budget-type]="row.type === 'budget'"
+            [class.disbursement-type]="row.type === 'disbursement'"
+            [class.fund-type]="row.type === 'fund'"
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="row"></tr>
+        </table>
+      </div>
+    } @else {
+      <canvas
+        baseChart
+        [data]="chart()"
+        [type]="chartType"
+        [options]="chartOptions"></canvas>
+    }
   </div>
 </div>

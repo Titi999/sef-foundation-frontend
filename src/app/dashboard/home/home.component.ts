@@ -2,6 +2,7 @@ import {
   Component,
   computed,
   inject,
+  OnDestroy,
   OnInit,
   signal,
   Signal,
@@ -22,11 +23,11 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import {
   catchError,
   finalize,
-  first,
   map,
   startWith,
   switchMap,
 } from 'rxjs/operators';
+import { combineLatest, debounceTime, Subject, takeUntil } from 'rxjs';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { MatOption, MatSelect } from '@angular/material/select';
@@ -39,7 +40,7 @@ import { MatChip } from '@angular/material/chips';
 import { MatMenu, MatMenuItem } from '@angular/material/menu';
 import { FinanceService } from '@app/dashboard/finance/finance.service';
 import { of, tap } from 'rxjs';
-import { monthNames, serverError } from '@app/libs/constants';
+import { budgetPeriods, serverError } from '@app/libs/constants';
 import { MatInput } from '@angular/material/input';
 import {
   MatDatepicker,
@@ -93,24 +94,26 @@ import { AuthService } from '@app/auth/auth.service';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   public role!: UserRoles;
   public fundsAllocated = '';
   public fundsDisbursed = '';
   public studentsSupported = '';
-  public fundsRequested = '';
-  public fundsDeclined = '';
-  private data: WritableSignal<number[]> = signal([]);
+  public pendingRequests = '';
+  public totalRequests = '';
   private doughnutLabel: WritableSignal<string[]> = signal([]);
   private doughnutData: WritableSignal<number[]> = signal([]);
   public isLoading = false;
   public yearControl = new FormControl('');
+  public periodControl = new FormControl('');
+  private disbursedLabel: WritableSignal<string[]> = signal([]);
+  private disbursedData: WritableSignal<number[]> = signal([]);
   public totalFundingDisbursed: Signal<ChartConfiguration['data']> = computed(
     () => {
       return {
         datasets: [
           {
-            data: this.data(),
+            data: this.disbursedData(),
             label: 'Total Funding Disbursed Over Time',
             borderColor: 'rgba(31, 101, 135, 1)',
             pointHoverBackgroundColor: '#fff',
@@ -118,20 +121,7 @@ export class HomeComponent implements OnInit {
             pointStyle: 'line',
           },
         ],
-        labels: [
-          'Jan',
-          'Feb',
-          'Mar',
-          'Apr',
-          'May',
-          'Jun',
-          'Jul',
-          'Aug',
-          'Sep',
-          'Oct',
-          'Nov',
-          'Dec',
-        ],
+        labels: this.disbursedLabel(),
       };
     }
   );
@@ -188,84 +178,98 @@ export class HomeComponent implements OnInit {
   ];
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
   private breakpointObserver = inject(BreakpointObserver);
+  cards = this.breakpointObserver
+    .observe([Breakpoints.Tablet, Breakpoints.Handset, Breakpoints.Small])
+    .pipe(
+      map(({ matches }) => {
+        if (matches) {
+          return [
+            {
+              title: 'Funds allocated',
+              cols: 4,
+              rows: 1,
+              id: 1,
+            },
+            { title: 'Funds disbursed', cols: 4, rows: 1, id: 2 },
+            {
+              title:
+                this.role === 'beneficiary'
+                  ? 'Total Requests'
+                  : 'Students supported',
+              cols: 4,
+              rows: 1,
+              id: 3,
+            },
+            {
+              title:
+                this.role === 'beneficiary'
+                  ? 'Pending Requests'
+                  : 'Total Funds',
+              cols: 4,
+              rows: 1,
+              id: 4,
+            },
+            {
+              title: 'Funding distribution',
+              cols: 4,
+              rows: 3,
+              id: 5,
+            },
+            {
+              title: 'Total Funding Disbursed Over Time',
+              cols: 4,
+              rows: 3,
+              id: 6,
+            },
+          ];
+        }
 
-  /** Based on the screen size, switch from standard to one column per row */
-  cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
-    map(({ matches }) => {
-      if (matches) {
         return [
           {
-            title:
-              this.role === 'beneficiary'
-                ? 'Funds Requested'
-                : 'Funds allocated',
-            cols: 3,
+            title: 'Funds allocated',
+            cols: 1,
             rows: 1,
             id: 1,
           },
-          { title: 'Funds disbursed', cols: 3, rows: 1, id: 2 },
+          {
+            title: 'Funds disbursed',
+            cols: 1,
+            rows: 1,
+            id: 2,
+          },
           {
             title:
               this.role === 'beneficiary'
-                ? 'Funds Declined'
+                ? 'Total Requests'
                 : 'Students supported',
-            cols: 3,
+            cols: 1,
             rows: 1,
             id: 3,
           },
           {
-            title: 'Funding distribution',
-            cols: 3,
-            rows: 3,
+            title:
+              this.role === 'beneficiary' ? 'Pending Requests' : 'Total Funds',
+            cols: 1,
+            rows: 1,
             id: 4,
           },
           {
-            title: 'Total Funding Disbursed Over Time',
-            cols: 3,
+            title: 'Funding distribution',
+            cols: 2,
             rows: 3,
             id: 5,
           },
+          {
+            title: 'Total Funding Disbursed Over Time',
+            cols: 2,
+            rows: 3,
+            id: 6,
+          },
         ];
-      }
-
-      return [
-        {
-          title:
-            this.role === 'beneficiary' ? 'Funds Requested' : 'Funds allocated',
-          cols: 1,
-          rows: 1,
-          id: 1,
-        },
-        {
-          title: 'Funds disbursed',
-          cols: 1,
-          rows: 1,
-          id: 2,
-        },
-        {
-          title:
-            this.role === 'beneficiary'
-              ? 'Funds Declined'
-              : 'Students supported',
-          cols: 1,
-          rows: 1,
-          id: 3,
-        },
-        {
-          title: 'Funding distribution',
-          cols: 1,
-          rows: 3,
-          id: 4,
-        },
-        {
-          title: 'Total Funding Disbursed Over Time',
-          cols: 2,
-          rows: 3,
-          id: 5,
-        },
-      ];
-    })
-  );
+      })
+    );
+  public totalFunds = '';
+  private readonly destroy = new Subject<void>();
 
   constructor(
     private readonly financeService: FinanceService,
@@ -281,73 +285,71 @@ export class HomeComponent implements OnInit {
     this.getStatistics();
   }
 
-  private getStatistics() {
-    this.isLoading = true;
-    this.yearControl.valueChanges
-      .pipe(
-        startWith(''),
-        switchMap(year =>
-          this.financeService.getStatistics(year || '').pipe(
-            first(),
-            tap(({ data }) => {
-              const overviewStatistics = data as IOverviewStatistics;
-              const beneficiaryOverviewStatistics =
-                data as IBeneficiaryOverviewStatistics;
-              if (beneficiaryOverviewStatistics.fundsRequest) {
-                this.fundsDeclined = formatNumber(
-                  beneficiaryOverviewStatistics.fundsDeclined
-                );
-                this.fundsRequested = formatNumber(
-                  beneficiaryOverviewStatistics.fundsRequest
-                );
-              }
-              if (
-                overviewStatistics.fundsAllocated &&
-                overviewStatistics.studentsSupported
-              ) {
-                this.fundsAllocated = formatNumber(
-                  overviewStatistics.fundsAllocated
-                );
-                this.studentsSupported = formatNumber(
-                  overviewStatistics.studentsSupported
-                );
-              }
+  ngOnDestroy() {
+    this.destroy.next();
+    this.destroy.complete();
+  }
 
-              this.fundsDisbursed = formatNumber(data.fundsDisbursed);
-              const fundingData = monthNames.map(month => {
-                let amount = 0;
-                data.totalFundingDisbursed.forEach(item => {
-                  if (month === item.month) {
-                    amount = item.total;
-                  }
-                });
-                return amount;
-              });
-              const doughnutLabel = data.fundingDistribution.map(item => {
-                return item.title;
-              });
-              const doughnutData = data.fundingDistribution.map(item => {
-                return item.amount;
-              });
-              this.doughnutLabel.set(doughnutLabel);
-              this.doughnutData.set(doughnutData);
-              this.data.set(fundingData);
-            }),
-            catchError(error => {
-              this.toastrService.error(
-                error.error.message,
-                error.error.error || serverError
-              );
-              return of(null);
-            }),
-            finalize(() => {
-              this.isLoading = false;
-            })
-          )
-        )
+  private getStatistics() {
+    combineLatest([
+      this.yearControl.valueChanges.pipe(startWith('')),
+      this.periodControl.valueChanges.pipe(startWith('')),
+    ])
+      .pipe(
+        takeUntil(this.destroy),
+        debounceTime(500),
+        switchMap(([year, period]) => {
+          this.isLoading = true;
+          return this.financeService
+            .getStatistics(year || '', period || '')
+            .pipe(
+              tap(({ data }) => {
+                const overviewStatistics = data as IOverviewStatistics;
+                const beneficiaryOverviewStatistics =
+                  data as IBeneficiaryOverviewStatistics;
+                if (beneficiaryOverviewStatistics.totalRequests) {
+                  this.totalRequests = formatNumber(
+                    beneficiaryOverviewStatistics.totalRequests
+                  );
+                  this.pendingRequests = formatNumber(
+                    beneficiaryOverviewStatistics.pendingRequests
+                  );
+                }
+                this.fundsAllocated =
+                  formatNumber(overviewStatistics.fundsAllocated) ?? 0;
+                this.studentsSupported =
+                  formatNumber(overviewStatistics.studentsSupported) ?? 0;
+                this.fundsDisbursed = formatNumber(data.fundsDisbursed) ?? 0;
+                this.totalFunds = formatNumber(data.totalFunds) ?? 0;
+                const { labels, values } = data.fundingDistribution;
+                this.disbursedData.set(
+                  data.totalFundingDisbursed?.values || []
+                );
+                this.disbursedLabel.set(
+                  data.totalFundingDisbursed?.labels || []
+                );
+                this.doughnutLabel.set(labels || []);
+                this.doughnutData.set(values || []);
+              }),
+              catchError(error => {
+                this.toastrService.error(
+                  error?.error?.message,
+                  error?.error?.error || serverError
+                );
+                return of(null);
+              }),
+              finalize(() => {
+                this.isLoading = false;
+              })
+            );
+        })
       )
       .subscribe();
   }
 
   protected readonly getYearsDropDownValues = getYearsDropDownValues;
+  protected readonly budgetPeriods = [
+    { label: 'All', value: '' },
+    ...budgetPeriods,
+  ];
 }

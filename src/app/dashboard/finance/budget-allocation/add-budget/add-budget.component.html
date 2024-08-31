@@ -5,31 +5,27 @@
   </div>
   <form
     (ngSubmit)="submit()"
-    [formGroup]="userForm"
+    [formGroup]="budgetForm"
     class="add-user__form__container">
     <mat-form-field appearance="outline">
-      <mat-label>Name</mat-label>
-      <input formControlName="name" id="name" matInput type="text" />
-      <mat-error>{{ getFormErrors('name') }}</mat-error>
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Email</mat-label>
-      <input
-        [disabled]="true"
-        formControlName="email"
-        id="email"
-        matInput
-        type="email" />
-      <mat-error>{{ getFormErrors('email') }}</mat-error>
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Select</mat-label>
-      <mat-select formControlName="role">
-        @for (role of roles; track role.value) {
-          <mat-option [value]="role.value">{{ role.name }}</mat-option>
+      <mat-label>Select Period</mat-label>
+      <mat-select formControlName="period">
+        @for (budgetPeriod of budgetPeriods; track budgetPeriod.value) {
+          <mat-option [value]="budgetPeriod.value">{{
+            budgetPeriod.label
+          }}</mat-option>
         }
       </mat-select>
-      <mat-error>{{ getFormErrors('role') }}</mat-error>
+      <mat-error>{{ getFormErrors('period') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Select Year</mat-label>
+      <mat-select formControlName="year">
+        @for (year of getYearsDropDownValues().slice(1); track year.value) {
+          <mat-option [value]="year.value">{{ year.label }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>{{ getFormErrors('year') }}</mat-error>
     </mat-form-field>
     <div class="actions">
       <button

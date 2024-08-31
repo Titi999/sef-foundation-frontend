@@ -123,8 +123,10 @@ export class StudentsService {
     }
   }
 
-  public getAllStudents(): Observable<Response<Student[]>> {
-    return this.http.get<Response<Student[]>>(`${this.url}/all`);
+  public getAllStudents(
+    user: 'yes' | 'no' = 'no'
+  ): Observable<Response<Student[]>> {
+    return this.http.get<Response<Student[]>>(`${this.url}/all?user=${user}`);
   }
 
   public deleteStudent(id: string): Observable<Response<Student>> {

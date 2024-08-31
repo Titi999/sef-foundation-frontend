@@ -1,12 +1,9 @@
 import { Student } from '@app/dashboard/students/students.interface';
-import { BudgetAllocation } from '@app/dashboard/finance/budget-allocation/budget-allocation.interface';
 
-export interface Disbursement {
+export interface Disbursement extends CreateDisbursement {
   id: string;
   student: Student;
-  budget: BudgetAllocation;
   disbursementDistribution: DisbursementDistribution[];
-  status: string;
   __student__: Student;
   amount: number;
   created_at: Date;
@@ -23,9 +20,11 @@ export interface DisbursementDistribution {
 }
 
 export interface CreateDisbursement {
-  studentId: string;
+  studentId?: string;
+  title?: string;
+  period: string;
   amount: number;
-  disbursementDistribution: CreateDisbursementDistribution[];
+  year: number;
 }
 
 export interface CreateDisbursementDistribution {

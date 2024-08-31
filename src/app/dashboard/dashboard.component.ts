@@ -31,6 +31,7 @@ const FINANCE_TREE_DATA: Node[] = [
     routerLink: 'finance',
     children: [
       { name: 'Budget Allocation', routerLink: 'finance/budget-allocation' },
+      { name: 'Funds', routerLink: 'finance/funds' },
       { name: 'Disbursements', routerLink: 'finance/disbursements' },
       { name: 'Financial Report', routerLink: 'finance/financial-report' },
     ],
@@ -171,6 +172,8 @@ export class DashboardComponent implements OnInit {
     switch (name) {
       case 'Budget Allocation':
         return this.router.url === `${financeUrl}/budget-allocation`;
+      case 'Funds':
+        return this.router.url === `${financeUrl}/funds`;
       case 'Disbursements':
         return this.router.url === `${financeUrl}/disbursements`;
       case 'Financial Report':
@@ -190,6 +193,9 @@ export class DashboardComponent implements OnInit {
         return;
       case 'Budget Allocation':
         void this.router.navigate(['dashboard/finance/budget-allocation']);
+        break;
+      case 'Funds':
+        void this.router.navigate(['dashboard/finance/funds']);
         break;
       case 'Disbursements':
         void this.router.navigate(['dashboard/finance/disbursements']);

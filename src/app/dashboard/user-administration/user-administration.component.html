@@ -96,7 +96,9 @@
             <mat-chip
               [class.status__chip__active]="row.status === 'active'"
               [class.status__chip__inactive]="row.status === 'inactive'">
-              <span>{{ row.status | titlecase }}</span>
+              <span>{{
+                (row.firstLogin ? 'pending' : row.status) | titlecase
+              }}</span>
             </mat-chip>
           </td>
         </ng-container>

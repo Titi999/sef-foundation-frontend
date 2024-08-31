@@ -1,124 +1,340 @@
 <app-spinner [isLoading]="isLoadingBudget" />
-<app-info-card title="Term Dates">
-  <div viewMode></div>
-  <div editMode [formGroup]="budgetForm" class="container">
-    <mat-form-field appearance="outline">
-      <mat-label>Enter a date range</mat-label>
-      <mat-date-range-input
-        [min]="!editId ? startMinDate : ''"
-        [rangePicker]="picker">
-        <input
-          matStartDate
-          formControlName="startDate"
-          placeholder="Start date" />
-        <input matEndDate formControlName="endDate" placeholder="End date" />
-      </mat-date-range-input>
-      <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
-      <mat-datepicker-toggle
-        matIconSuffix
-        [for]="picker"></mat-datepicker-toggle>
-      <mat-date-range-picker #picker></mat-date-range-picker>
-      <mat-error></mat-error>
-    </mat-form-field>
+@if (budgetDistribution) {
+  <span class="overview__title">Budget Distribution Upload Preview</span>
+  <div class="distribution-table">
+    <table
+      [fixedLayout]="false"
+      mat-table
+      [dataSource]="budgetDistribution"
+      class="example-table">
+      <ng-container matColumnDef="student" [sticky]="true">
+        <th mat-header-cell *matHeaderCellDef>Student Code</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.studentCode | zeroPad }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="school">
+        <th mat-header-cell *matHeaderCellDef>School</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.school }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="class">
+        <th mat-header-cell *matHeaderCellDef>Class</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.class }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="tuition">
+        <th mat-header-cell *matHeaderCellDef>Tuition</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.tuition | currency: 'GH&#8373; ' }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="textBooks">
+        <th mat-header-cell *matHeaderCellDef>Text Books</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.textBooks | currency: 'GH&#8373; ' }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="extraClasses">
+        <th mat-header-cell *matHeaderCellDef>Extra Classes</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.extraClasses | currency: 'GH&#8373; ' }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="examFee">
+        <th mat-header-cell *matHeaderCellDef>Exam Fee</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.examFee | currency: 'GH&#8373; ' }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="homeCare">
+        <th mat-header-cell *matHeaderCellDef>Home Care</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.homeCare | currency: 'GH&#8373; ' }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="uniformBag">
+        <th mat-header-cell *matHeaderCellDef>Uniform / Bag</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.uniformBag | currency: 'GH&#8373; ' }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="excursion">
+        <th mat-header-cell *matHeaderCellDef>Excursion</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.excursion | currency: 'GH&#8373; ' }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="transportation">
+        <th mat-header-cell *matHeaderCellDef>Transportation</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.transportation | currency: 'GH&#8373; ' }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="stationery">
+        <th mat-header-cell *matHeaderCellDef>Stationery</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.stationery | currency: 'GH&#8373; ' }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="wear">
+        <th mat-header-cell *matHeaderCellDef>Foot / Under Wears</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.wears | currency: 'GH&#8373; ' }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="schoolFeeding">
+        <th mat-header-cell *matHeaderCellDef>School Feeding</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.schoolFeeding | currency: 'GH&#8373; ' }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="provisions">
+        <th mat-header-cell *matHeaderCellDef>Provisions</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.stationery | currency: 'GH&#8373; ' }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="total" stickyEnd>
+        <th mat-header-cell *matHeaderCellDef>Total</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.stationery | currency: 'GH&#8373; ' }}
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        class="row"
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
   </div>
-</app-info-card>
-<app-info-card title="Category Distribution">
-  <div viewMode></div>
-  <div editMode>
-    @if (showBanner) {
-      <app-banner
-        [text]="bannerText"
-        [backgroundColor]="'blue'"
-        (closeBtn)="closeBanner()" />
-    }
-    <div class="upload-wrapper">
-      <button
-        (click)="fileUpload.click()"
-        class="submit__btn"
-        mat-flat-button
-        color="primary">
-        <mat-icon>upload</mat-icon>
-        <span>Upload</span>
-      </button>
-      <input
-        type="file"
-        class="file-input"
-        (change)="bulkUpload($event)"
-        #fileUpload />
-    </div>
-    <div class="container">
-      <mat-form-field appearance="outline">
-        <mat-label>Category</mat-label>
-        <mat-select [formControl]="distributionForm.controls.title">
-          @for (distribution of getCategories(); track distribution.value) {
-            <mat-option [value]="distribution.value">{{
-              distribution.label
-            }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Amount</mat-label>
-        <input
-          [formControl]="distributionForm.controls.amount"
-          matInput
-          type="number"
-          class="currency-right-align"
-          placeholder="0" />
-        <span matTextPrefix>GH&#8373;&nbsp;</span>
-        <span matTextSuffix>.00</span>
-      </mat-form-field>
-      <mat-checkbox
-        color="primary"
-        [formControl]="distributionForm.controls.boardingHouse"
-        >BOARDING HOUSE</mat-checkbox
-      >
-      <mat-form-field appearance="outline">
-        <mat-label>Comments</mat-label>
-        <textarea
-          [formControl]="distributionForm.controls.comments"
-          matInput></textarea>
-      </mat-form-field>
-    </div>
-    <div class="add__distribution">
-      <button
-        [disabled]="distributionForm.invalid"
-        class="submit__btn"
-        mat-flat-button
-        color="primary"
-        (click)="addDistribution()"
-        type="submit">
-        <span>Add</span>
-      </button>
-    </div>
-    <div class="distribution-lists">
-      @for (
-        distribution of budgetDistributions.value;
-        track distribution;
-        let index = $index
-      ) {
-        <div class="distribution-list">
-          <span>{{ distribution.title }}</span>
-          <span>GH&#8373;&nbsp;{{ distribution.amount }}</span>
-          <button (click)="deleteDistribution(index)" mat-icon-button>
-            <mat-icon>delete</mat-icon>
-          </button>
+} @else {
+  <app-info-card title="Budget Distribution">
+    <div viewMode></div>
+    <div editMode>
+      <div class="upload-wrapper">
+        <p>
+          <mat-slide-toggle [formControl]="others" color="primary"
+            >Others</mat-slide-toggle
+          >
+        </p>
+      </div>
+      @if (others.value) {
+        <div class="container">
+          <mat-form-field appearance="outline">
+            <mat-label>Title</mat-label>
+            <input
+              [matAutocomplete]="auto"
+              [formControl]="othersDistributionForm.controls.title"
+              matInput />
+            <mat-autocomplete #auto="matAutocomplete">
+              @for (option of filteredOptions | async; track option) {
+                <mat-option [value]="option">{{ option }}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Amount</mat-label>
+            <input
+              [formControl]="othersDistributionForm.controls.amount"
+              matInput
+              type="number"
+              class="currency-right-align"
+              placeholder="0" />
+            <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span matTextSuffix>.00</span>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Comment</mat-label>
+            <input
+              [formControl]="othersDistributionForm.controls.comment"
+              matInput />
+          </mat-form-field>
+        </div>
+      } @else {
+        <div class="container">
+          <mat-form-field appearance="outline">
+            <mat-select
+              [formControl]="distributionForm.controls.studentCode"
+              placeholder="Student Name"
+              #singleSelect>
+              <mat-option>
+                <ngx-mat-select-search
+                  ngxMatSelectSearchClear="fsdfsd"
+                  placeholderLabel="Search Students"
+                  noEntriesFoundLabel="No student found"
+                  [formControl]="studentsFilterCtrl"></ngx-mat-select-search>
+              </mat-option>
+              <mat-option
+                *ngFor="let student of filteredStudents | async"
+                [value]="student.code">
+                {{ student.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>School</mat-label>
+            <input [formControl]="distributionForm.controls.school" matInput />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Class</mat-label>
+            <input [formControl]="distributionForm.controls.class" matInput />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Tuition</mat-label>
+            <input
+              [formControl]="distributionForm.controls.tuition"
+              matInput
+              type="number"
+              class="currency-right-align"
+              placeholder="0" />
+            <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span matTextSuffix>.00</span>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Text Books</mat-label>
+            <input
+              [formControl]="distributionForm.controls.textBooks"
+              matInput
+              type="number"
+              class="currency-right-align"
+              placeholder="0" />
+            <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span matTextSuffix>.00</span>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Extra Classes</mat-label>
+            <input
+              [formControl]="distributionForm.controls.extraClasses"
+              matInput
+              type="number"
+              class="currency-right-align"
+              placeholder="0" />
+            <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span matTextSuffix>.00</span>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Exam Fee</mat-label>
+            <input
+              [formControl]="distributionForm.controls.examFee"
+              matInput
+              type="number"
+              class="currency-right-align"
+              placeholder="0" />
+            <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span matTextSuffix>.00</span>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Uniform or Bag</mat-label>
+            <input
+              [formControl]="distributionForm.controls.uniformBag"
+              matInput
+              type="number"
+              class="currency-right-align"
+              placeholder="0" />
+            <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span matTextSuffix>.00</span>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Excursion</mat-label>
+            <input
+              [formControl]="distributionForm.controls.excursion"
+              matInput
+              type="number"
+              class="currency-right-align"
+              placeholder="0" />
+            <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span matTextSuffix>.00</span>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Transportation</mat-label>
+            <input
+              [formControl]="distributionForm.controls.transportation"
+              matInput
+              type="number"
+              class="currency-right-align"
+              placeholder="0" />
+            <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span matTextSuffix>.00</span>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Stationery</mat-label>
+            <input
+              [formControl]="distributionForm.controls.stationery"
+              matInput
+              type="number"
+              class="currency-right-align"
+              placeholder="0" />
+            <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span matTextSuffix>.00</span>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Foot or Under Wears</mat-label>
+            <input
+              [formControl]="distributionForm.controls.wears"
+              matInput
+              type="number"
+              class="currency-right-align"
+              placeholder="0" />
+            <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span matTextSuffix>.00</span>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>School Feeding</mat-label>
+            <input
+              [formControl]="distributionForm.controls.schoolFeeding"
+              matInput
+              type="number"
+              class="currency-right-align"
+              placeholder="0" />
+            <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span matTextSuffix>.00</span>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>School Feeding</mat-label>
+            <input
+              [formControl]="distributionForm.controls.schoolFeeding"
+              matInput
+              type="number"
+              class="currency-right-align"
+              placeholder="0" />
+            <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span matTextSuffix>.00</span>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Provisions</mat-label>
+            <input
+              [formControl]="distributionForm.controls.provision"
+              matInput
+              type="number"
+              class="currency-right-align"
+              placeholder="0" />
+            <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span matTextSuffix>.00</span>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Home Care</mat-label>
+            <input
+              [formControl]="distributionForm.controls.homeCare"
+              matInput
+              type="number"
+              class="currency-right-align"
+              placeholder="0" />
+            <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span matTextSuffix>.00</span>
+          </mat-form-field>
+        </div>
+        <div class="total-distribution">
+          <mat-chip class="status__chip__active">
+            <span>Total Distribution: GH&#8373; {{ updateTotal() }}</span>
+          </mat-chip>
         </div>
       }
     </div>
-    <div class="total-distribution">
-      @if (budgetForm.controls.total.value) {
-        <mat-chip class="status__chip__active">
-          <span
-            >Total Distribution: GH&#8373;{{
-              budgetForm.controls.total.value
-            }}</span
-          >
-        </mat-chip>
-      }
-    </div>
-  </div>
-</app-info-card>
+  </app-info-card>
+}
 <div class="actions">
   <button
     (click)="cancel()"

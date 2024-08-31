@@ -7,7 +7,7 @@
         an overview of the total funds, number of students etc.
       </p>
     </div>
-    <div>
+    <div class="filters">
       <mat-form-field appearance="outline">
         <mat-label>Year</mat-label>
         <mat-select [formControl]="yearControl">
@@ -16,9 +16,17 @@
           }
         </mat-select>
       </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Period</mat-label>
+        <mat-select [formControl]="periodControl">
+          @for (item of budgetPeriods; track item.value) {
+            <mat-option [value]="item.value">{{ item.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
     </div>
   </div>
-  <mat-grid-list cols="3" rowHeight="200px">
+  <mat-grid-list cols="4" rowHeight="200px">
     @for (card of cards | async; track card) {
       <mat-grid-tile [colspan]="card.cols" [rowspan]="card.rows">
         <mat-card class="dashboard-card">
@@ -45,6 +53,11 @@
                     }
                   </button>
                 }
+                @case (4) {
+                  <button mat-icon-button class="more-button" aria-label="Icon">
+                    <mat-icon>attach_money</mat-icon>
+                  </button>
+                }
               }
             </mat-card-title>
           </mat-card-header>
@@ -52,11 +65,7 @@
             @switch (card.id) {
               @case (1) {
                 <div class="figure">
-                  @if (role === 'beneficiary') {
-                    <span>{{ fundsRequested }}</span>
-                  } @else {
-                    <span>{{ fundsAllocated }}</span>
-                  }
+                  <span>{{ fundsAllocated }}</span>
                 </div>
               }
               @case (2) {
@@ -67,13 +76,22 @@
               @case (3) {
                 <div class="figure">
                   @if (role === 'beneficiary') {
-                    <span>{{ fundsDeclined }}</span>
+                    <span>{{ totalRequests }}</span>
                   } @else {
                     <span>{{ studentsSupported }}</span>
                   }
                 </div>
               }
               @case (4) {
+                <div class="figure">
+                  @if (role === 'beneficiary') {
+                    <span>{{ pendingRequests }}</span>
+                  } @else {
+                    <span>{{ totalFunds ?? 0 }}</span>
+                  }
+                </div>
+              }
+              @case (5) {
                 <div class="doughnut-container">
                   <canvas
                     baseChart
@@ -83,7 +101,7 @@
                   </canvas>
                 </div>
               }
-              @case (5) {
+              @case (6) {
                 <div class="card__container">
                   <div class="linechart-container">
                     <canvas

@@ -1,0 +1,78 @@
+<div class="main-container">
+  <div class="title">
+    <span class="main">{{ title }}</span>
+    <span class="sub">{{ subtext }}</span>
+  </div>
+  <form
+    (ngSubmit)="submit()"
+    [formGroup]="fundForm"
+    class="add-user__form__container">
+    <mat-form-field appearance="outline">
+      <mat-label>Select Period</mat-label>
+      <mat-select formControlName="period">
+        @for (period of budgetPeriods; track period) {
+          <mat-option [value]="period.value">{{ period.label }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>{{ getFormErrors('period') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Select Year</mat-label>
+      <mat-select formControlName="year">
+        @for (year of getYearsDropDownValues().slice(1); track year.value) {
+          <mat-option [value]="year.value">{{ year.label }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>{{ getFormErrors('year') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Title / Description</mat-label>
+      <input formControlName="title" id="name" matInput type="text" />
+      <mat-error>{{ getFormErrors('title') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Amount</mat-label>
+      <input
+        formControlName="amount"
+        id="parent"
+        class="currency-right-align"
+        matInput
+        placeholder="0"
+        type="number" />
+      <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <span matTextSuffix>.00</span>
+      <mat-error>{{ getFormErrors('amount') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Comments</mat-label>
+      <textarea
+        formControlName="comments"
+        id="comments"
+        matInput
+        placeholder="Add any comment"></textarea>
+      <mat-error>{{ getFormErrors('comments') }}</mat-error>
+    </mat-form-field>
+    <div class="actions">
+      <button
+        [disabled]="isLoading"
+        class="submit__btn cancel"
+        mat-flat-button
+        mat-dialog-close
+        type="button">
+        <span>Cancel</span>
+      </button>
+      <button
+        [disabled]="isLoading"
+        class="submit__btn"
+        mat-flat-button
+        color="primary"
+        type="submit">
+        @if (isLoading) {
+          <span class="loading">Loading...</span>
+        } @else {
+          <span>{{ buttonText }}</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

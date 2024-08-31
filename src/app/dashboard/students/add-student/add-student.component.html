@@ -13,6 +13,16 @@
       <mat-error>{{ getFormErrors('name') }}</mat-error>
     </mat-form-field>
     <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input
+        [disabled]="true"
+        formControlName="email"
+        id="email"
+        matInput
+        type="email" />
+      <mat-error>{{ getFormErrors('email') }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
       <mat-label>Parent's Name</mat-label>
       <input formControlName="parent" id="parent" matInput type="text" />
       <mat-error>{{ getFormErrors('parent') }}</mat-error>

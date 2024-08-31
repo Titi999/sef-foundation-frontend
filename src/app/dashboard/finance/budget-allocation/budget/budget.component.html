@@ -2,9 +2,205 @@
   <app-spinner [isLoading]="isLoading" />
   <div class="overview__header">
     <div>
-      <h1 class="overview__title">Budget</h1>
+      <h1 class="overview__title">{{ budgetTitle }}</h1>
       <p class="overview__description">a detailed view of a budget</p>
     </div>
+    <div class="action-buttons">
+      <button
+        (click)="addDistribution()"
+        class="add__btn btn"
+        mat-flat-button
+        color="primary">
+        <mat-icon color="white">add</mat-icon>
+        Add Distribution
+      </button>
+      <button
+        (click)="fileUpload.click()"
+        class="add__btn btn"
+        mat-flat-button
+        color="primary">
+        <mat-icon color="white">upload</mat-icon>
+        Upload Distribution
+      </button>
+      <input
+        [style.display]="'none'"
+        type="file"
+        class="file-input"
+        (change)="bulkUpload($event)"
+        #fileUpload />
+    </div>
+  </div>
+  <div class="distribution-table">
+    <div class="filters">
+      <app-rounded-input
+        [control]="searchValue"
+        placeholder="Search name, school" />
+      <span>{{
+        'Grand Total: ' + (this.grandTotal | currency: 'GH&#8373; ')
+      }}</span>
+    </div>
+    <table
+      [fixedLayout]="false"
+      mat-table
+      [dataSource]="budgetDistribution"
+      class="example-table">
+      <ng-container matColumnDef="student" [sticky]="true">
+        <th mat-header-cell *matHeaderCellDef>Student</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.__student__.name }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef>Total</td>
+      </ng-container>
+      <ng-container matColumnDef="school">
+        <th mat-header-cell *matHeaderCellDef>School</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.school }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="class">
+        <th mat-header-cell *matHeaderCellDef>Class</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.class }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="tuition">
+        <th mat-header-cell *matHeaderCellDef>Tuition</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.tuition | currency: 'GH&#8373; ' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="textBooks">
+        <th mat-header-cell *matHeaderCellDef>Text Books</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.textBooks | currency: 'GH&#8373; ' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="extraClasses">
+        <th mat-header-cell *matHeaderCellDef>Extra Classes</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.extraClasses | currency: 'GH&#8373; ' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="examFee">
+        <th mat-header-cell *matHeaderCellDef>Exam Fee</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.examFee | currency: 'GH&#8373; ' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="homeCare">
+        <th mat-header-cell *matHeaderCellDef>Home Care</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.homeCare | currency: 'GH&#8373; ' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="uniformBag">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.uniformBag | currency: 'GH&#8373; ' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="excursion">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.excursion | currency: 'GH&#8373; ' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="transportation">
+        <th mat-header-cell *matHeaderCellDef>Transportation</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.transportation | currency: 'GH&#8373; ' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="stationery">
+        <th mat-header-cell *matHeaderCellDef>Stationery</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.stationery | currency: 'GH&#8373; ' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="wear">
+        <th mat-header-cell *matHeaderCellDef>Foot / Under Wears</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.wears | currency: 'GH&#8373; ' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="schoolFeeding">
+        <th mat-header-cell *matHeaderCellDef>School Feeding</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.schoolFeeding | currency: 'GH&#8373; ' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="provisions">
+        <th mat-header-cell *matHeaderCellDef>Provisions</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.stationery | currency: 'GH&#8373; ' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="total" stickyEnd>
+        <th mat-header-cell *matHeaderCellDef>Total</th>
+        <td mat-cell *matCellDef="let row">
+          {{ calculateBudgetTotal(row) | currency: 'GH&#8373; ' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef>
+          {{ getTotalCost() | currency: 'GH&#8373; ' }}
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        class="row"
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+    </table>
+    <span>Other Distributions</span>
+    <table
+      [fixedLayout]="false"
+      mat-table
+      [dataSource]="otherBudgetDistribution"
+      class="example-table">
+      <ng-container matColumnDef="title" [sticky]="true">
+        <th mat-header-cell *matHeaderCellDef>Title</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.title }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef>Total</td>
+      </ng-container>
+      <ng-container matColumnDef="comment" [sticky]="true">
+        <th mat-header-cell *matHeaderCellDef>Comment</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.comment }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="amount" stickyEnd>
+        <th mat-header-cell *matHeaderCellDef>Amount</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.amount | currency: 'GH&#8373; ' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef>
+          {{ getOtherTotalCost() | currency: 'GH&#8373; ' }}
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="otherDisplayedColumns"></tr>
+      <tr
+        class="row"
+        mat-row
+        *matRowDef="let row; columns: otherDisplayedColumns"></tr>
+      <tr mat-footer-row *matFooterRowDef="otherDisplayedColumns"></tr>
+    </table>
   </div>
   <mat-grid-list cols="4">
     @for (card of cards | async; track card) {
@@ -38,44 +234,41 @@
                 </div>
               }
               @case (3) {
-                <table
-                  mat-table
-                  [dataSource]="budgetAllocation?.budgetDistribution || []"
-                  class="mat-elevation-z8">
-                  <!-- Item Column -->
-                  <ng-container matColumnDef="description">
-                    <th mat-header-cell *matHeaderCellDef>Description</th>
-                    <td mat-cell *matCellDef="let distribution">
-                      {{ distribution.title }}
-                    </td>
-                    <td mat-footer-cell *matFooterCellDef>Total</td>
-                  </ng-container>
+                <!--                <table mat-table [dataSource]="[]" class="mat-elevation-z8">-->
+                <!--                  &lt;!&ndash; Item Column &ndash;&gt;-->
+                <!--                  <ng-container matColumnDef="description">-->
+                <!--                    <th mat-header-cell *matHeaderCellDef>Description</th>-->
+                <!--                    <td mat-cell *matCellDef="let distribution">-->
+                <!--                      {{ distribution.title }}-->
+                <!--                    </td>-->
+                <!--                    <td mat-footer-cell *matFooterCellDef>Total</td>-->
+                <!--                  </ng-container>-->
 
-                  <ng-container matColumnDef="comments">
-                    <th mat-header-cell *matHeaderCellDef>Comments</th>
-                    <td mat-cell *matCellDef="let distribution">
-                      {{ distribution.comments }}
-                    </td>
-                    <td mat-footer-cell *matFooterCellDef></td>
-                  </ng-container>
+                <!--                  <ng-container matColumnDef="comments">-->
+                <!--                    <th mat-header-cell *matHeaderCellDef>Comments</th>-->
+                <!--                    <td mat-cell *matCellDef="let distribution">-->
+                <!--                      {{ distribution.comments }}-->
+                <!--                    </td>-->
+                <!--                    <td mat-footer-cell *matFooterCellDef></td>-->
+                <!--                  </ng-container>-->
 
-                  <!-- Cost Column -->
-                  <ng-container matColumnDef="amount">
-                    <th mat-header-cell *matHeaderCellDef>Amount</th>
-                    <td mat-cell *matCellDef="let distribution">
-                      {{ distribution.amount | currency }}
-                    </td>
-                    <td mat-footer-cell *matFooterCellDef>
-                      {{ budgetAllocation?.total | currency }}
-                    </td>
-                  </ng-container>
+                <!--                  &lt;!&ndash; Cost Column &ndash;&gt;-->
+                <!--                  <ng-container matColumnDef="amount">-->
+                <!--                    <th mat-header-cell *matHeaderCellDef>Amount</th>-->
+                <!--                    <td mat-cell *matCellDef="let distribution">-->
+                <!--                      &lt;!&ndash;                      {{ distribution.amount | currency }}&ndash;&gt;-->
+                <!--                    </td>-->
+                <!--                    <td mat-footer-cell *matFooterCellDef>-->
+                <!--                      &lt;!&ndash;                      {{ budgetAllocation?.total | currency }}&ndash;&gt;-->
+                <!--                    </td>-->
+                <!--                  </ng-container>-->
 
-                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                  <tr
-                    mat-row
-                    *matRowDef="let row; columns: displayedColumns"></tr>
-                  <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
-                </table>
+                <!--                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>-->
+                <!--                  <tr-->
+                <!--                    mat-row-->
+                <!--                    *matRowDef="let row; columns: displayedColumns"></tr>-->
+                <!--                  <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>-->
+                <!--                </table>-->
               }
             }
           </mat-card-content>

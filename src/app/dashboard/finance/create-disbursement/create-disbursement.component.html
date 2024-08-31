@@ -1,136 +1,81 @@
 <app-spinner [isLoading]="isLoadingStudents || isLoadingDisbursement" />
-<div class="upload-wrapper">
-  <button
-    (click)="fileUpload.click()"
-    class="add__btn btn"
-    mat-flat-button
-    color="primary">
-    <mat-icon>upload</mat-icon>
-    Upload Disbursement
-  </button>
-  <input
-    type="file"
-    class="file-input"
-    (change)="bulkUpload($event)"
-    #fileUpload />
-</div>
+@if (showToggle) {
+  <div class="upload-wrapper">
+    <div class="upload-wrapper">
+      <p>
+        <mat-slide-toggle [formControl]="others" color="primary"
+          >Others</mat-slide-toggle
+        >
+      </p>
+    </div>
+  </div>
+}
 <app-info-card title="Disbursement Details">
   <div viewMode></div>
   <div editMode [formGroup]="disbursementForm" class="container">
-    <mat-form-field appearance="outline">
-      <mat-select
-        [formControl]="disbursementForm.controls.studentId"
-        placeholder="Student Name"
-        #singleSelect>
-        <mat-option>
-          <ngx-mat-select-search
-            ngxMatSelectSearchClear="fsdfsd"
-            placeholderLabel="Search Students"
-            noEntriesFoundLabel="No student found"
-            [formControl]="studentsFilterCtrl"></ngx-mat-select-search>
-        </mat-option>
-        <mat-option
-          *ngFor="let student of filteredStudents | async"
-          [value]="student.id">
-          {{ student.name }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-    <!--    <mat-form-field appearance="outline">-->
-    <!--      <mat-label>Amount</mat-label>-->
-    <!--      <input-->
-    <!--        formControlName="amount"-->
-    <!--        matInput-->
-    <!--        type="number"-->
-    <!--        class="currency-right-align"-->
-    <!--        placeholder="0" />-->
-    <!--      <span matTextPrefix>GH&#8373;&nbsp;</span>-->
-    <!--      <span matTextSuffix>.00</span>-->
-    <!--    </mat-form-field>-->
-  </div>
-</app-info-card>
-<app-info-card title="Disbursement Distribution">
-  <div viewMode></div>
-  <div editMode>
-    @if (showBanner) {
-      <app-banner
-        [text]="bannerText"
-        [backgroundColor]="'blue'"
-        (closeBtn)="closeBanner()" />
-    }
-    <div class="container">
+    @if (!others.value) {
       <mat-form-field appearance="outline">
-        <mat-label>Category</mat-label>
-        <mat-select [formControl]="distributionForm.controls.title">
-          @for (distribution of getCategories(); track distribution.value) {
-            <mat-option [value]="distribution.value">{{
-              distribution.label
-            }}</mat-option>
-          }
+        <mat-select
+          [formControl]="disbursementForm.controls.studentId"
+          placeholder="Student Name"
+          #singleSelect>
+          <mat-option>
+            <ngx-mat-select-search
+              ngxMatSelectSearchClear="clear"
+              placeholderLabel="Search Students"
+              noEntriesFoundLabel="No student found"
+              [formControl]="studentsFilterCtrl"></ngx-mat-select-search>
+          </mat-option>
+          <mat-option
+            *ngFor="let student of filteredStudents | async"
+            [value]="student.id">
+            {{ student.name }}
+          </mat-option>
         </mat-select>
       </mat-form-field>
-      <!--      <mat-form-field appearance="outline">-->
-      <!--        <mat-label>Title</mat-label>-->
-      <!--        <input-->
-      <!--          [formControl]="distributionForm.controls.title"-->
-      <!--          matInput-->
-      <!--          type="text" />-->
-      <!--      </mat-form-field>-->
+    } @else {
       <mat-form-field appearance="outline">
-        <mat-label>Amount</mat-label>
+        <mat-label>Title</mat-label>
         <input
-          [formControl]="distributionForm.controls.amount"
-          matInput
-          type="number"
-          class="currency-right-align"
-          placeholder="0" />
-        <span matTextPrefix>GH&#8373;&nbsp;</span>
-        <span matTextSuffix>.00</span>
+          [matAutocomplete]="auto"
+          [formControl]="disbursementForm.controls.title"
+          matInput />
+        <mat-autocomplete #auto="matAutocomplete">
+          @for (option of filteredOptions | async; track option) {
+            <mat-option [value]="option">{{ option }}</mat-option>
+          }
+        </mat-autocomplete>
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Comments</mat-label>
-        <textarea
-          [formControl]="distributionForm.controls.comments"
-          matInput></textarea>
-      </mat-form-field>
-    </div>
-    <div class="add__distribution">
-      <button
-        [disabled]="distributionForm.invalid"
-        class="submit__btn"
-        mat-flat-button
-        color="primary"
-        (click)="addDistribution()"
-        type="submit">
-        <span>Add</span>
-      </button>
-    </div>
-    <div class="distribution-lists">
-      @for (
-        distribution of disbursementDistributions.value;
-        track distribution;
-        let index = $index
-      ) {
-        <div class="distribution-list">
-          <span>{{ distribution.title }}</span>
-          <span>GH&#8373;&nbsp;{{ distribution.amount }}</span>
-          <button (click)="deleteDistribution(index)" mat-icon-button>
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
-      }
-    </div>
-    <div class="total-distribution">
-      @if (disbursementForm.controls.amount.value) {
-        <mat-chip class="status__chip__active">
-          <span
-            >Disbursement Total: GH&#8373;{{
-              disbursementForm.controls.amount.value
-            }}</span
-          >
-        </mat-chip>
-      }
-    </div>
+    }
+    <mat-form-field appearance="outline">
+      <mat-label>Amount</mat-label>
+      <input
+        [formControl]="disbursementForm.controls.amount"
+        matInput
+        type="number"
+        class="currency-right-align"
+        placeholder="0" />
+      <span matTextPrefix>GH&#8373;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <span matTextSuffix>.00</span>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Select Period</mat-label>
+      <mat-select [formControl]="disbursementForm.controls.period">
+        @for (budgetPeriod of budgetPeriods; track budgetPeriod.value) {
+          <mat-option [value]="budgetPeriod.value">{{
+            budgetPeriod.label
+          }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Select Year</mat-label>
+      <mat-select [formControl]="disbursementForm.controls.year">
+        @for (year of getYearsDropDownValues().slice(1); track year.value) {
+          <mat-option [value]="year.value">{{ year.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
   </div>
 </app-info-card>
 <div class="actions">
@@ -144,7 +89,7 @@
     <span>Cancel</span>
   </button>
   <button
-    [disabled]="isLoading || disbursementForm.invalid"
+    [disabled]="isLoading || isFormInValid()"
     class="submit__btn"
     mat-flat-button
     color="primary"

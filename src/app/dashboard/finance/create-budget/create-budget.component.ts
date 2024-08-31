@@ -1,9 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import {
-  FormArray,
   FormBuilder,
   FormControl,
-  FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
@@ -16,7 +14,7 @@ import {
   MatCardTitle,
 } from '@angular/material/card';
 import { InfoCardComponent } from '@app/shared/info-card/info-card.component';
-import { CommonModule, Location } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   MatError,
   MatFormField,
@@ -27,29 +25,81 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatOption, provideNativeDateAdapter } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
-import { budgetDistributions, serverError } from '@app/libs/constants';
+import { otherDistributionTitles, serverError } from '@app/libs/constants';
 import { MatList, MatListItem } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
-import { MatDialog, MatDialogClose } from '@angular/material/dialog';
 import {
-  CreateBudget,
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogClose,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import {
   CreateBudgetDistribution,
+  CreateOtherBudgetDistribution,
 } from '@app/dashboard/finance/budget-allocation/budget-allocation.interface';
 import { FinanceService } from '@app/dashboard/finance/finance.service';
-import { catchError, finalize, first, of, tap } from 'rxjs';
+import {
+  catchError,
+  finalize,
+  first,
+  map,
+  Observable,
+  of,
+  ReplaySubject,
+  startWith,
+  Subject,
+  takeUntil,
+} from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import {
   ActionModalData,
   ActionModalIllustration,
 } from '@app/shared/action-modal/action-modal.type';
 import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
-import { ActivatedRoute, Router } from '@angular/router';
 import { BannerComponent } from '@app/shared/banner/banner.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatChip } from '@angular/material/chips';
 import { Papa } from 'ngx-papaparse';
+import { StudentsService } from '@app/dashboard/students/students.service';
+import { Student } from '@app/dashboard/students/students.interface';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import {
+  MatCell,
+  MatCellDef,
+  MatColumnDef,
+  MatHeaderCell,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatTableModule,
+} from '@angular/material/table';
+import { ZeroPadPipe } from '@app/pipes/zero-pad.pipe';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+import {
+  MatAutocomplete,
+  MatAutocompleteTrigger,
+} from '@angular/material/autocomplete';
+
+interface DistributionFormValue {
+  studentCode: string;
+  school: string;
+  class: string;
+  tuition: string;
+  textBooks: string;
+  extraClasses: string;
+  examFee: string;
+  uniformBag: string;
+  excursion: string;
+  transportation: string;
+  wears: string;
+  schoolFeeding: string;
+  stationery: string;
+  provision: string;
+  homeCare: string;
+}
 
 @Component({
   selector: 'app-create-budget',
@@ -82,209 +132,256 @@ import { Papa } from 'ngx-papaparse';
     SpinnerComponent,
     MatCheckbox,
     MatChip,
+    NgxMatSelectSearchModule,
+    MatCell,
+    MatCellDef,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatRow,
+    MatTableModule,
+    ZeroPadPipe,
+    MatSlideToggle,
+    MatAutocomplete,
+    MatAutocompleteTrigger,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './create-budget.component.html',
   styleUrl: './create-budget.component.scss',
 })
-export class CreateBudgetComponent implements OnInit {
-  editId: string | undefined = undefined;
-  budgetForm = this.fb.group({
-    startDate: ['', Validators.required],
-    endDate: ['', Validators.required],
-    total: ['', Validators.required],
-    distributions: this.fb.array([]),
-  });
-  budgetDistributionsCategory = budgetDistributions;
+export class CreateBudgetComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
-  public startMinDate = new Date();
   distributionForm = this.fb.group({
+    studentCode: ['', Validators.required],
+    school: ['', Validators.required],
+    class: ['', Validators.required],
+    tuition: ['', Validators.required],
+    textBooks: ['', Validators.required],
+    extraClasses: ['', Validators.required],
+    examFee: ['', Validators.required],
+    uniformBag: ['', Validators.required],
+    excursion: ['', Validators.required],
+    transportation: ['', Validators.required],
+    wears: ['', Validators.required],
+    schoolFeeding: ['', Validators.required],
+    stationery: ['', Validators.required],
+    provision: ['', Validators.required],
+    homeCare: ['', Validators.required],
+  });
+  othersDistributionForm = this.fb.group({
     title: ['', Validators.required],
     amount: ['', Validators.required],
-    comments: [''],
-    boardingHouse: [false],
+    comment: [''],
   });
-  showBanner = false;
-  bannerText = '';
-  totalDistribution = 0;
+  displayedColumns: string[] = [
+    'student',
+    'school',
+    'class',
+    'tuition',
+    'textBooks',
+    'extraClasses',
+    'examFee',
+    'homeCare',
+    'uniformBag',
+    'excursion',
+    'transportation',
+    'stationery',
+    'wear',
+    'schoolFeeding',
+    'provisions',
+    'total',
+  ];
   isLoadingBudget = false;
+  public isLoadingStudents = true;
+  protected students: Student[] = [];
+  public studentsFilterCtrl = new FormControl<string>('');
+  public filteredStudents: ReplaySubject<Student[]> = new ReplaySubject<
+    Student[]
+  >(1);
+  protected _onDestroy = new Subject<void>();
+  public budgetDistribution: CreateBudgetDistribution[] | undefined = undefined;
+  public others = new FormControl('');
+  options = otherDistributionTitles;
+  filteredOptions: Observable<string[]> =
+    this.othersDistributionForm.controls.title.valueChanges.pipe(
+      takeUntil(this._onDestroy),
+      startWith(''),
+      map(value => this._filter(value || ''))
+    );
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly location: Location,
     private readonly financeService: FinanceService,
     private readonly toastrService: ToastrService,
     private readonly dialog: MatDialog,
-    private readonly router: Router,
-    private readonly activatedRoute: ActivatedRoute,
-    private readonly papa: Papa
-  ) {}
-
-  ngOnInit() {
-    this.canEditBudget();
-  }
-
-  canEditBudget() {
-    if (this.router.url.startsWith('/dashboard/finance/edit-budget/')) {
-      const budgetId = this.activatedRoute.snapshot.params['id'];
-      this.isLoadingBudget = true;
-      this.financeService
-        .getBudget(budgetId)
-        .pipe(
-          finalize(() => (this.isLoadingBudget = false)),
-          tap(({ data }) => {
-            this.editId = data.id;
-            this.budgetForm.controls.total.setValue(data.total.toString());
-            this.budgetForm.controls.startDate.setValue(
-              data.startDate.toString()
-            );
-            this.budgetForm.controls.endDate.setValue(data.endDate.toString());
-            data.budgetDistribution.map(({ amount, title }) => {
-              this.distributionForm.controls.amount.setValue(amount.toString());
-              this.distributionForm.controls.title.setValue(title);
-              this.addDistribution();
-            });
-          })
-        )
-        .subscribe();
+    private readonly papa: Papa,
+    private readonly studentsService: StudentsService,
+    private dialogRef: MatDialogRef<CreateBudgetComponent>,
+    @Inject(MAT_DIALOG_DATA)
+    public data: { id: string; budgetDistribution: CreateBudgetDistribution[] }
+  ) {
+    if (data.budgetDistribution) {
+      this.budgetDistribution = data.budgetDistribution;
     }
   }
 
-  addDistribution() {
-    const amount = this.distributionForm.controls.amount.value;
-    const values = new FormGroup({
-      title: new FormControl(this.distributionForm.controls.title.value),
-      amount: new FormControl(amount),
-      comments: new FormControl(this.distributionForm.controls.comments.value),
-      boardingHouse: new FormControl(
-        !!this.distributionForm.controls.boardingHouse.value
-      ),
-    });
-    this.totalDistribution += parseInt(amount as string);
-    this.budgetForm.controls.total.setValue(this.totalDistribution.toString());
-    this.budgetDistributions.push(values);
-    this.distributionForm.reset();
-  }
-
-  get budgetDistributions(): FormArray {
-    return this.budgetForm.controls.distributions as FormArray;
-  }
-
-  deleteDistribution(index: number) {
-    this.totalDistribution -= parseInt(
-      this.budgetDistributions.at(index).value.amount
-    );
-    this.budgetForm.controls.total.setValue(this.totalDistribution.toString());
-    this.budgetDistributions.removeAt(index);
-  }
-
-  getCategories() {
-    const distributions = new Set(
-      (this.budgetDistributions.value as { title: string }[]).map(
-        criteria => criteria.title
+  ngOnInit() {
+    this.studentsService
+      .getAllStudents()
+      .pipe(
+        first(),
+        catchError(error => {
+          this.toastrService.error(
+            error.error.message,
+            error.error.error || serverError
+          );
+          return of(null);
+        }),
+        finalize(() => {
+          this.isLoadingStudents = false;
+        })
       )
+      .subscribe(response => {
+        if (response) {
+          this.students = response.data;
+          this.filteredStudents.next(response.data.slice());
+        }
+      });
+    this.studentsFilterCtrl.valueChanges
+      .pipe(takeUntil(this._onDestroy))
+      .subscribe(() => {
+        this.filterStudents();
+      });
+  }
+
+  ngOnDestroy() {
+    this._onDestroy.next();
+    this._onDestroy.complete();
+  }
+
+  public updateTotal() {
+    const form = this.distributionForm.value as DistributionFormValue;
+    const fieldsToSum: (keyof DistributionFormValue)[] = [
+      'tuition',
+      'textBooks',
+      'extraClasses',
+      'examFee',
+      'uniformBag',
+      'excursion',
+      'transportation',
+      'wears',
+      'schoolFeeding',
+      'stationery',
+      'provision',
+      'homeCare',
+    ];
+
+    return fieldsToSum.reduce((total, field) => {
+      const value = parseFloat(form[field] || '0');
+      return total + (isNaN(value) ? 0 : value);
+    }, 0);
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.options.filter(option =>
+      option.toLowerCase().includes(filterValue)
     );
-    return this.budgetDistributionsCategory.filter(
-      category => !distributions.has(category.value)
+  }
+
+  protected filterStudents() {
+    if (!this.students) {
+      return;
+    }
+    let search = this.studentsFilterCtrl.value as string;
+    if (!search) {
+      this.filteredStudents.next(this.students.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    this.filteredStudents.next(
+      this.students.filter(
+        student => student.name.toLowerCase().indexOf(search) > -1
+      )
     );
   }
 
   submit() {
-    if (this.budgetForm.valid) {
-      const budgetDetails: CreateBudget = {
-        distributions: this.budgetForm.controls.distributions
-          .value as CreateBudgetDistribution[],
-        endDate: new Date(this.budgetForm.controls.endDate.value as string),
-        startDate: new Date(this.budgetForm.controls.startDate.value as string),
-        total: parseInt(this.budgetForm.controls.total.value as string),
-      };
-      this.isLoading = true;
-      if (this.editId) {
-        this.financeService
-          .editBudget(this.editId, budgetDetails)
-          .pipe(
-            first(),
-            catchError(error => {
-              this.toastrService.error(
-                error.error.message,
-                error.error.error || serverError
-              );
-              return of(null);
-            }),
-            finalize(() => {
-              this.isLoading = false;
-            })
-          )
-          .subscribe(response => {
-            if (response) {
-              const data: ActionModalData = {
-                actionIllustration: ActionModalIllustration.success,
-                title: 'Congratulations!',
-                actionColor: 'primary',
-                subtext: 'Well done, You have successfully edited a budget',
-                actionType: 'close',
-              };
-              this.dialog.open(ActionModalComponent, {
-                maxWidth: '400px',
-                maxHeight: '400px',
-                width: '100%',
-                height: '100%',
-                data,
-              });
-              void this.router.navigate([
-                'dashboard/finance/budget-allocation',
-              ]);
-            }
-          });
-      } else {
-        this.financeService
-          .createBudget(budgetDetails)
-          .pipe(
-            first(),
-            catchError(error => {
-              this.toastrService.error(
-                error.error.message,
-                error.error.error || serverError
-              );
-              return of(null);
-            }),
-            finalize(() => {
-              this.isLoading = false;
-            })
-          )
-          .subscribe(response => {
-            if (response) {
-              const data: ActionModalData = {
-                actionIllustration: ActionModalIllustration.success,
-                title: 'Congratulations!',
-                actionColor: 'primary',
-                subtext: 'Well done, You have successfully created a budget',
-                actionType: 'close',
-              };
-              this.dialog.open(ActionModalComponent, {
-                maxWidth: '400px',
-                maxHeight: '400px',
-                width: '100%',
-                height: '100%',
-                data,
-              });
-              void this.router.navigate([
-                'dashboard/finance/budget-allocation',
-              ]);
-            }
-          });
-      }
+    let budgetDetails:
+      | CreateBudgetDistribution[]
+      | CreateOtherBudgetDistribution;
+    let response: Observable<unknown>;
+    if (this.budgetDistribution && this.budgetDistribution.length) {
+      budgetDetails = [...this.budgetDistribution];
+      response = this.financeService.createBudgetDistribution(
+        budgetDetails,
+        this.data.id
+      );
+    } else if (!this.others.value && this.distributionForm.valid) {
+      budgetDetails = [
+        {
+          ...(this.distributionForm.value as CreateBudgetDistribution),
+        },
+      ];
+      response = this.financeService.createBudgetDistribution(
+        budgetDetails,
+        this.data.id
+      );
+    } else if (this.others.value && this.othersDistributionForm.valid) {
+      budgetDetails = this.othersDistributionForm
+        .value as CreateOtherBudgetDistribution;
+      response = this.financeService.createOtherBudgetDistribution(
+        budgetDetails,
+        this.data.id
+      );
     } else {
-      this.budgetForm.markAllAsTouched();
+      this.distributionForm.markAsDirty();
+      this.distributionForm.markAllAsTouched();
+      this.othersDistributionForm.markAsDirty();
+      this.othersDistributionForm.markAllAsTouched();
+      return;
     }
+    this.isLoading = true;
+    response
+      .pipe(
+        first(),
+        catchError(error => {
+          this.toastrService.error(
+            error.error.message,
+            error.error.error || serverError
+          );
+          return of(null);
+        }),
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe(response => {
+        if (response) {
+          this.dialogRef.close(response);
+          const data: ActionModalData = {
+            actionIllustration: ActionModalIllustration.success,
+            title: 'Congratulations!',
+            actionColor: 'primary',
+            subtext: 'Well done, You have successfully created a budget',
+            actionType: 'close',
+          };
+          this.dialog.open(ActionModalComponent, {
+            maxWidth: '400px',
+            maxHeight: '400px',
+            width: '100%',
+            height: '100%',
+            data,
+          });
+        }
+      });
   }
 
   cancel() {
-    this.location.back();
-  }
-
-  closeBanner() {
-    this.showBanner = false;
+    this.dialogRef.close();
   }
 
   bulkUpload(event: Event) {
@@ -301,14 +398,6 @@ export class CreateBudgetComponent implements OnInit {
             });
           }
         }
-        distribution.forEach(distribution => {
-          this.distributionForm.controls.amount.setValue(distribution.amount);
-          this.distributionForm.controls.title.setValue(distribution.title);
-          this.distributionForm.controls.comments.setValue(
-            distribution.comments
-          );
-          this.addDistribution();
-        });
       },
     });
   }

@@ -77,5 +77,24 @@ input.currency-right-align {
 
 .upload-wrapper {
   margin-top: 30px;
+  color: white;
+}
+
+.distribution-table {
+  padding: 3rem 3rem;
+  overflow: auto;
+  margin-bottom: 3rem;
+}
+
+.mat-mdc-header-cell, .mat-mdc-footer-cell, .mat-mdc-cell {
+  min-width: 130px;
+  box-sizing: border-box;
+}
+
+.overview__title {
+  font-size: 22px;
+  color: map-get($primary-palette, 500);
+  padding: 3rem;
+  font-weight: 700;
 }
 

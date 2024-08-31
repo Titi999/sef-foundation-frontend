@@ -9,6 +9,7 @@ import {
   combineLatest,
   debounceTime,
   finalize,
+  first,
   of,
   of as observableOf,
   Subject,
@@ -16,7 +17,6 @@ import {
   tap,
 } from 'rxjs';
 import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
-import { Disbursement } from '@app/dashboard/finance/disbursement/disbursement.interface';
 import { MatTableModule } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatChip } from '@angular/material/chips';
@@ -33,6 +33,14 @@ import {
 import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
+import {
+  BudgetDistribution,
+  IRequest,
+} from '@app/dashboard/finance/budget-allocation/budget-allocation.interface';
+import { CreateRequestComponent } from '@app/dashboard/requests/create-request/create-request.component';
+import { calculateBudgetTotal } from '@app/libs/util';
+import { AuthService } from '@app/auth/auth.service';
+import { UserRoles } from '@app/auth/auth.type';
 
 @Component({
   selector: 'app-requests',
@@ -59,29 +67,22 @@ import { ToastrService } from 'ngx-toastr';
   styleUrl: './requests.component.scss',
 })
 export class RequestsComponent implements AfterViewInit {
-  public readonly displayedColumns: string[] = [
-    'created_at',
-    'amount',
-    'status',
-    'more',
-  ];
+  displayedColumns: string[] = ['student', 'total', 'status', 'more'];
   public searchValue = new FormControl('');
-  public categoryControl = new FormControl('');
-  public categoryFilters = [
-    { value: 'Professional Course', label: 'Professional Course' },
-  ];
   public isLoadingResults = false;
   public totalItems = 0;
   public page = new FormControl(1);
   private readonly destroy = new Subject<void>();
   public statusFilters = requestFilters;
   public statusControl = new FormControl('');
-  public data: Disbursement[] = [];
+  public data: IRequest[] = [];
+  public role = this.authService.role;
 
   constructor(
     private readonly financeService: FinanceService,
     private readonly dialog: MatDialog,
-    private readonly toastrService: ToastrService
+    private readonly toastrService: ToastrService,
+    private readonly authService: AuthService
   ) {}
 
   ngAfterViewInit() {
@@ -95,7 +96,7 @@ export class RequestsComponent implements AfterViewInit {
         switchMap(([page, status]) => {
           this.isLoadingResults = true;
           return this.financeService
-            .getBeneficiaryDisbursements(page || 1, status || '')
+            .getRequest(page || 1, status || '')
             .pipe(catchError(() => observableOf(null)));
         }),
         map(data => {
@@ -112,6 +113,27 @@ export class RequestsComponent implements AfterViewInit {
 
   onPaginationChange(event: PageEvent): void {
     this.page.setValue(event.pageIndex + 1);
+  }
+
+  addRequest(request?: IRequest) {
+    const dialogRef = this.dialog.open(CreateRequestComponent, {
+      maxWidth: '100%',
+      maxHeight: '100%',
+      width: '100%',
+      height: '100%',
+      data: request,
+    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        first(),
+        tap(distribution => {
+          if (distribution) {
+            this.page.setValue(1);
+          }
+        })
+      )
+      .subscribe();
   }
 
   delete(id: string) {
@@ -148,9 +170,7 @@ export class RequestsComponent implements AfterViewInit {
           dialogRef.disableClose = true;
           dialogRef.componentInstance.isLoading = true;
         }),
-        switchMap(() =>
-          this.financeService.deleteDisbursementByBeneficiary(id)
-        ),
+        switchMap(() => this.financeService.deleteRequest(id)),
         tap(() => {
           dialogRef.componentInstance.isLoading = false;
           dialogRef.close();
@@ -159,8 +179,7 @@ export class RequestsComponent implements AfterViewInit {
             actionIllustration: ActionModalIllustration.delete,
             title: 'completed',
             actionColor: 'warn',
-            subtext:
-              'Disbursement request has successfully been deleted from the system',
+            subtext: 'Request has successfully been deleted from the system',
             actionType: 'close',
           };
           this.dialog.open(ActionModalComponent, {
@@ -174,4 +193,123 @@ export class RequestsComponent implements AfterViewInit {
       )
       .subscribe();
   }
+
+  approve(id: string) {
+    const data: ActionModalData = {
+      actionIllustration: ActionModalIllustration.activate,
+      title: 'Approve Request',
+      actionColor: 'primary',
+      subtext: 'are you sure you want to approve this request from the system?',
+      actionType: 'decision',
+      decisionText: 'Approve',
+    };
+    const dialogRef = this.dialog.open(ActionModalComponent, {
+      maxWidth: '400px',
+      maxHeight: '400px',
+      width: '100%',
+      height: '100%',
+      data,
+    });
+    dialogRef.componentInstance.decisionEmitter
+      .pipe(
+        takeUntil(this.destroy),
+        catchError(error => {
+          this.toastrService.error(
+            error.error.message,
+            error.error.error || serverError
+          );
+          return of(null);
+        }),
+        finalize(() => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.disableClose = false;
+        }),
+        tap(() => {
+          dialogRef.disableClose = true;
+          dialogRef.componentInstance.isLoading = true;
+        }),
+        switchMap(() => this.financeService.approveRequest(id)),
+        tap(() => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.close();
+          this.page.setValue(1);
+          const data: ActionModalData = {
+            actionIllustration: ActionModalIllustration.success,
+            title: 'completed',
+            actionColor: 'primary',
+            subtext: 'Request has successfully been approved',
+            actionType: 'close',
+          };
+          this.dialog.open(ActionModalComponent, {
+            maxWidth: '400px',
+            maxHeight: '400px',
+            width: '100%',
+            height: '100%',
+            data,
+          });
+        })
+      )
+      .subscribe();
+  }
+
+  decline(id: string) {
+    const data: ActionModalData = {
+      actionIllustration: ActionModalIllustration.deactivate,
+      title: 'Decline Request',
+      actionColor: 'warn',
+      subtext: 'are you sure you want to decline this request?',
+      actionType: 'decision',
+      decisionText: 'Decline',
+    };
+    const dialogRef = this.dialog.open(ActionModalComponent, {
+      maxWidth: '400px',
+      maxHeight: '400px',
+      width: '100%',
+      height: '100%',
+      data,
+    });
+    dialogRef.componentInstance.decisionEmitter
+      .pipe(
+        takeUntil(this.destroy),
+        catchError(error => {
+          this.toastrService.error(
+            error.error.message,
+            error.error.error || serverError
+          );
+          return of(null);
+        }),
+        finalize(() => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.disableClose = false;
+        }),
+        tap(() => {
+          dialogRef.disableClose = true;
+          dialogRef.componentInstance.isLoading = true;
+        }),
+        switchMap(() => this.financeService.declineRequest(id)),
+        tap(() => {
+          dialogRef.componentInstance.isLoading = false;
+          dialogRef.close();
+          this.page.setValue(1);
+          const data: ActionModalData = {
+            actionIllustration: ActionModalIllustration.success,
+            title: 'completed',
+            actionColor: 'warn',
+            subtext: 'Request has successfully been declined',
+            actionType: 'close',
+          };
+          this.dialog.open(ActionModalComponent, {
+            maxWidth: '400px',
+            maxHeight: '400px',
+            width: '100%',
+            height: '100%',
+            data,
+          });
+        })
+      )
+      .subscribe();
+  }
+
+  protected readonly calculateBudgetTotal = calculateBudgetTotal;
+  protected readonly UserRoles = UserRoles;
 }

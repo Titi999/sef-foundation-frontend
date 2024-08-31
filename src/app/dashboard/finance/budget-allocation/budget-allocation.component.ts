@@ -34,16 +34,20 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
   combineLatest,
   debounceTime,
+  first,
   of as observableOf,
   Subject,
   takeUntil,
+  tap,
 } from 'rxjs';
 import { ngxCsv } from 'ngx-csv';
 import { BudgetAllocation } from '@app/dashboard/finance/budget-allocation/budget-allocation.interface';
 import { RouterLink } from '@angular/router';
 import { FinanceService } from '@app/dashboard/finance/finance.service';
-import { getShortMonthAndYear, getShortMonthName } from '@app/libs/date';
-import { statusFilters } from '@app/libs/constants';
+import { budgetPeriods, statusFilters } from '@app/libs/constants';
+import { AddBudgetComponent } from '@app/dashboard/finance/budget-allocation/add-budget/add-budget.component';
+import { MatDialog } from '@angular/material/dialog';
+import { getYearsDropDownValues } from '@app/libs/util';
 
 @Component({
   selector: 'app-budget-allocation',
@@ -90,12 +94,8 @@ import { statusFilters } from '@app/libs/constants';
 export class BudgetAllocationComponent implements AfterViewInit, OnDestroy {
   public readonly displayedColumns: string[] = [
     'created_at',
-    'termDate',
+    'period',
     'total',
-    'totalDistribution',
-    'utilized',
-    'surplus',
-    'status',
     'more',
   ];
   public data: BudgetAllocation[] = [];
@@ -104,29 +104,30 @@ export class BudgetAllocationComponent implements AfterViewInit, OnDestroy {
   public searchValue = new FormControl('');
   private readonly destroy = new Subject<void>();
   public page = new FormControl(1);
-  public statusControl = new FormControl('');
+  public periodControl = new FormControl('');
+  public yearControl = new FormControl('');
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private readonly financeService: FinanceService) {}
+  constructor(
+    private readonly financeService: FinanceService,
+    private readonly dialog: MatDialog
+  ) {}
 
   ngAfterViewInit() {
     combineLatest([
-      // this.searchValue.valueChanges.pipe(
-      //   startWith(''),
-      //   filter((searchValue): searchValue is string => searchValue !== null)
-      // ),
       this.page.valueChanges.pipe(startWith(1)),
-      this.statusControl.valueChanges.pipe(startWith('')),
+      this.periodControl.valueChanges.pipe(startWith('')),
+      this.yearControl.valueChanges.pipe(startWith('')),
     ])
       .pipe(
         takeUntil(this.destroy),
         debounceTime(1000),
-        switchMap(([page, status]) => {
+        switchMap(([page, period, year]) => {
           this.isLoadingResults = true;
           return this.financeService
-            .getBudgets(page || 1, status || '')
+            .getBudgets(page || 1, period || '', year || '')
             .pipe(catchError(() => observableOf(null)));
         }),
         map(data => {
@@ -151,16 +152,54 @@ export class BudgetAllocationComponent implements AfterViewInit, OnDestroy {
     this.page.setValue(event.pageIndex + 1);
   }
 
+  addBudget() {
+    const dialogRef = this.dialog.open(AddBudgetComponent, {
+      maxWidth: '500px',
+      maxHeight: '300px',
+      width: '100%',
+      height: '100%',
+    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        first(),
+        tap((budget: BudgetAllocation) => {
+          if (budget) {
+            this.page.setValue(1);
+          }
+        })
+      )
+      .subscribe();
+  }
+
+  editBudget(budget: BudgetAllocation) {
+    const dialogRef = this.dialog.open(AddBudgetComponent, {
+      maxWidth: '500px',
+      maxHeight: '300px',
+      width: '100%',
+      height: '100%',
+      data: budget,
+    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        first(),
+        tap((budget: BudgetAllocation) => {
+          if (budget) {
+            this.page.setValue(1);
+          }
+        })
+      )
+      .subscribe();
+  }
+
   downloadCSV() {
     new ngxCsv(this.data, 'Budgets', {
       headers: [
         'ID',
-        'TOTAL BUDGET AMOUNT',
-        'TOTAL AMOUNT UTILIZED',
-        'SURPLUS / DEFICIT',
-        'START DATE',
-        'END DATE',
-        'TOTAL DISTRIBUTION',
+        'TOTAL',
+        'YEAR',
+        'PERIOD',
         'STATUS',
         'DATE CREATED',
         'DATE UPDATED',
@@ -168,7 +207,7 @@ export class BudgetAllocationComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  protected readonly getShortMonthName = getShortMonthName;
-  protected readonly getShortMonthAndYear = getShortMonthAndYear;
   protected readonly statusFilters = statusFilters;
+  protected readonly budgetPeriods = budgetPeriods;
+  protected readonly getYearsDropDownValues = getYearsDropDownValues;
 }

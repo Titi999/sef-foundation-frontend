@@ -20,20 +20,7 @@
           Filter by
         </button>
         <mat-menu #filter="matMenu">
-          <!--          TODO: This filter is not necessary at this point-->
-          <!--          <button mat-menu-item [matMenuTriggerFor]="role">Role</button>-->
           <button mat-menu-item [matMenuTriggerFor]="status">Status</button>
-        </mat-menu>
-        <mat-menu #role="matMenu">
-          <mat-radio-group [formControl]="categoryControl">
-            @for (category of categoryFilters; track category.value) {
-              <button mat-menu-item>
-                <mat-radio-button [value]="category.value" color="primary">
-                  {{ category.label }}
-                </mat-radio-button>
-              </button>
-            }
-          </mat-radio-group>
         </mat-menu>
         <mat-menu #status="matMenu">
           <mat-radio-group [formControl]="statusControl">
@@ -46,16 +33,8 @@
             }
           </mat-radio-group>
         </mat-menu>
-        <!--        <button-->
-        <!--          [disabled]="!data.length"-->
-        <!--          (click)="downloadCSV()"-->
-        <!--          class="download__btn btn"-->
-        <!--          mat-flat-button>-->
-        <!--          <mat-icon>download</mat-icon>-->
-        <!--          Download CSV-->
-        <!--        </button>-->
         <button
-          routerLink="../create-request"
+          (click)="addRequest()"
           class="add__btn btn"
           mat-flat-button
           color="primary">
@@ -78,14 +57,18 @@
         matSortActive="created"
         matSortDisableClear
         matSortDirection="desc">
-        <!-- Number Column -->
-        <ng-container matColumnDef="amount">
-          <th mat-header-cell *matHeaderCellDef>Amount</th>
+        <ng-container matColumnDef="total">
+          <th mat-header-cell *matHeaderCellDef>Total</th>
           <td mat-cell *matCellDef="let row">
-            {{ row.amount | currency: 'GH&#8373; ' }}
+            {{ calculateBudgetTotal(row) | currency: 'GH&#8373; ' }}
           </td>
         </ng-container>
-
+        <ng-container matColumnDef="student" stickyEnd>
+          <th mat-header-cell *matHeaderCellDef>Student</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.__student__.name }}
+          </td>
+        </ng-container>
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef>Status</th>
           <td mat-cell *matCellDef="let row">
@@ -106,19 +89,30 @@
               </button>
             }
             <mat-menu #menu="matMenu">
-              <button [routerLink]="'../edit-request/' + row.id" mat-menu-item>
-                <mat-icon>edit</mat-icon>Edit
-              </button>
-              <button
-                (click)="delete(row.id)"
-                class="delete__btn"
-                mat-menu-item>
-                <mat-icon color="warn">delete</mat-icon>Delete
-              </button>
+              @if (role() === UserRoles.BENEFICIARY) {
+                <button (click)="addRequest(row)" mat-menu-item>
+                  <mat-icon>edit</mat-icon>Edit
+                </button>
+                <button
+                  (click)="delete(row.id)"
+                  class="delete__btn"
+                  mat-menu-item>
+                  <mat-icon color="warn">delete</mat-icon>Delete
+                </button>
+              } @else if (role() === UserRoles.SUPER_ADMIN) {
+                <button (click)="approve(row.id)" mat-menu-item>
+                  <mat-icon>price_check</mat-icon>Approve
+                </button>
+                <button
+                  (click)="decline(row.id)"
+                  class="delete__btn"
+                  mat-menu-item>
+                  <mat-icon color="warn">block</mat-icon>Decline
+                </button>
+              }
             </mat-menu>
           </td>
         </ng-container>
-        <!-- Created Column -->
         <ng-container matColumnDef="created_at">
           <th mat-header-cell *matHeaderCellDef>Created at</th>
           <td mat-cell *matCellDef="let row">{{ row.created_at | date }}</td>

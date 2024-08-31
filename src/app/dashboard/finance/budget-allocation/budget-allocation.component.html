@@ -19,14 +19,31 @@
           Filter by
         </button>
         <mat-menu #filter="matMenu">
-          <button mat-menu-item [matMenuTriggerFor]="status">Status</button>
+          <button mat-menu-item [matMenuTriggerFor]="status">Period</button>
+          <button mat-menu-item [matMenuTriggerFor]="year">Year</button>
         </mat-menu>
         <mat-menu #status="matMenu">
-          <mat-radio-group [formControl]="statusControl">
-            @for (status of statusFilters; track status.value) {
+          <mat-radio-group [formControl]="periodControl">
+            <button mat-menu-item>
+              <mat-radio-button [value]="" color="primary">
+                All
+              </mat-radio-button>
+            </button>
+            @for (status of budgetPeriods; track status.value) {
               <button mat-menu-item>
                 <mat-radio-button [value]="status.value" color="primary">
                   {{ status.label }}
+                </mat-radio-button>
+              </button>
+            }
+          </mat-radio-group>
+        </mat-menu>
+        <mat-menu #year="matMenu">
+          <mat-radio-group [formControl]="yearControl">
+            @for (year of getYearsDropDownValues(); track year.value) {
+              <button mat-menu-item>
+                <mat-radio-button [value]="year.value" color="primary">
+                  {{ year.label }}
                 </mat-radio-button>
               </button>
             }
@@ -41,7 +58,7 @@
           Download CSV
         </button>
         <button
-          routerLink="../create-budget"
+          (click)="addBudget()"
           class="add__btn btn"
           mat-flat-button
           color="primary">
@@ -73,40 +90,34 @@
         matSortDirection="desc">
         <!-- Number Column -->
         <ng-container matColumnDef="total">
-          <th mat-header-cell *matHeaderCellDef>Total Allocated</th>
+          <th mat-header-cell *matHeaderCellDef>Total Amount</th>
           <td mat-cell *matCellDef="let row">
             {{ row.total | currency: 'GH&#8373; ' }}
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>Status</th>
+        <!--        <ng-container matColumnDef="status">-->
+        <!--          <th mat-header-cell *matHeaderCellDef>Status</th>-->
+        <!--          <td mat-cell *matCellDef="let row">-->
+        <!--            <mat-chip-->
+        <!--              [class.status__chip__active]="row.status === 'active'"-->
+        <!--              [class.status__chip__inactive]="row.status === 'inactive'">-->
+        <!--              <span>{{ row.status | titlecase }}</span>-->
+        <!--            </mat-chip>-->
+        <!--          </td>-->
+        <!--        </ng-container>-->
+        <ng-container matColumnDef="period">
+          <th mat-header-cell *matHeaderCellDef>Period</th>
           <td mat-cell *matCellDef="let row">
-            <mat-chip
-              [class.status__chip__active]="row.status === 'active'"
-              [class.status__chip__inactive]="row.status === 'inactive'">
-              <span>{{ row.status | titlecase }}</span>
-            </mat-chip>
+            {{ row.period + ' ' + row.year }}
           </td>
         </ng-container>
-        <ng-container matColumnDef="totalDistribution">
-          <th mat-header-cell *matHeaderCellDef>Total Distribution</th>
-          <td mat-cell *matCellDef="let row">
-            <mat-chip
-              [class.status__chip__active]="row.totalDistribution <= row.total"
-              [class.status__chip__inactive]="
-                row.totalDistribution > row.total
-              ">
-              <span>{{ row.totalDistribution | currency: 'GH&#8373; ' }}</span>
-            </mat-chip>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="surplus">
-          <th mat-header-cell *matHeaderCellDef>Deficit</th>
-          <td mat-cell *matCellDef="let row">
-            {{ row.surplus | currency: 'GH&#8373; ' }}
-          </td>
-        </ng-container>
+        <!--        <ng-container matColumnDef="surplus">-->
+        <!--          <th mat-header-cell *matHeaderCellDef>Deficit</th>-->
+        <!--          <td mat-cell *matCellDef="let row">-->
+        <!--            {{ row.surplus | currency: 'GH&#8373; ' }}-->
+        <!--          </td>-->
+        <!--        </ng-container>-->
 
         <ng-container matColumnDef="more">
           <th mat-header-cell *matHeaderCellDef>More</th>
@@ -115,43 +126,34 @@
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
-              <button [routerLink]="'../edit-budget/' + row.id" mat-menu-item>
+              <button
+                [routerLink]="'../budget-allocation/' + row.id"
+                mat-menu-item>
+                <mat-icon>visibility</mat-icon>View
+              </button>
+              <button (click)="editBudget(row)" mat-menu-item>
                 <mat-icon>edit</mat-icon>Edit
               </button>
-              <!--              <button class="delete__btn" mat-menu-item>-->
-              <!--                <mat-icon color="warn">delete</mat-icon>Delete-->
-              <!--              </button>-->
-              <!--              TODO: Still contemplating the implications of activating or deactivating a budget-->
-              <!--              @if (row.status === 'active') {-->
-              <!--                <button mat-menu-item>-->
-              <!--                  <mat-icon>hide_source</mat-icon>Deactivate-->
-              <!--                </button>-->
-              <!--              }-->
-              <!--              @if (row.status === 'inactive') {-->
-              <!--                <button mat-menu-item>-->
-              <!--                  <mat-icon>check</mat-icon>Activate-->
-              <!--                </button>-->
-              <!--              }-->
             </mat-menu>
           </td>
         </ng-container>
 
         <!-- Title Column -->
-        <ng-container matColumnDef="utilized">
-          <th mat-header-cell *matHeaderCellDef>Total Utilized</th>
-          <td mat-cell *matCellDef="let row">
-            {{ row.utilized | currency: 'GH&#8373; ' }}
-          </td>
-        </ng-container>
+        <!--        <ng-container matColumnDef="utilized">-->
+        <!--          <th mat-header-cell *matHeaderCellDef>Total Utilized</th>-->
+        <!--          <td mat-cell *matCellDef="let row">-->
+        <!--            {{ row.utilized | currency: 'GH&#8373; ' }}-->
+        <!--          </td>-->
+        <!--        </ng-container>-->
 
         <!-- State Column -->
-        <ng-container matColumnDef="termDate">
-          <th mat-header-cell *matHeaderCellDef>Term Dates</th>
-          <td mat-cell *matCellDef="let row">
-            {{ getShortMonthName(row.startDate) }} -
-            {{ getShortMonthAndYear(row.endDate) }}
-          </td>
-        </ng-container>
+        <!--        <ng-container matColumnDef="termDate">-->
+        <!--          <th mat-header-cell *matHeaderCellDef>Term Dates</th>-->
+        <!--          <td mat-cell *matCellDef="let row">-->
+        <!--            {{ getShortMonthName(row.startDate) }} - -->
+        <!--            {{ getShortMonthAndYear(row.endDate) }}-->
+        <!--          </td>-->
+        <!--        </ng-container>-->
 
         <!-- Created Column -->
         <ng-container matColumnDef="created_at">
@@ -163,7 +165,6 @@
         <tr
           class="row"
           mat-row
-          [routerLink]="'./' + row.id"
           *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
     </div>

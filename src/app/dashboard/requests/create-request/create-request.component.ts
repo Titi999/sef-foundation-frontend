@@ -1,13 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { SpinnerComponent } from '@app/shared/spinner/spinner.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { InfoCardComponent } from '@app/shared/info-card/info-card.component';
 import {
-  FormArray,
   FormBuilder,
   FormControl,
-  FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -16,26 +14,57 @@ import {
   MatPrefix,
   MatSuffix,
 } from '@angular/material/form-field';
-import { MatSelect } from '@angular/material/select';
+import { MatOption, MatSelect } from '@angular/material/select';
 import { MatInput, MatLabel } from '@angular/material/input';
 import { BannerComponent } from '@app/shared/banner/banner.component';
-import { catchError, finalize, first, of, Subject, tap } from 'rxjs';
-import { AsyncPipe, Location } from '@angular/common';
-import { MatDialog, MatDialogClose } from '@angular/material/dialog';
 import {
-  CreateDisbursement,
-  CreateDisbursementDistribution,
-} from '@app/dashboard/finance/disbursement/disbursement.interface';
+  catchError,
+  finalize,
+  first,
+  of,
+  ReplaySubject,
+  Subject,
+  takeUntil,
+} from 'rxjs';
+import { AsyncPipe, CurrencyPipe, NgForOf } from '@angular/common';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogClose,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { FinanceService } from '@app/dashboard/finance/finance.service';
+import { ToastrService } from 'ngx-toastr';
+import {
+  MatAutocomplete,
+  MatAutocompleteTrigger,
+} from '@angular/material/autocomplete';
+import {
+  MatCell,
+  MatCellDef,
+  MatColumnDef,
+  MatHeaderCell,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef,
+  MatTable,
+} from '@angular/material/table';
+import { MatChip } from '@angular/material/chips';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { ZeroPadPipe } from '@app/pipes/zero-pad.pipe';
+import {
+  BudgetAllocation,
+  CreateRequest,
+  IRequest,
+} from '@app/dashboard/finance/budget-allocation/budget-allocation.interface';
 import { serverError } from '@app/libs/constants';
 import {
   ActionModalData,
   ActionModalIllustration,
 } from '@app/shared/action-modal/action-modal.type';
 import { ActionModalComponent } from '@app/shared/action-modal/action-modal.component';
-import { FinanceService } from '@app/dashboard/finance/finance.service';
-import { ToastrService } from 'ngx-toastr';
-import { ActivatedRoute, Router } from '@angular/router';
-import { StudentsService } from '@app/dashboard/students/students.service';
 
 @Component({
   selector: 'app-create-request',
@@ -56,54 +85,126 @@ import { StudentsService } from '@app/dashboard/students/students.service';
     MatIconButton,
     MatLabel,
     AsyncPipe,
+    CurrencyPipe,
+    MatAutocomplete,
+    MatAutocompleteTrigger,
+    MatCell,
+    MatCellDef,
+    MatChip,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatOption,
+    MatRow,
+    MatRowDef,
+    MatSlideToggle,
+    MatTable,
+    NgForOf,
+    NgxMatSelectSearchModule,
+    ZeroPadPipe,
   ],
   templateUrl: './create-request.component.html',
   styleUrl: './create-request.component.scss',
 })
 export class CreateRequestComponent implements OnDestroy, OnInit {
-  isLoading = false;
-  isChecking = false;
-  beneficiaryExists = false;
-  showBanner = false;
-  bannerText = '';
+  isLoading: boolean = false;
   requestForm = this.fb.group({
-    amount: ['', Validators.required],
-    disbursementDistribution: this.fb.array([]),
+    budgetId: ['', Validators.required],
+    school: ['', Validators.required],
+    class: ['', Validators.required],
+    tuition: ['', Validators.required],
+    textBooks: ['', Validators.required],
+    extraClasses: ['', Validators.required],
+    examFee: ['', Validators.required],
+    uniformBag: ['', Validators.required],
+    excursion: ['', Validators.required],
+    transportation: ['', Validators.required],
+    wears: ['', Validators.required],
+    schoolFeeding: ['', Validators.required],
+    stationery: ['', Validators.required],
+    provision: ['', Validators.required],
+    homeCare: ['', Validators.required],
   });
-  public distributionForm = this.fb.group({
-    title: ['', Validators.required],
-    amount: ['', Validators.required],
-  });
+  isLoadingBudget = false;
+  public isLoadingStudents = true;
+  protected budgets: BudgetAllocation[] = [];
+  public budgetsFilterCtrl = new FormControl<string>('');
+  public filteredBudgets: ReplaySubject<BudgetAllocation[]> = new ReplaySubject<
+    BudgetAllocation[]
+  >(1);
   protected _onDestroy = new Subject<void>();
-  public totalDistribution = 0;
-  public editId: string | undefined = undefined;
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly location: Location,
     private readonly financeService: FinanceService,
     private readonly toastrService: ToastrService,
     private readonly dialog: MatDialog,
-    private readonly router: Router,
-    private readonly studentsService: StudentsService,
-    private readonly activatedRoute: ActivatedRoute
-  ) {}
-
-  ngOnInit() {
-    this.canEditRequest();
-    this.beneficiaryInfoExists();
+    private dialogRef: MatDialogRef<CreateRequestComponent>,
+    @Inject(MAT_DIALOG_DATA)
+    public data: IRequest
+  ) {
+    if (data) {
+      const {
+        school,
+        tuition,
+        textBooks,
+        extraClasses,
+        examFee,
+        excursion,
+        uniformBag,
+        transportation,
+        wears,
+        schoolFeeding,
+        stationery,
+        provision,
+        homeCare,
+      } = data;
+      this.requestForm.controls.class.setValue(data.class);
+      this.requestForm.controls.school.setValue(school);
+      this.requestForm.controls.tuition.setValue(String(tuition));
+      this.requestForm.controls.textBooks.setValue(String(textBooks));
+      this.requestForm.controls.extraClasses.setValue(String(extraClasses));
+      this.requestForm.controls.examFee.setValue(String(examFee));
+      this.requestForm.controls.excursion.setValue(String(excursion));
+      this.requestForm.controls.uniformBag.setValue(String(uniformBag));
+      this.requestForm.controls.transportation.setValue(String(transportation));
+      this.requestForm.controls.wears.setValue(String(wears));
+      this.requestForm.controls.schoolFeeding.setValue(String(schoolFeeding));
+      this.requestForm.controls.stationery.setValue(String(stationery));
+      this.requestForm.controls.provision.setValue(String(provision));
+      this.requestForm.controls.homeCare.setValue(String(homeCare));
+      this.requestForm.controls.budgetId.setValue(data.__budget__.id);
+    }
   }
 
-  beneficiaryInfoExists() {
-    this.isChecking = true;
-    return this.studentsService
-      .beneficiaryInfoExists()
+  ngOnInit() {
+    this.financeService
+      .getAllBudgets()
       .pipe(
         first(),
-        finalize(() => (this.isChecking = false)),
-        tap(response => (this.beneficiaryExists = response.data))
+        catchError(error => {
+          this.toastrService.error(
+            error.error.message,
+            error.error.error || serverError
+          );
+          return of(null);
+        }),
+        finalize(() => {
+          this.isLoadingStudents = false;
+        })
       )
-      .subscribe();
+      .subscribe(response => {
+        if (response) {
+          this.budgets = response.data;
+          this.filteredBudgets.next(response.data.slice());
+        }
+      });
+    this.budgetsFilterCtrl.valueChanges
+      .pipe(takeUntil(this._onDestroy))
+      .subscribe(() => {
+        this.filterStudents();
+      });
   }
 
   ngOnDestroy() {
@@ -111,83 +212,70 @@ export class CreateRequestComponent implements OnDestroy, OnInit {
     this._onDestroy.complete();
   }
 
-  canEditRequest() {
-    if (this.router.url.startsWith('/dashboard/edit-request/')) {
-      const requestId = this.activatedRoute.snapshot.params['id'];
-      this.isChecking = true;
-      this.financeService
-        .getDisbursement(requestId)
-        .pipe(
-          finalize(() => (this.isChecking = false)),
-          tap(({ data }) => {
-            this.editId = data.id;
-            this.requestForm.controls.amount.setValue(data.amount.toString());
-            data.disbursementDistribution.map(({ amount, title }) => {
-              this.distributionForm.controls.amount.setValue(amount.toString());
-              this.distributionForm.controls.title.setValue(title);
-              this.addDistribution();
-            });
-          })
-        )
-        .subscribe();
+  public updateTotal() {
+    const form = this.requestForm.value as CreateRequest;
+    const fieldsToSum: (keyof CreateRequest)[] = [
+      'tuition',
+      'textBooks',
+      'extraClasses',
+      'examFee',
+      'uniformBag',
+      'excursion',
+      'transportation',
+      'wears',
+      'schoolFeeding',
+      'stationery',
+      'provision',
+      'homeCare',
+    ];
+
+    return fieldsToSum.reduce((total, field) => {
+      const value = parseFloat((form[field] as string) || '0');
+      return total + (isNaN(value) ? 0 : value);
+    }, 0);
+  }
+
+  protected filterStudents() {
+    if (!this.budgets) {
+      return;
     }
-  }
-
-  get disbursementDistributions(): FormArray {
-    return this.requestForm.controls.disbursementDistribution as FormArray;
-  }
-
-  addDistribution() {
-    if (this.requestForm.controls.amount.valid) {
-      const amount = this.distributionForm.controls.amount.value;
-      const values = new FormGroup({
-        title: new FormControl(this.distributionForm.controls.title.value),
-        amount: new FormControl(amount),
-      });
-      this.totalDistribution += parseInt(amount as string);
-      const totalBudget = parseInt(
-        this.requestForm.controls.amount.value || '0'
-      );
-      if (this.totalDistribution > totalBudget) {
-        this.bannerText =
-          'Your disbursement distribution as exceeded your total budget.';
-        this.showBanner = true;
-        return;
-      }
-      this.disbursementDistributions.push(values);
-      this.distributionForm.reset();
+    let search = this.budgetsFilterCtrl.value as string;
+    if (!search) {
+      this.filteredBudgets.next(this.budgets.slice());
+      return;
     } else {
-      this.bannerText = 'Please enter disbursement amount before distribution';
-      this.showBanner = true;
+      search = search.toLowerCase();
     }
-  }
-
-  deleteDistribution(index: number) {
-    this.totalDistribution -= parseInt(
-      this.disbursementDistributions.at(index).value
+    this.filteredBudgets.next(
+      this.budgets.filter(
+        budget => budget.period.toLowerCase().indexOf(search) > -1
+      )
     );
-    this.disbursementDistributions.removeAt(index);
-  }
-
-  closeBanner() {
-    this.showBanner = !this.showBanner;
-  }
-
-  cancel() {
-    this.location.back();
   }
 
   submit() {
-    if (this.disbursementDistributions.length) {
-      const disbursementDetails: Omit<CreateDisbursement, 'studentId'> = {
-        amount: parseInt(this.requestForm.value.amount as string),
-        disbursementDistribution: this.requestForm.controls
-          .disbursementDistribution.value as CreateDisbursementDistribution[],
-      };
+    const request = {
+      budgetId: this.requestForm.controls.budgetId.value,
+      school: this.requestForm.controls.school.value,
+      class: this.requestForm.controls.class.value,
+      tuition: Number(this.requestForm.controls.tuition.value),
+      textBooks: Number(this.requestForm.controls.textBooks.value),
+      extraClasses: Number(this.requestForm.controls.extraClasses.value),
+      examFee: Number(this.requestForm.controls.examFee.value),
+      uniformBag: Number(this.requestForm.controls.uniformBag.value),
+      excursion: Number(this.requestForm.controls.excursion.value),
+      transportation: Number(this.requestForm.controls.transportation.value),
+      wears: Number(this.requestForm.controls.wears.value),
+      schoolFeeding: Number(this.requestForm.controls.schoolFeeding.value),
+      stationery: Number(this.requestForm.controls.stationery.value),
+      provision: Number(this.requestForm.controls.provision.value),
+      homeCare: Number(this.requestForm.controls.homeCare.value),
+    } as CreateRequest;
+    if (this.requestForm.valid) {
       this.isLoading = true;
-      if (this.editId) {
+      if (this.data) {
         this.financeService
-          .editRequest(this.editId, disbursementDetails)
+          .editRequest(this.data.id, request)
           .pipe(
             first(),
             catchError(error => {
@@ -203,11 +291,12 @@ export class CreateRequestComponent implements OnDestroy, OnInit {
           )
           .subscribe(response => {
             if (response) {
+              this.dialogRef.close(response);
               const data: ActionModalData = {
                 actionIllustration: ActionModalIllustration.success,
                 title: 'Congratulations!',
                 actionColor: 'primary',
-                subtext: 'Well done, You have successfully edited a request',
+                subtext: 'Well done, You have successfully updated a request',
                 actionType: 'close',
               };
               this.dialog.open(ActionModalComponent, {
@@ -217,12 +306,11 @@ export class CreateRequestComponent implements OnDestroy, OnInit {
                 height: '100%',
                 data,
               });
-              void this.router.navigate(['dashboard/requests']);
             }
           });
       } else {
         this.financeService
-          .createBeneficiaryDisbursement(disbursementDetails)
+          .createRequest(request)
           .pipe(
             first(),
             catchError(error => {
@@ -238,6 +326,7 @@ export class CreateRequestComponent implements OnDestroy, OnInit {
           )
           .subscribe(response => {
             if (response) {
+              this.dialogRef.close(response);
               const data: ActionModalData = {
                 actionIllustration: ActionModalIllustration.success,
                 title: 'Congratulations!',
@@ -252,14 +341,16 @@ export class CreateRequestComponent implements OnDestroy, OnInit {
                 height: '100%',
                 data,
               });
-              void this.router.navigate(['dashboard/requests']);
             }
           });
       }
     } else {
-      this.bannerText =
-        'Please make sure your distribution equals disbursement amount';
-      this.showBanner = true;
+      this.requestForm.markAllAsTouched();
+      this.requestForm.markAsDirty();
     }
+  }
+
+  cancel() {
+    this.dialogRef.close();
   }
 }

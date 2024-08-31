@@ -7,6 +7,18 @@ $border: 1px solid $background-color;
 $height: 30px;
 $padding: 0 5px;
 
+.budget-type {
+  color: map-get(colors.$primary-palette, 500);
+}
+
+.disbursement-type {
+  color: red;
+}
+
+.fund-type {
+  color: green;
+}
+
 .financial-report__container {
   background: white;
   margin: 20px;
@@ -96,3 +108,18 @@ $padding: 0 5px;
     padding: $padding;
   }
 }
+
+.display-style {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: end;
+  margin-right: 1.5rem;
+}
+
+.filter-fields {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+
