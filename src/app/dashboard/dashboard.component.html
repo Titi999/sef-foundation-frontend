@@ -155,19 +155,6 @@
                 }
               </span>
             </a>
-            <a class="nav-item" mat-list-item>
-              <span
-                class="entry"
-                matTooltip="Academic Performance"
-                matTooltipPosition="right"
-                [routerLink]="'academic-performance'"
-                routerLinkActive="entry__active">
-                <mat-icon>bar_chart</mat-icon>
-                @if (!isCollapsed) {
-                  <span>Performance</span>
-                }
-              </span>
-            </a>
             @if (getUserRole() === UserRoles.SUPER_ADMIN) {
               @if (!isCollapsed) {
                 <mat-tree
