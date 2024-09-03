@@ -68,6 +68,7 @@ export class FundsComponent implements AfterViewInit {
   public isLoadingResults = true;
   public readonly displayedColumns: string[] = [
     'created_at',
+    'source',
     'period',
     'year',
     'amount',
