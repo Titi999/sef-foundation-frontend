@@ -22,6 +22,14 @@
         <mat-icon color="white">upload</mat-icon>
         Upload Distribution
       </button>
+      <button
+        (click)="downloadCSV()"
+        class="add__btn btn"
+        mat-flat-button
+        color="primary">
+        <mat-icon color="white">download</mat-icon>
+        Download Sample
+      </button>
       <input
         [style.display]="'none'"
         type="file"
