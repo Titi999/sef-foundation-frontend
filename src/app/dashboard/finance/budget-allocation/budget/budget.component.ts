@@ -315,5 +315,18 @@ export class BudgetComponent implements OnInit {
     });
   }
 
+  downloadCSV() {
+    const filePath = `./assets/sample.csv`;
+    this.financeService.downloadCSV(filePath).subscribe(data => {
+      const blob = new Blob([data], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'sample.csv';
+      link.click();
+      window.URL.revokeObjectURL(url);
+    });
+  }
+
   protected readonly calculateBudgetTotal = calculateBudgetTotal;
 }

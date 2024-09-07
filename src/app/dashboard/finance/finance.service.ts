@@ -250,4 +250,8 @@ export class FinanceService {
       `${this.url}/performance?page=${page}&search=${search}&type=${type}&year=${year}&category=${category}`
     );
   }
+
+  public downloadCSV(filePath: string) {
+    return this.http.get(filePath, { responseType: 'blob' });
+  }
 }
